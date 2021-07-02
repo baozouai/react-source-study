@@ -2996,9 +2996,9 @@ function bailoutOnAlreadyFinishedWork(
     // Don't update "base" render times for bailouts.
     stopProfilerTimerIfRunning(workInProgress);
   }
-
+  // 标记有跳过的更新
   markSkippedUpdateLanes(workInProgress.lanes);
-
+  // 如果子节点没有更新，返回null，终止遍历
   // Check if the children have any pending work.
   if (!includesSomeLane(renderLanes, workInProgress.childLanes)) {
     // The children don't have any work either. We can skip them.
@@ -3006,6 +3006,7 @@ function bailoutOnAlreadyFinishedWork(
     // a work-in-progress set. If so, we need to transfer their effects.
     return null;
   } else {
+    // 子节点有更新，那么从current上复制子节点，并return出去
     // This fiber doesn't have work, but its subtree does. Clone the child
     // fibers and continue.
     cloneChildFibers(current, workInProgress);
@@ -3080,6 +3081,7 @@ function beginWork(
   workInProgress: Fiber,
   renderLanes: Lanes,
 ): Fiber | null {
+  // 获取workInProgress.lanes，可通过判断它是否为空去判断该节点是否需要更新
   const updateLanes = workInProgress.lanes;
 
   if (__DEV__) {
@@ -3099,7 +3101,9 @@ function beginWork(
       );
     }
   }
-
+  // 依据current是否存在判断当前是首次挂载还是后续的更新
+  // 如果是更新，先看优先级够不够，不够的话就能调用bailoutOnAlreadyFinishedWork
+  // 复用fiber节点来跳出对当前这个节点的处理了。
   if (current !== null) {
     const oldProps = current.memoizedProps;
     const newProps = workInProgress.pendingProps;
@@ -3114,6 +3118,8 @@ function beginWork(
       // This may be unset if the props are determined to be equal later (memo).
       didReceiveUpdate = true;
     } else if (!includesSomeLane(renderLanes, updateLanes)) {
+      // 更新时，如果节点的优先级不够会直接复用已有节点，即走跳出（bailout）的逻辑，而不是去走下面的更新逻辑
+      // 此时无需更新
       didReceiveUpdate = false;
       // This fiber does not have any pending work. Bailout without entering
       // the begin phase. There's still some bookkeeping we that needs to be done
@@ -3278,6 +3284,7 @@ function beginWork(
           return updateOffscreenComponent(current, workInProgress, renderLanes);
         }
       }
+      // 拦截无需更新的节点
       return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
     } else {
       if ((current.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
@@ -3301,8 +3308,14 @@ function beginWork(
   // the update queue. However, there's an exception: SimpleMemoComponent
   // sometimes bails out later in the begin phase. This indicates that we should
   // move this assignment out of the common path and into each branch.
-  workInProgress.lanes = NoLanes;
+  
+  // 代码走到这里说明确实要去处理节点了，此时会根据不同fiber的类型
+  // 去调用它们各自的处理函数
 
+  // 先清空workInProgress节点上的lanes，因为更新过程中用不到，
+  // 在处理完updateQueue之后会重新赋值
+  workInProgress.lanes = NoLanes;
+  // 依据不同的节点类型来处理节点的更新
   switch (workInProgress.tag) {
     case IndeterminateComponent: {
       return mountIndeterminateComponent(
