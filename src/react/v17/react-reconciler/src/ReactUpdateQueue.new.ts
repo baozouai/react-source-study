@@ -141,6 +141,7 @@ let hasForceUpdate = false;
 let didWarnUpdateInsideUpdate;
 let currentlyProcessingQueue;
 export let resetCurrentlyProcessingQueue;
+// @ts-ignore
 if (__DEV__) {
   didWarnUpdateInsideUpdate = false;
   currentlyProcessingQueue = null;
@@ -149,6 +150,10 @@ if (__DEV__) {
   };
 }
 
+/**
+ * @description: 初始化updateQueue
+ * @param {Fiber} fiber
+ */
 export function initializeUpdateQueue<State>(fiber: Fiber): void {
   const queue: UpdateQueue<State> = {
     baseState: fiber.memoizedState,
@@ -183,13 +188,21 @@ export function cloneUpdateQueue<State>(
 
 export function createUpdate(eventTime: number, lane: Lane): Update<*> {
   const update: Update<*> = {
+    // update的产生时间，若该update一直因为优先级不够而得不到执行，那么它会超时，会被立刻执行
     eventTime,
+    // update的优先级，即更新优先级
     lane,
-
+    // 表示更新是哪种类型（UpdateState，ReplaceState，ForceUpdate，CaptureUpdate）
     tag: UpdateState,
+    /**
+     * 更新所携带的状态
+     * 类组件中：有两种可能，对象（{}），和函数（(prevState, nextProps):newState => {}）
+     * 根组件中：是React.element，即ReactDOM.render的第一个参数
+     */
     payload: null,
+    // 可理解为setState的回调
     callback: null,
-
+    // 指向下一个update的指针
     next: null,
   };
   return update;
@@ -202,7 +215,7 @@ export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
     return;
   }
 
-  const sharedQueue: SharedQueue<State> = (updateQueue: any).shared;
+  const sharedQueue: SharedQueue<State> = (updateQueue as any).shared;
   const pending = sharedQueue.pending;
   if (pending === null) {
     // This is the first update. Create a circular list.

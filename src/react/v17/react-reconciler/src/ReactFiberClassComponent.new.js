@@ -196,8 +196,9 @@ const classComponentUpdater = {
   enqueueSetState(inst, payload, callback) {
     const fiber = getInstance(inst);
     const eventTime = requestEventTime();
+    // 依据事件优先级创建update的优先级
     const lane = requestUpdateLane(fiber);
-
+    // 生成一个update对象
     const update = createUpdate(eventTime, lane);
     update.payload = payload;
     if (callback !== undefined && callback !== null) {
@@ -206,8 +207,9 @@ const classComponentUpdater = {
       }
       update.callback = callback;
     }
-
+    // 调用enqueueUpdate将update放入updateQueue
     enqueueUpdate(fiber, update);
+    // 开始调度
     scheduleUpdateOnFiber(fiber, lane, eventTime);
 
     if (__DEV__) {
