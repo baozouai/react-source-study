@@ -17,7 +17,7 @@ let Scheduler;
 describe('ReactScope', () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.enableScopeAPI = true;
     React = require('react');
     Scheduler = require('scheduler');

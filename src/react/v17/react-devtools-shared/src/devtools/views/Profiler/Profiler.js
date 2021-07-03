@@ -32,7 +32,7 @@ import Store from '../../store';
 
 import styles from './Profiler.css';
 
-function Profiler(_: {||}) {
+function Profiler(_: {}) {
   const {
     didRecordCommits,
     isProcessingData,

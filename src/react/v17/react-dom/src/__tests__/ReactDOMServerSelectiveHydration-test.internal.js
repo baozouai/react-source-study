@@ -96,7 +96,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
 
-    const ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    const ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.enableCreateEventHandleAPI = true;
     React = require('react');
     ReactDOM = require('react-dom');

@@ -11,11 +11,11 @@ import type {Fiber} from './ReactInternalTypes';
 
 import {getStackByFiberInDevAndProd} from './ReactFiberComponentStack';
 
-export type CapturedValue<T> = {|
+export type CapturedValue<T> = {
   value: T,
   source: Fiber | null,
   stack: string | null,
-|};
+};
 
 export function createCapturedValue<T>(
   value: T,

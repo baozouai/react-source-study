@@ -12,7 +12,7 @@
 // while still maintaining support for multiple renderer versions
 // (which use different values for ReactTypeOfWork).
 
-import type {Source} from 'shared/ReactElementType';
+import type {Source} from '../../shared/ReactElementType';
 import type {LazyComponent} from 'react/src/ReactLazy';
 import type {CurrentDispatcherRef} from './types';
 
@@ -33,7 +33,7 @@ import {
 
 // These methods are safe to import from shared;
 // there is no React-specific logic here.
-import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
+import {disableLogs, reenableLogs} from '../../shared/ConsolePatchingDev';
 
 let prefix;
 export function describeBuiltInComponentFrame(

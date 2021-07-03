@@ -24,7 +24,7 @@ function loadModules() {
   jest.resetModules();
   jest.useFakeTimers();
 
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
 
   ReactFeatureFlags.enableSchedulerTracing = true;
   ReactFeatureFlags.enableProfilerTimer = true;

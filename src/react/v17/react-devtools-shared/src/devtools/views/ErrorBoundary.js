@@ -15,18 +15,18 @@ import Icon from './Icon';
 import styles from './ErrorBoundary.css';
 import Store from 'react-devtools-shared/src/devtools/store';
 
-type Props = {|
+type Props = {
   children: React$Node,
   onRetry?: (store: Store) => void,
   store: Store,
-|};
+};
 
-type State = {|
+type State = {
   callStack: string | null,
   componentStack: string | null,
   errorMessage: string | null,
   hasError: boolean,
-|};
+};
 
 const InitialState: State = {
   callStack: null,

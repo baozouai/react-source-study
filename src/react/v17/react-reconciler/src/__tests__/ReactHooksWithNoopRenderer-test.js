@@ -10,7 +10,7 @@
 
 /* eslint-disable no-func-assign */
 
-'use strict';
+
 
 let React;
 let textCache;
@@ -210,7 +210,7 @@ describe('ReactHooksWithNoopRenderer', () => {
     expect(Scheduler).toFlushAndYield([10]);
   });
 
-  if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('throws inside module-style components', () => {
       function Counter() {
         return {
@@ -1046,7 +1046,7 @@ describe('ReactHooksWithNoopRenderer', () => {
             setCount(1);
           }
           Scheduler.unstable_yieldValue('Layout effect ' + count);
-        });
+        }, [count]);
         return <Text text="Layout" />;
       }
 
@@ -1310,7 +1310,7 @@ describe('ReactHooksWithNoopRenderer', () => {
           return () => {
             Scheduler.unstable_yieldValue(`Child ${label} passive destroy`);
           };
-        }, []);
+        }, [label]);
         Scheduler.unstable_yieldValue(`Child ${label} render`);
         return state;
       }
@@ -1553,7 +1553,7 @@ describe('ReactHooksWithNoopRenderer', () => {
         React.useEffect(() => {
           Scheduler.unstable_yieldValue('Child passive create');
           updaterRef.current = setState;
-        }, []);
+        }, [updaterRef]);
         return state;
       }
 
@@ -1587,7 +1587,7 @@ describe('ReactHooksWithNoopRenderer', () => {
             Scheduler.unstable_yieldValue('Child passive destroy');
             setState(true);
           };
-        }, []);
+        }, [setState]);
         return state;
       }
 
@@ -1911,7 +1911,7 @@ describe('ReactHooksWithNoopRenderer', () => {
           return () => {
             Scheduler.unstable_yieldValue(`Did destroy [${props.count}]`);
           };
-        }, []);
+        }, [props.count]);
         return <Text text={'Count: ' + props.count} />;
       }
       act(() => {
@@ -1983,7 +1983,7 @@ describe('ReactHooksWithNoopRenderer', () => {
           return () => {
             Scheduler.unstable_yieldValue(`Did destroy [${text}]`);
           };
-        }, [props.label, props.count]);
+        }, [props.label, props.count, text]);
         return <Text text={text} />;
       }
       act(() => {
@@ -3176,9 +3176,7 @@ describe('ReactHooksWithNoopRenderer', () => {
 
     it('should not invoke memoized function during re-renders unless inputs change', () => {
       function LazyCompute(props) {
-        const computed = useMemo(() => props.compute(props.input), [
-          props.input,
-        ]);
+        const computed = useMemo(() => props.compute(props.input), [props]);
         const [count, setCount] = useState(0);
         if (count < 3) {
           setCount(count + 1);
@@ -3297,7 +3295,7 @@ describe('ReactHooksWithNoopRenderer', () => {
 
       function Counter(props, ref) {
         const [count, dispatch] = useReducer(reducer, 0);
-        useImperativeHandle(ref, () => ({count, dispatch}), []);
+        useImperativeHandle(ref, () => ({count, dispatch}), [count]);
         return <Text text={'Count: ' + count} />;
       }
 

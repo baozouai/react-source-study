@@ -24,10 +24,10 @@ export type IconType =
   | 'settings'
   | 'store-as-global-variable';
 
-type Props = {|
+type Props = {
   className?: string,
   type: IconType,
-|};
+};
 
 export default function Icon({className = '', type}: Props) {
   let pathData = null;

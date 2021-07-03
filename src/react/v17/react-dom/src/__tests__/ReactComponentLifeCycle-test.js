@@ -983,7 +983,7 @@ describe('ReactComponentLifeCycle', () => {
     });
   });
 
-  if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('calls effects on module-pattern component', function() {
       const log = [];
 

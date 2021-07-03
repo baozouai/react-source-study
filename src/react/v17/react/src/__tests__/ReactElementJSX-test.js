@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+
 
 let React;
 let ReactDOM;
@@ -369,7 +369,7 @@ describe('ReactElement.jsx', () => {
     );
   });
 
-  if (require('shared/ReactFeatureFlags').warnAboutSpreadingKeyToJSX) {
+  if (require('../../shared/ReactFeatureFlags').warnAboutSpreadingKeyToJSX) {
     it('should warn when keys are passed as part of props', () => {
       const container = document.createElement('div');
       class Child extends React.Component {

@@ -7,14 +7,14 @@
  * @flow
  */
 
-export opaque type ModuleMetaData = {
+export type ModuleMetaData = {
   id: string,
   chunks: Array<string>,
   name: string,
 };
 
 // eslint-disable-next-line no-unused-vars
-export opaque type ModuleReference<T> = ModuleMetaData;
+export type ModuleReference<T> = ModuleMetaData;
 
 export function resolveModuleReference<T>(
   moduleData: ModuleMetaData,

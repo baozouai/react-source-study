@@ -23,7 +23,7 @@ import type {ProfilingDataForRootFrontend} from './types';
 import type {ChartData} from './InteractionsChartBuilder';
 import type {TabID} from './ProfilerContext';
 
-export type ItemData = {|
+export type ItemData = {
   chartData: ChartData,
   dataForRoot: ProfilingDataForRootFrontend,
   labelWidth: number,
@@ -32,9 +32,9 @@ export type ItemData = {|
   selectCommitIndex: (id: number | null) => void,
   selectInteraction: (id: number | null) => void,
   selectTab: (id: TabID) => void,
-|};
+};
 
-export default function InteractionsAutoSizer(_: {||}) {
+export default function InteractionsAutoSizer(_: {}) {
   return (
     <div className={styles.Container}>
       <AutoSizer>
@@ -44,7 +44,7 @@ export default function InteractionsAutoSizer(_: {||}) {
   );
 }
 
-function Interactions({height, width}: {|height: number, width: number|}) {
+function Interactions({height, width}: {height: number, width: number}) {
   const {
     rootID,
     selectedInteractionID,

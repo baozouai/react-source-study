@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {ReactNodeList} from 'shared/ReactTypes';
+import type {ReactNodeList} from '../../shared/ReactTypes';
 import type {Container} from './ReactDOMHostConfig';
 
 import '../shared/checkReact';
@@ -39,13 +39,13 @@ import {
   getCurrentUpdateLanePriority,
 } from 'react-reconciler/src/ReactFiberReconciler';
 import {createPortal as createPortalImpl} from 'react-reconciler/src/ReactPortal';
-import {canUseDOM} from 'shared/ExecutionEnvironment';
-import ReactVersion from 'shared/ReactVersion';
-import invariant from 'shared/invariant';
+import {canUseDOM} from '../../shared/ExecutionEnvironment';
+import ReactVersion from '../../shared/ReactVersion';
+import invariant from '../../shared/invariant';
 import {
   warnUnstableRenderSubtreeIntoContainer,
   enableNewReconciler,
-} from 'shared/ReactFeatureFlags';
+} from '../../shared/ReactFeatureFlags';
 
 import {
   getInstanceFromNode,

@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+
 
 let PropTypes;
 let React;
@@ -40,7 +40,7 @@ describe('ReactErrorBoundaries', () => {
     jest.useFakeTimers();
     jest.resetModules();
     PropTypes = require('prop-types');
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
     ReactDOM = require('react-dom');
     React = require('react');
@@ -918,7 +918,7 @@ describe('ReactErrorBoundaries', () => {
     expect(container.firstChild.textContent).toBe('Caught an error: Hello.');
   });
 
-  if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('renders an error state if module-style context provider throws in componentWillMount', () => {
       function BrokenComponentWillMountWithContext() {
         return {

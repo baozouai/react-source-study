@@ -7,9 +7,9 @@
  * @flow
  */
 
-export type Point = $ReadOnly<{|x: number, y: number|}>;
-export type Size = $ReadOnly<{|width: number, height: number|}>;
-export type Rect = $ReadOnly<{|origin: Point, size: Size|}>;
+export type Point = $ReadOnly<{x: number, y: number}>;
+export type Size = $ReadOnly<{width: number, height: number}>;
+export type Rect = $ReadOnly<{origin: Point, size: Size}>;
 
 /**
  * Alternative representation of `Rect`.

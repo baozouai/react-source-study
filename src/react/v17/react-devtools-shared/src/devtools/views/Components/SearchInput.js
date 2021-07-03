@@ -16,7 +16,7 @@ import Icon from '../Icon';
 
 import styles from './SearchInput.css';
 
-type Props = {||};
+type Props = {};
 
 export default function SearchInput(props: Props) {
   const {searchIndex, searchResults, searchText} = useContext(TreeStateContext);

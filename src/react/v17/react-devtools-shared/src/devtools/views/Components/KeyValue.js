@@ -30,7 +30,7 @@ import type {GetInspectedElementPath} from './InspectedElementContext';
 
 type Type = 'props' | 'state' | 'context' | 'hooks';
 
-type KeyValueProps = {|
+type KeyValueProps = {
   alphaSort: boolean,
   bridge: FrontendBridge,
   canDeletePaths: boolean,
@@ -48,7 +48,7 @@ type KeyValueProps = {|
   pathRoot: Type,
   store: Store,
   value: any,
-|};
+};
 
 export default function KeyValue({
   alphaSort,
@@ -87,7 +87,7 @@ export default function KeyValue({
       getInspectedElementPath(id, [pathRoot, ...path]);
     }
     prevIsOpenRef.current = isOpen;
-  }, [getInspectedElementPath, isInspectable, isOpen, path, pathRoot]);
+  }, [getInspectedElementPath, id, isInspectable, isOpen, path, pathRoot]);
 
   const toggleIsOpen = () => setIsOpen(prevIsOpen => !prevIsOpen);
 

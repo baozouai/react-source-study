@@ -14,9 +14,9 @@ import {StoreContext} from '../context';
 
 import styles from './WhatChanged.css';
 
-type Props = {|
+type Props = {
   fiberID: number,
-|};
+};
 
 export default function WhatChanged({fiberID}: Props) {
   const {profilerStore} = useContext(StoreContext);

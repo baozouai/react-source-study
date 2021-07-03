@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Source} from 'shared/ReactElementType';
+import type {Source} from '../../shared/ReactElementType';
 import type {
   Dehydrated,
   Unserializable,
@@ -18,7 +18,7 @@ import type {ElementType} from 'react-devtools-shared/src/types';
 // Some of its information (e.g. id, type, displayName) come from the backend.
 // Other bits (e.g. weight and depth) are computed on the frontend for windowing and display purposes.
 // Elements are updated on a push basis– meaning the backend pushes updates to the frontend when needed.
-export type Element = {|
+export type Element = {
   id: number,
   parentID: number,
   children: Array<number>,
@@ -42,21 +42,21 @@ export type Element = {|
   // This property is used to quickly determine the total number of Elements,
   // and the Element at any given index (for windowing purposes).
   weight: number,
-|};
+};
 
-export type Owner = {|
+export type Owner = {
   displayName: string | null,
   id: number,
   hocDisplayNames: Array<string> | null,
   type: ElementType,
-|};
+};
 
-export type OwnersList = {|
+export type OwnersList = {
   id: number,
   owners: Array<Owner> | null,
-|};
+};
 
-export type InspectedElement = {|
+export type InspectedElement = {
   id: number,
 
   // Does the current renderer support editable hooks and function props?
@@ -99,11 +99,11 @@ export type InspectedElement = {|
   // Meta information about the renderer that created this element.
   rendererPackageName: string | null,
   rendererVersion: string | null,
-|};
+};
 
 // TODO: Add profiling type
 
-export type DehydratedData = {|
+export type DehydratedData = {
   cleaned: Array<Array<string | number>>,
   data:
     | string
@@ -113,4 +113,4 @@ export type DehydratedData = {|
     | Array<Unserializable>
     | {[key: string]: string | Dehydrated | Unserializable, ...},
   unserializable: Array<Array<string | number>>,
-|};
+};

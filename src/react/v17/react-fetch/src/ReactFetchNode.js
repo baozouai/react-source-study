@@ -7,14 +7,14 @@
  * @flow
  */
 
-import type {Wakeable} from 'shared/ReactTypes';
+import type {Wakeable} from '../../shared/ReactTypes';
 
 import * as http from 'http';
 import * as https from 'https';
 
 import {readCache} from 'react/unstable-cache';
 
-type FetchResponse = {|
+type FetchResponse = {
   // Properties
   headers: any,
   ok: boolean,
@@ -28,7 +28,7 @@ type FetchResponse = {|
   blob(): any,
   json(): any,
   text(): string,
-|};
+};
 
 function nodeFetch(
   url: string,
@@ -58,20 +58,20 @@ const Pending = 0;
 const Resolved = 1;
 const Rejected = 2;
 
-type PendingResult = {|
+type PendingResult = {
   status: 0,
   value: Wakeable,
-|};
+};
 
-type ResolvedResult<V> = {|
+type ResolvedResult<V> = {
   status: 1,
   value: V,
-|};
+};
 
-type RejectedResult = {|
+type RejectedResult = {
   status: 2,
   value: mixed,
-|};
+};
 
 type Result<V> = PendingResult | ResolvedResult<V> | RejectedResult;
 

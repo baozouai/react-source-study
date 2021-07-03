@@ -50,92 +50,92 @@ const debug = (methodName, ...args) => {
   }
 };
 
-type ElementAndRendererID = {|
+type ElementAndRendererID = {
   id: number,
   rendererID: number,
-|};
+};
 
-type StoreAsGlobalParams = {|
+type StoreAsGlobalParams = {
   count: number,
   id: number,
   path: Array<string | number>,
   rendererID: number,
-|};
+};
 
-type CopyElementParams = {|
+type CopyElementParams = {
   id: number,
   path: Array<string | number>,
   rendererID: number,
-|};
+};
 
-type InspectElementParams = {|
+type InspectElementParams = {
   id: number,
   path?: Array<string | number>,
   rendererID: number,
-|};
+};
 
-type OverrideHookParams = {|
+type OverrideHookParams = {
   id: number,
   hookID: number,
   path: Array<string | number>,
   rendererID: number,
   wasForwarded?: boolean,
   value: any,
-|};
+};
 
-type SetInParams = {|
+type SetInParams = {
   id: number,
   path: Array<string | number>,
   rendererID: number,
   wasForwarded?: boolean,
   value: any,
-|};
+};
 
 type PathType = 'props' | 'hooks' | 'state' | 'context';
 
-type DeletePathParams = {|
+type DeletePathParams = {
   type: PathType,
   hookID?: ?number,
   id: number,
   path: Array<string | number>,
   rendererID: number,
-|};
+};
 
-type RenamePathParams = {|
+type RenamePathParams = {
   type: PathType,
   hookID?: ?number,
   id: number,
   oldPath: Array<string | number>,
   newPath: Array<string | number>,
   rendererID: number,
-|};
+};
 
-type OverrideValueAtPathParams = {|
+type OverrideValueAtPathParams = {
   type: PathType,
   hookID?: ?number,
   id: number,
   path: Array<string | number>,
   rendererID: number,
   value: any,
-|};
+};
 
-type OverrideSuspenseParams = {|
+type OverrideSuspenseParams = {
   id: number,
   rendererID: number,
   forceFallback: boolean,
-|};
+};
 
-type PersistedSelection = {|
+type PersistedSelection = {
   rendererID: number,
   path: Array<PathFrame>,
-|};
+};
 
-export default class Agent extends EventEmitter<{|
+export default class Agent extends EventEmitter<{
   hideNativeHighlight: [],
   showNativeHighlight: [NativeType],
   shutdown: [],
   traceUpdates: [Set<NativeType>],
-|}> {
+}> {
   _bridge: BackendBridge;
   _isProfiling: boolean = false;
   _recordChangeDescriptions: boolean = false;
@@ -275,7 +275,7 @@ export default class Agent extends EventEmitter<{|
     return null;
   }
 
-  getProfilingData = ({rendererID}: {|rendererID: RendererID|}) => {
+  getProfilingData = ({rendererID}: {rendererID: RendererID}) => {
     const renderer = this._rendererInterfaces[rendererID];
     if (renderer == null) {
       console.warn(`Invalid renderer id "${rendererID}"`);
@@ -571,10 +571,10 @@ export default class Agent extends EventEmitter<{|
   updateConsolePatchSettings = ({
     appendComponentStack,
     breakOnConsoleErrors,
-  }: {|
+  }: {
     appendComponentStack: boolean,
     breakOnConsoleErrors: boolean,
-  |}) => {
+  }) => {
     // If the frontend preference has change,
     // or in the case of React Native- if the backend is just finding out the preference-
     // then install or uninstall the console overrides.

@@ -55,7 +55,7 @@ function createDataResourceFromImportedFile(file: File): DataResource {
   );
 }
 
-export function SchedulingProfiler(_: {||}) {
+export function SchedulingProfiler(_: {}) {
   const [dataResource, setDataResource] = useState<DataResource | null>(null);
 
   const handleFileSelect = useCallback((file: File) => {
@@ -87,7 +87,7 @@ export function SchedulingProfiler(_: {||}) {
   );
 }
 
-const Welcome = ({onFileSelect}: {|onFileSelect: (file: File) => void|}) => (
+const Welcome = ({onFileSelect}: {onFileSelect: (file: File) => void}) => (
   <div className={styles.EmptyStateContainer}>
     <div className={styles.ScreenshotWrapper}>
       <img
@@ -131,10 +131,10 @@ const CouldNotLoadProfile = ({error, onFileSelect}) => (
 const DataResourceComponent = ({
   dataResource,
   onFileSelect,
-}: {|
+}: {
   dataResource: DataResource,
   onFileSelect: (file: File) => void,
-|}) => {
+}) => {
   const dataOrError = dataResource.read();
   if (dataOrError instanceof Error) {
     return (

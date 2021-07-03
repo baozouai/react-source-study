@@ -20,7 +20,7 @@ beforeEach(() => {
   jest.unmock('scheduler');
   React = require('react');
   ReactDOM = require('react-dom');
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
   ReactFeatureFlags.warnAboutUnmockedScheduler = true;
 });
 
@@ -46,7 +46,7 @@ it('does not warn if Scheduler is mocked', () => {
   jest.mock('scheduler', () => require('scheduler/unstable_mock'));
   React = require('react');
   ReactDOM = require('react-dom');
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
   ReactFeatureFlags.warnAboutUnmockedScheduler = true;
 
   // This should not warn

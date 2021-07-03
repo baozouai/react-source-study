@@ -16,7 +16,7 @@ import {minBarWidth} from './constants';
 
 import styles from './SnapshotCommitList.css';
 
-export type ItemData = {|
+export type ItemData = {
   commitDurations: Array<number>,
   commitTimes: Array<number>,
   filteredCommitIndices: Array<number>,
@@ -25,16 +25,16 @@ export type ItemData = {|
   selectedFilteredCommitIndex: number | null,
   selectCommitIndex: (index: number) => void,
   startCommitDrag: (newDragState: DragState) => void,
-|};
+};
 
-type Props = {|
+type Props = {
   commitDurations: Array<number>,
   commitTimes: Array<number>,
   filteredCommitIndices: Array<number>,
   selectedCommitIndex: number | null,
   selectedFilteredCommitIndex: number | null,
   selectCommitIndex: (index: number) => void,
-|};
+};
 
 export default function SnapshotCommitList({
   commitDurations,
@@ -62,7 +62,7 @@ export default function SnapshotCommitList({
   );
 }
 
-type ListProps = {|
+type ListProps = {
   commitDurations: Array<number>,
   commitTimes: Array<number>,
   height: number,
@@ -71,7 +71,7 @@ type ListProps = {|
   selectedFilteredCommitIndex: number | null,
   selectCommitIndex: (index: number) => void,
   width: number,
-|};
+};
 
 type DragState = {
   commitIndex: number,

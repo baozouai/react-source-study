@@ -1,6 +1,6 @@
 fiber上的update相关数据结构：
 ```javascript
-type Update<State> = {|
+type Update<State> = {
   eventTime: number,
   lane: Lane,
   suspenseConfig: null | SuspenseConfig,
@@ -10,25 +10,25 @@ type Update<State> = {|
   callback: (() => mixed) | null,
 
   next: Update<State> | null,
-|};
+};
 
-type SharedQueue<State> = {|
+type SharedQueue<State> = {
   pending: Update<State> | null,
-|};
+};
 
-type UpdateQueue<State> = {|
+type UpdateQueue<State> = {
   baseState: State,
   firstBaseUpdate: Update<State> | null,
   lastBaseUpdate: Update<State> | null,
   shared: SharedQueue<State>,
   effects: Array<Update<State>> | null,
-|};
+};
 
 ```
 
 hooks的update相关数据结构：
 ```javascript
-type Update<S, A> = {|
+type Update<S, A> = {
   eventTime: number,
   lane: Lane,
   suspenseConfig: null | SuspenseConfig,
@@ -37,34 +37,34 @@ type Update<S, A> = {|
   eagerState: S | null,
   next: Update<S, A>,
   priority?: ReactPriorityLevel,
-|};
+};
 
-type UpdateQueue<S, A> = {|
+type UpdateQueue<S, A> = {
   pending: Update<S, A> | null,
   dispatch: (A => mixed) | null,
   lastRenderedReducer: ((S, A) => S) | null,
   lastRenderedState: S | null,
-|};
+};
 
 ```
 
 Hook相关的数据结构
 ```javascript
-type Hook = {|
+type Hook = {
   memoizedState: any,
   baseState: any,
   baseQueue: Update<any, any> | null,
   queue: UpdateQueue<any, any> | null,
   next: Hook | null,
-|};
+};
 
-type Effect = {|
+type Effect = {
   tag: HookEffectTag,
   create: () => (() => void) | void,
   destroy: (() => void) | void,
   deps: Array<mixed> | null,
   next: Effect,
-|};
+};
 ```
 useState 和 useEffect这两个hook都是用链表来表示。
 

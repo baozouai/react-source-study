@@ -48,7 +48,7 @@ describe('Store component filters', () => {
   });
 
   it('should support filtering by element type', () => {
-    class Root extends React.Component<{|children: React$Node|}> {
+    class Root extends React.Component<{children: React$Node}> {
       render() {
         return <div>{this.props.children}</div>;
       }

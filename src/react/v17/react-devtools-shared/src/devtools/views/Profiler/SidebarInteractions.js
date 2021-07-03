@@ -16,7 +16,7 @@ import {getGradientColor} from './utils';
 
 import styles from './SidebarInteractions.css';
 
-export type Props = {||};
+export type Props = {};
 
 export default function SidebarInteractions(_: Props) {
   const {

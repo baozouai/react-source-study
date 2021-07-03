@@ -104,20 +104,20 @@ import type {
 type getDisplayNameForFiberType = (fiber: Fiber) => string | null;
 type getTypeSymbolType = (type: any) => Symbol | number;
 
-type ReactPriorityLevelsType = {|
+type ReactPriorityLevelsType = {
   ImmediatePriority: number,
   UserBlockingPriority: number,
   NormalPriority: number,
   LowPriority: number,
   IdlePriority: number,
   NoPriority: number,
-|};
+};
 
-type ReactTypeOfSideEffectType = {|
+type ReactTypeOfSideEffectType = {
   NoFlags: number,
   PerformedWork: number,
   Placement: number,
-|};
+};
 
 function getFiberFlags(fiber: Fiber): number {
   // The name of this field changed from "effectTag" to "flags"
@@ -132,13 +132,13 @@ const getCurrentTime =
 
 export function getInternalReactConstants(
   version: string,
-): {|
+): {
   getDisplayNameForFiber: getDisplayNameForFiberType,
   getTypeSymbol: getTypeSymbolType,
   ReactPriorityLevels: ReactPriorityLevelsType,
   ReactTypeOfSideEffect: ReactTypeOfSideEffectType,
   ReactTypeOfWork: WorkTagMap,
-|} {
+} {
   const ReactTypeOfSideEffect: ReactTypeOfSideEffectType = {
     NoFlags: 0b00,
     PerformedWork: 0b01,
@@ -2885,14 +2885,14 @@ export function attach(
     }
   }
 
-  type CommitProfilingData = {|
+  type CommitProfilingData = {
     changeDescriptions: Map<number, ChangeDescription> | null,
     commitTime: number,
     durations: Array<number>,
     interactions: Array<Interaction>,
     maxActualDuration: number,
     priorityLevel: string | null,
-  |};
+  };
 
   type CommitProfilingMetadataMap = Map<number, Array<CommitProfilingData>>;
   type DisplayNamesByRootID = Map<number, string>;

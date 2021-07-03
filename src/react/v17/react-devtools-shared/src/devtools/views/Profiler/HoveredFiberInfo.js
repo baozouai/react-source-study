@@ -18,10 +18,10 @@ import styles from './HoveredFiberInfo.css';
 
 import type {ChartNode} from './FlamegraphChartBuilder';
 
-export type TooltipFiberData = {|
+export type TooltipFiberData = {
   id: number,
   name: string,
-|};
+};
 
 export type Props = {
   fiberData: ChartNode,

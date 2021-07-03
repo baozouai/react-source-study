@@ -51,12 +51,12 @@ export type GetInspectedElement = (
   id: number,
 ) => InspectedElementFrontend | null;
 
-export type InspectedElementContextType = {|
+export type InspectedElementContextType = {
   copyInspectedElementPath: CopyInspectedElementPath,
   getInspectedElementPath: GetInspectedElementPath,
   getInspectedElement: GetInspectedElement,
   storeAsGlobal: StoreAsGlobal,
-|};
+};
 
 const InspectedElementContext = createContext<InspectedElementContextType>(
   ((null: any): InspectedElementContextType),
@@ -64,10 +64,10 @@ const InspectedElementContext = createContext<InspectedElementContextType>(
 InspectedElementContext.displayName = 'InspectedElementContext';
 
 type ResolveFn = (inspectedElement: InspectedElementFrontend) => void;
-type InProgressRequest = {|
+type InProgressRequest = {
   promise: Thenable<InspectedElementFrontend>,
   resolveFn: ResolveFn,
-|};
+};
 
 const inProgressRequests: WeakMap<Element, InProgressRequest> = new WeakMap();
 const resource: Resource<
@@ -94,9 +94,9 @@ const resource: Resource<
   {useWeakMap: true},
 );
 
-type Props = {|
+type Props = {
   children: React$Node,
-|};
+};
 
 function InspectedElementContextController({children}: Props) {
   const bridge = useContext(BridgeContext);
@@ -346,13 +346,7 @@ function InspectedElementContextController({children}: Props) {
       storeAsGlobal,
     }),
     // InspectedElement is used to invalidate the cache and schedule an update with React.
-    [
-      copyInspectedElementPath,
-      currentlyInspectedElement,
-      getInspectedElement,
-      getInspectedElementPath,
-      storeAsGlobal,
-    ],
+    [copyInspectedElementPath, getInspectedElement, getInspectedElementPath, storeAsGlobal],
   );
 
   return (

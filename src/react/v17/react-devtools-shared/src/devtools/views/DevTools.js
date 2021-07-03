@@ -50,7 +50,7 @@ export type CanViewElementSource = (
   inspectedElement: InspectedElement,
 ) => boolean;
 
-export type Props = {|
+export type Props = {
   bridge: FrontendBridge,
   browserTheme?: BrowserTheme,
   canViewElementSourceFunction?: ?CanViewElementSource,
@@ -74,7 +74,7 @@ export type Props = {|
   // but individual tabs (e.g. Components, Profiling) can be rendered into portals within their browser panels.
   componentsPortalContainer?: Element,
   profilerPortalContainer?: Element,
-|};
+};
 
 const componentsTab = {
   id: ('components': TabID),

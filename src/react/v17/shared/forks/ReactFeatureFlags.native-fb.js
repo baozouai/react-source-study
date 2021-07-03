@@ -7,7 +7,7 @@
  * @flow
  */
 
-import typeof * as FeatureFlagsType from 'shared/ReactFeatureFlags';
+import typeof * as FeatureFlagsType from '../../shared/ReactFeatureFlags';
 import typeof * as ExportsType from './ReactFeatureFlags.native-fb';
 
 // The rest of the flags are static for better dead code elimination.

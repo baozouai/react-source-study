@@ -14,10 +14,10 @@ import ButtonIcon from '../ButtonIcon';
 import {BridgeContext, StoreContext} from '../context';
 import {useSubscription} from '../hooks';
 
-type SubscriptionData = {|
+type SubscriptionData = {
   recordChangeDescriptions: boolean,
   supportsReloadAndProfile: boolean,
-|};
+};
 
 export default function ReloadAndProfileButton() {
   const bridge = useContext(BridgeContext);

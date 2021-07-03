@@ -7,7 +7,7 @@
  * @flow
  */
 
-import {enableFilterEmptyStringAttributesDOM} from 'shared/ReactFeatureFlags';
+import {enableFilterEmptyStringAttributesDOM} from '../../shared/ReactFeatureFlags';
 
 type PropertyType = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -44,7 +44,7 @@ export const NUMERIC = 5;
 // When falsy, it should be removed.
 export const POSITIVE_NUMERIC = 6;
 
-export type PropertyInfo = {|
+export type PropertyInfo = {
   +acceptsBooleans: boolean,
   +attributeName: string,
   +attributeNamespace: string | null,
@@ -53,7 +53,7 @@ export type PropertyInfo = {|
   +type: PropertyType,
   +sanitizeURL: boolean,
   +removeEmptyString: boolean,
-|};
+};
 
 /* eslint-disable max-len */
 export const ATTRIBUTE_NAME_START_CHAR =

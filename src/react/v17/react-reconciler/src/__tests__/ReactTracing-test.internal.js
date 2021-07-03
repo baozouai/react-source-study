@@ -14,7 +14,7 @@ describe('ReactTracing', () => {
   it('should error if profiling renderer and non-profiling scheduler/tracing bundles are combined', () => {
     jest.resetModules();
 
-    const ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    const ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.enableSchedulerTracing = false;
 
     require('scheduler/tracing');

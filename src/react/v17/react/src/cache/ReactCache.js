@@ -6,14 +6,14 @@
  * @flow
  */
 
-import type {ReactContext} from 'shared/ReactTypes';
+import type {ReactContext} from '../../shared/ReactTypes';
 
 import {createContext} from 'react';
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
-type Cache = {|
+type Cache = {
   resources: Map<any, any>,
-|};
+};
 
 // TODO: should there be a default cache?
 const CacheContext: ReactContext<null | Cache> = createContext(null);

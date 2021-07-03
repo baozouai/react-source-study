@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ReactFeatureFlags = require('shared/ReactFeatureFlags');
+const ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
 
 let act;
 let React;

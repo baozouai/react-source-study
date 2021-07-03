@@ -7,7 +7,7 @@
  * @flow
  */
 
-import {enableNewReconciler} from 'shared/ReactFeatureFlags';
+import {enableNewReconciler} from '../../shared/ReactFeatureFlags';
 
 export type {
   Family,

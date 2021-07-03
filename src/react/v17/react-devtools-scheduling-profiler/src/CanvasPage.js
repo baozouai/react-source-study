@@ -61,9 +61,9 @@ import styles from './CanvasPage.css';
 
 const CONTEXT_MENU_ID = 'canvas';
 
-type Props = {|
+type Props = {
   profilerData: ReactProfilerData,
-|};
+};
 
 function CanvasPage({profilerData}: Props) {
   return (
@@ -108,11 +108,11 @@ const zoomToBatch = (
   );
 };
 
-type AutoSizedCanvasProps = {|
+type AutoSizedCanvasProps = {
   data: ReactProfilerData,
   height: number,
   width: number,
-|};
+};
 
 function AutoSizedCanvas({data, height, width}: AutoSizedCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

@@ -21,7 +21,7 @@ import type {
 import {mountSafeCallback_NOT_REALLY_SAFE} from './NativeMethodsMixinUtils';
 import {create, diff} from './ReactNativeAttributePayload';
 
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
 import {dispatchEvent} from './ReactFabricEventEmitter';
 
@@ -69,9 +69,9 @@ export type HydratableInstance = Instance | TextInstance;
 export type PublicInstance = ReactFabricHostComponent;
 export type Container = number;
 export type ChildSet = Object;
-export type HostContext = $ReadOnly<{|
+export type HostContext = $ReadOnly<{
   isInAParentText: boolean,
-|}>;
+}>;
 export type UpdatePayload = Object;
 
 export type TimeoutHandle = TimeoutID;
@@ -79,7 +79,7 @@ export type NoTimeout = -1;
 
 export type OpaqueIDType = void;
 
-export type RendererInspectionConfig = $ReadOnly<{|
+export type RendererInspectionConfig = $ReadOnly<{
   // Deprecated. Replaced with getInspectorDataForViewAtPoint.
   getInspectorDataForViewTag?: (tag: number) => Object,
   getInspectorDataForViewAtPoint?: (
@@ -88,7 +88,7 @@ export type RendererInspectionConfig = $ReadOnly<{|
     locationY: number,
     callback: (viewData: TouchedViewDataAtPoint) => mixed,
   ) => void,
-|}>;
+}>;
 
 // TODO: Remove this conditional once all changes have propagated.
 if (registerEventHandler) {

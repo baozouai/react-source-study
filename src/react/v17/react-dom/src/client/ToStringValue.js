@@ -7,7 +7,7 @@
  * @flow
  */
 
-export opaque type ToStringValue =
+export type ToStringValue =
   | boolean
   | number
   | Object

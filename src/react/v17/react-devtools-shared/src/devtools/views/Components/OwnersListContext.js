@@ -27,10 +27,10 @@ const OwnersListContext = createContext<Context>(((null: any): Context));
 OwnersListContext.displayName = 'OwnersListContext';
 
 type ResolveFn = (ownersList: Array<Owner> | null) => void;
-type InProgressRequest = {|
+type InProgressRequest = {
   promise: Thenable<Array<Owner>>,
   resolveFn: ResolveFn,
-|};
+};
 
 const inProgressRequests: WeakMap<Element, InProgressRequest> = new WeakMap();
 const resource: Resource<Element, Element, Array<Owner>> = createResource(
@@ -53,9 +53,9 @@ const resource: Resource<Element, Element, Array<Owner>> = createResource(
   {useWeakMap: true},
 );
 
-type Props = {|
+type Props = {
   children: React$Node,
-|};
+};
 
 function OwnersListContextController({children}: Props) {
   const bridge = useContext(BridgeContext);

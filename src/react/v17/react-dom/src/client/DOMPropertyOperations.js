@@ -19,7 +19,7 @@ import sanitizeURL from '../shared/sanitizeURL';
 import {
   disableJavaScriptURLs,
   enableTrustedTypesIntegration,
-} from 'shared/ReactFeatureFlags';
+} from '../../shared/ReactFeatureFlags';
 import {isOpaqueHydratingObject} from './ReactDOMHostConfig';
 
 import type {PropertyInfo} from '../shared/DOMProperty';

@@ -16,8 +16,8 @@ import {__interactionsRef} from '../../scheduler/tracing';
 import {
   enableSchedulerTracing,
   decoupleUpdatePriorityFromScheduler,
-} from 'shared/ReactFeatureFlags';
-import invariant from 'shared/invariant';
+} from '../../shared/ReactFeatureFlags';
+import invariant from '../../shared/invariant';
 import {
   SyncLanePriority,
   getCurrentUpdateLanePriority,

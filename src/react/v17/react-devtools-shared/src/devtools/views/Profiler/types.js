@@ -9,7 +9,7 @@
 
 import type {ElementType} from 'react-devtools-shared/src/types';
 
-export type CommitTreeNode = {|
+export type CommitTreeNode = {
   id: number,
   children: Array<number>,
   displayName: string | null,
@@ -18,37 +18,37 @@ export type CommitTreeNode = {|
   parentID: number,
   treeBaseDuration: number,
   type: ElementType,
-|};
+};
 
-export type CommitTree = {|
+export type CommitTree = {
   nodes: Map<number, CommitTreeNode>,
   rootID: number,
-|};
+};
 
-export type Interaction = {|
+export type Interaction = {
   id: number,
   name: string,
   timestamp: number,
-|};
+};
 
-export type SnapshotNode = {|
+export type SnapshotNode = {
   id: number,
   children: Array<number>,
   displayName: string | null,
   hocDisplayNames: Array<string> | null,
   key: number | string | null,
   type: ElementType,
-|};
+};
 
-export type ChangeDescription = {|
+export type ChangeDescription = {
   context: Array<string> | boolean | null,
   didHooksChange: boolean,
   isFirstMount: boolean,
   props: Array<string> | null,
   state: Array<string> | null,
-|};
+};
 
-export type CommitDataFrontend = {|
+export type CommitDataFrontend = {
   // Map of Fiber (ID) to a description of what changed in this commit.
   changeDescriptions: Map<number, ChangeDescription> | null,
 
@@ -71,9 +71,9 @@ export type CommitDataFrontend = {|
 
   // When did this commit occur (relative to the start of profiling)
   timestamp: number,
-|};
+};
 
-export type ProfilingDataForRootFrontend = {|
+export type ProfilingDataForRootFrontend = {
   // Timing, duration, and other metadata about each commit.
   commitData: Array<CommitDataFrontend>,
 
@@ -101,16 +101,16 @@ export type ProfilingDataForRootFrontend = {|
   // Map of fiber id to node when the Profiling session was started.
   // This info can be used along with commitOperations to reconstruct the tree for any commit.
   snapshots: Map<number, SnapshotNode>,
-|};
+};
 
 // Combination of profiling data collected by the renderer interface (backend) and Store (frontend).
-export type ProfilingDataFrontend = {|
+export type ProfilingDataFrontend = {
   // Profiling data per root.
   dataForRoots: Map<number, ProfilingDataForRootFrontend>,
   imported: boolean,
-|};
+};
 
-export type CommitDataExport = {|
+export type CommitDataExport = {
   changeDescriptions: Array<[number, ChangeDescription]> | null,
   duration: number,
   // Tuple of fiber ID and actual duration
@@ -120,9 +120,9 @@ export type CommitDataExport = {|
   interactionIDs: Array<number>,
   priorityLevel: string | null,
   timestamp: number,
-|};
+};
 
-export type ProfilingDataForRootExport = {|
+export type ProfilingDataForRootExport = {
   commitData: Array<CommitDataExport>,
   displayName: string,
   // Tuple of Fiber ID and base duration
@@ -133,10 +133,10 @@ export type ProfilingDataForRootExport = {|
   operations: Array<Array<number>>,
   rootID: number,
   snapshots: Array<[number, SnapshotNode]>,
-|};
+};
 
 // Serializable version of ProfilingDataFrontend data.
-export type ProfilingDataExport = {|
+export type ProfilingDataExport = {
   version: 4,
   dataForRoots: Array<ProfilingDataForRootExport>,
-|};
+};

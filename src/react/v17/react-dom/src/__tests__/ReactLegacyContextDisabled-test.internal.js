@@ -21,7 +21,7 @@ describe('ReactLegacyContextDisabled', () => {
     React = require('react');
     ReactDOM = require('react-dom');
     ReactDOMServer = require('react-dom/server');
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.disableLegacyContext = true;
   });
 

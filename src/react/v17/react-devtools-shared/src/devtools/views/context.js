@@ -21,10 +21,10 @@ BridgeContext.displayName = 'BridgeContext';
 export const StoreContext = createContext<Store>(((null: any): Store));
 StoreContext.displayName = 'StoreContext';
 
-export type ContextMenuContextType = {|
+export type ContextMenuContextType = {
   isEnabledForInspectedElement: boolean,
   viewAttributeSourceFunction: ViewAttributeSource | null,
-|};
+};
 
 export const ContextMenuContext = createContext<ContextMenuContextType>({
   isEnabledForInspectedElement: false,

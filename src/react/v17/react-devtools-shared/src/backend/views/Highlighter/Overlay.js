@@ -13,7 +13,7 @@ import {getElementDimensions, getNestedBoundingClientRect} from '../utils';
 import type {DevToolsHook} from 'react-devtools-shared/src/backend/types';
 import type {Rect} from '../utils';
 
-type Box = {|top: number, left: number, width: number, height: number|};
+type Box = {top: number, left: number, width: number, height: number};
 
 // Note that the Overlay components are not affected by the active Theme,
 // because they highlight elements in the main Chrome window (outside of devtools).

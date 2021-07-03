@@ -9,7 +9,7 @@ import {
   needsStateRestore,
   restoreStateIfNeeded,
 } from './ReactDOMControlledComponent';
-import {enableDiscreteEventFlushingChange} from 'shared/ReactFeatureFlags';
+import {enableDiscreteEventFlushingChange} from '../../shared/ReactFeatureFlags';
 
 // Used as a way to call batchedUpdates when we don't have a reference to
 // the renderer. Such as when we're dispatching events or if third party

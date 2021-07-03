@@ -26,11 +26,11 @@ import {getBatchRange} from './utils/getBatchRange';
 import useSmartTooltip from './utils/useSmartTooltip';
 import styles from './EventTooltip.css';
 
-type Props = {|
+type Props = {
   data: ReactProfilerData,
   hoveredEvent: ReactHoverContextInfo | null,
   origin: Point,
-|};
+};
 
 function formatTimestamp(ms) {
   return ms.toLocaleString(undefined, {minimumFractionDigits: 2}) + 'ms';

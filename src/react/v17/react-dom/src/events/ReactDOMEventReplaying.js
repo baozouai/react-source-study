@@ -17,7 +17,7 @@ import type {LanePriority} from 'react-reconciler/src/ReactFiberLane';
 import {
   enableSelectiveHydration,
   enableEagerRootListeners,
-} from 'shared/ReactFeatureFlags';
+} from '../../shared/ReactFeatureFlags';
 import {
   unstable_runWithPriority as runWithPriority,
   unstable_scheduleCallback as scheduleCallback,
@@ -35,6 +35,9 @@ import {
   getClosestInstanceFromNode,
 } from '../client/ReactDOMComponentTree';
 import {HostRoot, SuspenseComponent} from 'react-reconciler/src/ReactWorkTags';
+
+import {IS_REPLAYED} from './EventSystemFlags';
+import {listenToNativeEvent} from './DOMPluginEventSystem';
 
 let attemptSynchronousHydration: (fiber: Object) => void;
 
@@ -84,16 +87,13 @@ type PointerEvent = Event & {
   ...
 };
 
-import {IS_REPLAYED} from './EventSystemFlags';
-import {listenToNativeEvent} from './DOMPluginEventSystem';
-
-type QueuedReplayableEvent = {|
+type QueuedReplayableEvent = {
   blockedOn: null | Container | SuspenseInstance,
   domEventName: DOMEventName,
   eventSystemFlags: EventSystemFlags,
   nativeEvent: AnyNativeEvent,
   targetContainers: Array<EventTarget>,
-|};
+};
 
 let hasScheduledReplayAttempt = false;
 
@@ -112,12 +112,12 @@ const queuedPointers: Map<number, QueuedReplayableEvent> = new Map();
 const queuedPointerCaptures: Map<number, QueuedReplayableEvent> = new Map();
 // We could consider replaying selectionchange and touchmoves too.
 
-type QueuedHydrationTarget = {|
+type QueuedHydrationTarget = {
   blockedOn: null | Container | SuspenseInstance,
   target: Node,
   priority: number,
   lanePriority: LanePriority,
-|};
+};
 const queuedExplicitHydrationTargets: Array<QueuedHydrationTarget> = [];
 
 export function hasQueuedDiscreteEvents(): boolean {

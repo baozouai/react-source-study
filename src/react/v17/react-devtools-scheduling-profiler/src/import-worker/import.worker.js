@@ -18,14 +18,14 @@ import InvalidProfileError from './InvalidProfileError';
 
 declare var self: DedicatedWorkerGlobalScope;
 
-type ImportWorkerInputData = {|
+type ImportWorkerInputData = {
   file: File,
-|};
+};
 
 export type ImportWorkerOutputData =
-  | {|status: 'SUCCESS', processedData: ReactProfilerData|}
-  | {|status: 'INVALID_PROFILE_ERROR', error: Error|}
-  | {|status: 'UNEXPECTED_ERROR', error: Error|};
+  | {status: 'SUCCESS', processedData: ReactProfilerData}
+  | {status: 'INVALID_PROFILE_ERROR', error: Error}
+  | {status: 'UNEXPECTED_ERROR', error: Error};
 
 self.onmessage = async function(event: MessageEvent) {
   const {file} = ((event.data: any): ImportWorkerInputData);

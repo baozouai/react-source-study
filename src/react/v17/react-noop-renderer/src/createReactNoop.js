@@ -16,19 +16,19 @@
 
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 import type {UpdateQueue} from 'react-reconciler/src/ReactUpdateQueue';
-import type {ReactNodeList, Thenable} from 'shared/ReactTypes';
+import type {ReactNodeList, Thenable} from '../../shared/ReactTypes';
 import type {RootTag} from 'react-reconciler/src/ReactRootTags';
 
 import * as Scheduler from '../../scheduler/unstable_mock';
-import {REACT_FRAGMENT_TYPE, REACT_ELEMENT_TYPE} from 'shared/ReactSymbols';
+import {REACT_FRAGMENT_TYPE, REACT_ELEMENT_TYPE} from '../../shared/ReactSymbols';
 import {
   ConcurrentRoot,
   BlockingRoot,
   LegacyRoot,
 } from 'react-reconciler/src/ReactRootTags';
 
-import ReactSharedInternals from 'shared/ReactSharedInternals';
-import enqueueTask from 'shared/enqueueTask';
+import ReactSharedInternals from '../../shared/ReactSharedInternals';
+import enqueueTask from '../../shared/enqueueTask';
 const {IsSomeRendererActing} = ReactSharedInternals;
 
 type Container = {
@@ -47,7 +47,7 @@ type Props = {
   top?: null | number,
   ...
 };
-type Instance = {|
+type Instance = {
   type: string,
   id: number,
   children: Array<Instance | TextInstance>,
@@ -55,13 +55,13 @@ type Instance = {|
   prop: any,
   hidden: boolean,
   context: HostContext,
-|};
-type TextInstance = {|
+};
+type TextInstance = {
   text: string,
   id: number,
   hidden: boolean,
   context: HostContext,
-|};
+};
 type HostContext = Object;
 
 const NO_CONTEXT = {};
@@ -909,14 +909,14 @@ function createReactNoop(reconciler: Function, useMutation: boolean) {
     flushWithHostCounters(
       fn: () => void,
     ):
-      | {|
+      | {
           hostDiffCounter: number,
           hostUpdateCounter: number,
-        |}
-      | {|
+        }
+      | {
           hostDiffCounter: number,
           hostCloneCounter: number,
-        |} {
+        } {
       hostDiffCounter = 0;
       hostUpdateCounter = 0;
       hostCloneCounter = 0;

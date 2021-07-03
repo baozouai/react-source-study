@@ -12,9 +12,9 @@ import type {StackCursor} from './ReactFiberStack.new';
 
 import {createCursor, push, pop} from './ReactFiberStack.new';
 
-export opaque type SuspenseContext = number;
-export opaque type SubtreeSuspenseContext: SuspenseContext = number;
-export opaque type ShallowSuspenseContext: SuspenseContext = number;
+export type SuspenseContext = number;
+export type SubtreeSuspenseContext = number;
+export type ShallowSuspenseContext = number;
 
 const DefaultSuspenseContext: SuspenseContext = 0b00;
 

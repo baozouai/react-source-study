@@ -8,12 +8,12 @@
  */
 
 import * as React from 'react';
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
 type Unsubscribe = () => void;
 
 export function createSubscription<Property, Value>(
-  config: $ReadOnly<{|
+  config: $ReadOnly<{
     // Synchronously gets the value for the subscribed property.
     // Return undefined if the subscribable value is undefined,
     // Or does not support synchronous reading (e.g. native Promise).
@@ -28,11 +28,11 @@ export function createSubscription<Property, Value>(
       source: Property,
       callback: (value: Value | void) => void,
     ) => Unsubscribe,
-  |}>,
-): React$ComponentType<{|
+  }>,
+): React$ComponentType<{
   children: (value: Value | void) => React$Node,
   source: Property,
-|}> {
+}> {
   const {getCurrentValue, subscribe} = config;
 
   if (__DEV__) {
@@ -44,14 +44,14 @@ export function createSubscription<Property, Value>(
     }
   }
 
-  type Props = {|
+  type Props = {
     children: (value: Value) => React$Element<any>,
     source: Property,
-  |};
-  type State = {|
+  };
+  type State = {
     source: Property,
     value: Value | void,
-  |};
+  };
 
   // Reference: https://gist.github.com/bvaughn/d569177d70b50b58bff69c3c4a5353f3
   class Subscription extends React.Component<Props, State> {

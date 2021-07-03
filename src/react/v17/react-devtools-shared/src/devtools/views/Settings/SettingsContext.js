@@ -30,7 +30,7 @@ import type {BrowserTheme} from '../DevTools';
 export type DisplayDensity = 'comfortable' | 'compact';
 export type Theme = 'auto' | 'light' | 'dark';
 
-type Context = {|
+type Context = {
   displayDensity: DisplayDensity,
   setDisplayDensity(value: DisplayDensity): void,
 
@@ -49,19 +49,19 @@ type Context = {|
 
   traceUpdatesEnabled: boolean,
   setTraceUpdatesEnabled: (value: boolean) => void,
-|};
+};
 
 const SettingsContext = createContext<Context>(((null: any): Context));
 SettingsContext.displayName = 'SettingsContext';
 
 type DocumentElements = Array<HTMLElement>;
 
-type Props = {|
+type Props = {
   browserTheme: BrowserTheme,
   children: React$Node,
   componentsPortalContainer?: Element,
   profilerPortalContainer?: Element,
-|};
+};
 
 function SettingsContextController({
   browserTheme,

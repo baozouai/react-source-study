@@ -9,11 +9,11 @@
 
 import type {Lane, Lanes} from './ReactFiberLane';
 import type {Fiber} from './ReactInternalTypes';
-import type {Wakeable} from 'shared/ReactTypes';
+import type {Wakeable} from '../../shared/ReactTypes';
 
-import {enableSchedulingProfiler} from 'shared/ReactFeatureFlags';
-import ReactVersion from 'shared/ReactVersion';
-import getComponentName from 'shared/getComponentName';
+import {enableSchedulingProfiler} from '../../shared/ReactFeatureFlags';
+import ReactVersion from '../../shared/ReactVersion';
+import getComponentName from '../../shared/getComponentName';
 
 /**
  * If performance exists and supports the subset of the User Timing API that we

@@ -40,18 +40,18 @@ type ResizeActionType =
   | 'ACTION_SET_HORIZONTAL_PERCENTAGE'
   | 'ACTION_SET_VERTICAL_PERCENTAGE';
 
-type ResizeAction = {|
+type ResizeAction = {
   type: ResizeActionType,
   payload: any,
-|};
+};
 
-type ResizeState = {|
+type ResizeState = {
   horizontalPercentage: number,
   isResizing: boolean,
   verticalPercentage: number,
-|};
+};
 
-function Components(_: {||}) {
+function Components(_: {}) {
   const wrapperElementRef = useRef<null | HTMLElement>(null);
   const resizeElementRef = useRef<null | HTMLElement>(null);
 
@@ -72,7 +72,7 @@ function Components(_: {||}) {
       horizontalPercentage * 100,
     );
     setResizeCSSVariable(resizeElement, 'vertical', verticalPercentage * 100);
-  }, []);
+  }, [horizontalPercentage, verticalPercentage]);
 
   useEffect(() => {
     const timeoutID = setTimeout(() => {

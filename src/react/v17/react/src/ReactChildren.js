@@ -7,14 +7,14 @@
  * @flow
  */
 
-import type {ReactNodeList} from 'shared/ReactTypes';
+import type {ReactNodeList} from '../../shared/ReactTypes';
 
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 import {
   getIteratorFn,
   REACT_ELEMENT_TYPE,
   REACT_PORTAL_TYPE,
-} from 'shared/ReactSymbols';
+} from '../../shared/ReactSymbols';
 
 import {isValidElement, cloneAndReplaceKey} from './ReactElement';
 

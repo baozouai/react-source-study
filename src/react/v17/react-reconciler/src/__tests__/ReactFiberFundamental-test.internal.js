@@ -23,7 +23,7 @@ function createReactFundamentalComponent(fundamentalImpl) {
 
 function init() {
   jest.resetModules();
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
   ReactFeatureFlags.enableFundamentalAPI = true;
   React = require('react');
   Scheduler = require('scheduler');

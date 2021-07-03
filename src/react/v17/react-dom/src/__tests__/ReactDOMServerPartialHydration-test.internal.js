@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+
 
 let React;
 let ReactDOM;
@@ -73,7 +73,7 @@ describe('ReactDOMServerPartialHydration', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
 
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.enableSuspenseCallback = true;
     ReactFeatureFlags.enableCreateEventHandleAPI = true;
 

@@ -25,17 +25,17 @@ import {clamp} from './utils/clamp';
 
 type ResizeBarState = 'normal' | 'hovered' | 'dragging';
 
-type ResizingState = $ReadOnly<{|
+type ResizingState = $ReadOnly<{
   /** Distance between top of resize bar and mouseY */
   cursorOffsetInBarFrame: number,
   /** Mouse's vertical coordinates relative to canvas */
   mouseY: number,
-|}>;
+}>;
 
-type LayoutState = $ReadOnly<{|
+type LayoutState = $ReadOnly<{
   /** Resize bar's vertical position relative to resize view's frame.origin.y */
   barOffsetY: number,
-|}>;
+}>;
 
 function getColorForBarState(state: ResizeBarState): string {
   // Colors obtained from Firefox Profiler

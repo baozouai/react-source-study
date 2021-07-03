@@ -20,7 +20,7 @@ let Scheduler;
 function initializeModules(hasPointerEvents) {
   setPointerEvent(hasPointerEvents);
   jest.resetModules();
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
   ReactFeatureFlags.enableCreateEventHandleAPI = true;
   React = require('react');
   ReactDOM = require('react-dom');

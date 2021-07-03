@@ -15,7 +15,7 @@ import type {
   ObserveVisibleRectsCallback,
 } from 'react-reconciler/src/ReactTestSelectors';
 import type {RootType} from './ReactDOMRoot';
-import type {ReactScopeInstance} from 'shared/ReactTypes';
+import type {ReactScopeInstance} from '../../shared/ReactTypes';
 import type {ReactDOMFundamentalComponentInstance} from '../shared/ReactDOMTypes';
 
 import {
@@ -59,7 +59,7 @@ import {
 } from '../shared/HTMLNodeType';
 import dangerousStyleValue from '../shared/dangerousStyleValue';
 
-import {REACT_OPAQUE_ID_TYPE} from 'shared/ReactSymbols';
+import {REACT_OPAQUE_ID_TYPE} from '../../shared/ReactSymbols';
 import {retryIfBlockedOn} from '../events/ReactDOMEventReplaying';
 
 import {
@@ -68,7 +68,7 @@ import {
   enableCreateEventHandleAPI,
   enableScopeAPI,
   enableEagerRootListeners,
-} from 'shared/ReactFeatureFlags';
+} from '../../shared/ReactFeatureFlags';
 import {HostComponent, HostText} from 'react-reconciler/src/ReactWorkTags';
 import {
   listenToReactEvent,
@@ -125,19 +125,19 @@ export type UpdatePayload = Array<mixed>;
 export type ChildSet = void; // Unused
 export type TimeoutHandle = TimeoutID;
 export type NoTimeout = -1;
-export type RendererInspectionConfig = $ReadOnly<{||}>;
+export type RendererInspectionConfig = $ReadOnly<{}>;
 
-export opaque type OpaqueIDType =
+export type OpaqueIDType =
   | string
   | {
       toString: () => string | void,
       valueOf: () => string | void,
     };
 
-type SelectionInformation = {|
+type SelectionInformation = {
   focusedElem: null | HTMLElement,
   selectionRange: mixed,
-|};
+};
 
 let SUPPRESS_HYDRATION_WARNING;
 if (__DEV__) {
@@ -1186,11 +1186,11 @@ export function setupIntersectionObserver(
   targets: Array<Instance>,
   callback: ObserveVisibleRectsCallback,
   options?: IntersectionObserverOptions,
-): {|
+): {
   disconnect: () => void,
   observe: (instance: Instance) => void,
   unobserve: (instance: Instance) => void,
-|} {
+} {
   const rectRatioCache: Map<Instance, RectRatio> = new Map();
   targets.forEach(target => {
     rectRatioCache.set(target, {

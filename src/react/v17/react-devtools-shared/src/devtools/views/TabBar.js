@@ -17,21 +17,21 @@ import tooltipStyles from './Tooltip.css';
 
 import type {IconType} from './Icon';
 
-type TabInfo = {|
+type TabInfo = {
   icon: IconType,
   id: string,
   label: string,
   title?: string,
-|};
+};
 
-export type Props = {|
+export type Props = {
   currentTab: any,
   disabled?: boolean,
   id: string,
   selectTab: (tabID: any) => void,
   tabs: Array<TabInfo>,
   type: 'navigation' | 'profiler' | 'settings',
-|};
+};
 
 export default function TabBar({
   currentTab,

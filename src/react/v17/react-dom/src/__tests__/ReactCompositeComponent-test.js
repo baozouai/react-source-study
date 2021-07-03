@@ -108,7 +108,7 @@ describe('ReactCompositeComponent', () => {
     };
   });
 
-  if (require('shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('should not support module pattern components', () => {
       function Child({test}) {
         return {

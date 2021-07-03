@@ -24,21 +24,21 @@
 // really an argument to a top-level wrapping function.
 
 declare var $$$hostConfig: any;
-export opaque type Type = mixed; // eslint-disable-line no-undef
-export opaque type Props = mixed; // eslint-disable-line no-undef
-export opaque type Container = mixed; // eslint-disable-line no-undef
-export opaque type Instance = mixed; // eslint-disable-line no-undef
-export opaque type TextInstance = mixed; // eslint-disable-line no-undef
-export opaque type SuspenseInstance = mixed; // eslint-disable-line no-undef
-export opaque type HydratableInstance = mixed; // eslint-disable-line no-undef
-export opaque type PublicInstance = mixed; // eslint-disable-line no-undef
-export opaque type HostContext = mixed; // eslint-disable-line no-undef
-export opaque type UpdatePayload = mixed; // eslint-disable-line no-undef
-export opaque type ChildSet = mixed; // eslint-disable-line no-undef
-export opaque type TimeoutHandle = mixed; // eslint-disable-line no-undef
-export opaque type NoTimeout = mixed; // eslint-disable-line no-undef
-export opaque type RendererInspectionConfig = mixed; // eslint-disable-line no-undef
-export opaque type OpaqueIDType = mixed;
+export type Type = mixed; // eslint-disable-line no-undef
+export type Props = mixed; // eslint-disable-line no-undef
+export type Container = mixed; // eslint-disable-line no-undef
+export type Instance = mixed; // eslint-disable-line no-undef
+export type TextInstance = mixed; // eslint-disable-line no-undef
+export type SuspenseInstance = mixed; // eslint-disable-line no-undef
+export type HydratableInstance = mixed; // eslint-disable-line no-undef
+export type PublicInstance = mixed; // eslint-disable-line no-undef
+export type HostContext = mixed; // eslint-disable-line no-undef
+export type UpdatePayload = mixed; // eslint-disable-line no-undef
+export type ChildSet = mixed; // eslint-disable-line no-undef
+export type TimeoutHandle = mixed; // eslint-disable-line no-undef
+export type NoTimeout = mixed; // eslint-disable-line no-undef
+export type RendererInspectionConfig = mixed; // eslint-disable-line no-undef
+export type OpaqueIDType = mixed;
 export type EventResponder = any;
 
 export const getPublicInstance = $$$hostConfig.getPublicInstance;

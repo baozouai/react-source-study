@@ -21,31 +21,31 @@ import {useModalDismissSignal} from './hooks';
 
 import styles from './ModalDialog.css';
 
-type DIALOG_ACTION_HIDE = {|
+type DIALOG_ACTION_HIDE = {
   type: 'HIDE',
-|};
-type DIALOG_ACTION_SHOW = {|
+};
+type DIALOG_ACTION_SHOW = {
   type: 'SHOW',
   canBeDismissed?: boolean,
   content: React$Node,
   title?: React$Node | null,
-|};
+};
 
 type Action = DIALOG_ACTION_HIDE | DIALOG_ACTION_SHOW;
 
 type Dispatch = (action: Action) => void;
 
-type State = {|
+type State = {
   canBeDismissed: boolean,
   content: React$Node | null,
   isVisible: boolean,
   title: React$Node | null,
-|};
+};
 
-type ModalDialogContextType = {|
+type ModalDialogContextType = {
   ...State,
   dispatch: Dispatch,
-|};
+};
 
 const ModalDialogContext = createContext<ModalDialogContextType>(
   ((null: any): ModalDialogContextType),
@@ -73,9 +73,9 @@ function dialogReducer(state, action) {
   }
 }
 
-type Props = {|
+type Props = {
   children: React$Node,
-|};
+};
 
 function ModalDialogContextController({children}: Props) {
   const [state, dispatch] = useReducer<State, State, Action>(dialogReducer, {
@@ -103,12 +103,12 @@ function ModalDialogContextController({children}: Props) {
   );
 }
 
-function ModalDialog(_: {||}) {
+function ModalDialog(_: {}) {
   const {isVisible} = useContext(ModalDialogContext);
   return isVisible ? <ModalDialogImpl /> : null;
 }
 
-function ModalDialogImpl(_: {||}) {
+function ModalDialogImpl(_: {}) {
   const {canBeDismissed, content, dispatch, title} = useContext(
     ModalDialogContext,
   );

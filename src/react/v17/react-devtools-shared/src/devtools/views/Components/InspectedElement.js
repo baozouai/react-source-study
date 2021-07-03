@@ -26,7 +26,7 @@ import styles from './InspectedElement.css';
 import type {InspectedElementContextType} from './InspectedElementContext';
 import type {InspectedElement} from './types';
 
-export type Props = {||};
+export type Props = {};
 
 export default function InspectedElementWrapper(_: Props) {
   const {inspectedElementID} = useContext(TreeStateContext);

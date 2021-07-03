@@ -8,7 +8,7 @@
  */
 
 import type {Destination} from './ReactServerStreamConfig';
-import type {ReactNodeList} from 'shared/ReactTypes';
+import type {ReactNodeList} from '../../shared/ReactTypes';
 
 import {
   scheduleWork,
@@ -19,7 +19,7 @@ import {
   close,
 } from './ReactServerStreamConfig';
 import {formatChunk} from './ReactServerFormatConfig';
-import {REACT_ELEMENT_TYPE} from 'shared/ReactSymbols';
+import {REACT_ELEMENT_TYPE} from '../../shared/ReactSymbols';
 
 type OpaqueRequest = {
   destination: Destination,

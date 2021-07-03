@@ -8,7 +8,7 @@
  */
 
 import type {DOMEventName} from '../events/DOMEventNames';
-import type {ReactScopeInstance} from 'shared/ReactTypes';
+import type {ReactScopeInstance} from '../../shared/ReactTypes';
 import type {
   ReactDOMEventHandle,
   ReactDOMEventHandleListener,
@@ -33,12 +33,12 @@ import {
   enableScopeAPI,
   enableCreateEventHandleAPI,
   enableEagerRootListeners,
-} from 'shared/ReactFeatureFlags';
-import invariant from 'shared/invariant';
+} from '../../shared/ReactFeatureFlags';
+import invariant from '../../shared/invariant';
 
-type EventHandleOptions = {|
+type EventHandleOptions = {
   capture?: boolean,
-|};
+};
 
 function getNearestRootOrPortalContainer(node: Fiber): null | Element {
   while (node !== null) {

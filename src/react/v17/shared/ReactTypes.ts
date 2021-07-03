@@ -8,7 +8,7 @@
  */
 
 export type ReactNode =
-  | React$Element<any>
+    React$Element<any>
   | ReactPortal
   | ReactText
   | ReactFragment
@@ -82,9 +82,9 @@ export type ReactPortal = {
   ...
 };
 
-export type RefObject = {|
+export type RefObject = {
   current: any,
-|};
+};
 
 export type EventPriority = 0 | 1 | 2;
 
@@ -92,14 +92,14 @@ export const DiscreteEvent: EventPriority = 0;
 export const UserBlockingEvent: EventPriority = 1;
 export const ContinuousEvent: EventPriority = 2;
 
-export type ReactFundamentalComponentInstance<C, H> = {|
+export type ReactFundamentalComponentInstance<C, H> = {
   currentFiber: Object,
   instance: mixed,
   prevProps: null | Object,
   props: Object,
   impl: ReactFundamentalImpl<C, H>,
   state: Object,
-|};
+};
 
 export type ReactFundamentalImpl<C, H> = {
   displayName: string,
@@ -133,14 +133,14 @@ export type ReactFundamentalImpl<C, H> = {
   ...
 };
 
-export type ReactFundamentalComponent<C, H> = {|
+export type ReactFundamentalComponent<C, H> = {
   $$typeof: Symbol | number,
   impl: ReactFundamentalImpl<C, H>,
-|};
+};
 
-export type ReactScope = {|
+export type ReactScope = {
   $$typeof: Symbol | number,
-|};
+};
 
 export type ReactScopeQuery = (
   type: string,
@@ -148,12 +148,12 @@ export type ReactScopeQuery = (
   instance: mixed,
 ) => boolean;
 
-export type ReactScopeInstance = {|
+export type ReactScopeInstance = {
   DO_NOT_USE_queryAllNodes(ReactScopeQuery): null | Array<Object>,
   DO_NOT_USE_queryFirstNode(ReactScopeQuery): null | Object,
   containsNode(Object): boolean,
   getChildContextValues: <T>(context: ReactContext<T>) => Array<T>,
-|};
+};
 
 // Mutable source version can be anything (e.g. number, string, immutable data structure)
 // so long as it changes every time any part of the source changes.
@@ -173,7 +173,7 @@ export type MutableSourceGetVersionFn = (
   source: $NonMaybeType<mixed>,
 ) => MutableSourceVersion;
 
-export type MutableSource<Source: $NonMaybeType<mixed>> = {|
+export type MutableSource<Source: $NonMaybeType<mixed>> = {
   _source: Source,
 
   _getVersion: MutableSourceGetVersionFn,
@@ -197,7 +197,7 @@ export type MutableSource<Source: $NonMaybeType<mixed>> = {|
   // Used to detect multiple renderers using the same mutable source.
   _currentPrimaryRenderer?: Object | null,
   _currentSecondaryRenderer?: Object | null,
-|};
+};
 
 // The subset of a Thenable required by things thrown by Suspense.
 // This doesn't require a value to be passed to either handler.

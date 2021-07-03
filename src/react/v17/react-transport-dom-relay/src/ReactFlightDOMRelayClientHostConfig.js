@@ -25,7 +25,7 @@ export type {
   ModuleMetaData,
 } from 'ReactFlightDOMRelayClientIntegration';
 
-export opaque type UninitializedModel = JSONValue;
+export type UninitializedModel = JSONValue;
 
 export type Response = ResponseBase;
 

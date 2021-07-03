@@ -10,9 +10,9 @@
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 import type {Instance} from './ReactFiberHostConfig';
 
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 import {HostComponent, HostText} from 'react-reconciler/src/ReactWorkTags';
-import getComponentName from 'shared/getComponentName';
+import getComponentName from '../../shared/getComponentName';
 import {
   findFiberRoot,
   getBoundingRect,
@@ -42,30 +42,30 @@ if (typeof Symbol === 'function' && Symbol.for) {
 
 type Type = Symbol | number;
 
-type ComponentSelector = {|
+type ComponentSelector = {
   $$typeof: Type,
   value: React$AbstractComponent<empty, mixed>,
-|};
+};
 
-type HasPsuedoClassSelector = {|
+type HasPsuedoClassSelector = {
   $$typeof: Type,
   value: Array<Selector>,
-|};
+};
 
-type RoleSelector = {|
+type RoleSelector = {
   $$typeof: Type,
   value: string,
-|};
+};
 
-type TextSelector = {|
+type TextSelector = {
   $$typeof: Type,
   value: string,
-|};
+};
 
-type TestNameSelector = {|
+type TestNameSelector = {
   $$typeof: Type,
   value: string,
-|};
+};
 
 type Selector =
   | ComponentSelector
@@ -364,12 +364,12 @@ export function getFindAllNodesFailureDescription(
   return null;
 }
 
-export type BoundingRect = {|
+export type BoundingRect = {
   x: number,
   y: number,
   width: number,
   height: number,
-|};
+};
 
 export function findBoundingRects(
   hostRoot: Instance,
@@ -514,7 +514,7 @@ export function observeVisibleRects(
   selectors: Array<Selector>,
   callback: (intersections: Array<{ratio: number, rect: BoundingRect}>) => void,
   options?: IntersectionObserverOptions,
-): {|disconnect: () => void|} {
+): {disconnect: () => void} {
   if (!supportsTestSelectors) {
     invariant(false, 'Test selector API is not supported by this renderer.');
   }

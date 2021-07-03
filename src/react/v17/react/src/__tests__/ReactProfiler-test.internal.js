@@ -32,7 +32,7 @@ function loadModules({
   replayFailedUnitOfWorkWithInvokeGuardedCallback = false,
   useNoopRenderer = false,
 } = {}) {
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
 
   ReactFeatureFlags.enableProfilerTimer = enableProfilerTimer;
   ReactFeatureFlags.enableProfilerCommitHooks = enableProfilerCommitHooks;

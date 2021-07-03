@@ -7,7 +7,7 @@
  * @flow
  */
 
-import ReactSharedInternals from 'shared/ReactSharedInternals';
+import ReactSharedInternals from '../../shared/ReactSharedInternals';
 
 const {ReactCurrentBatchConfig} = ReactSharedInternals;
 

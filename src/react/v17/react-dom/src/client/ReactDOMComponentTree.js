@@ -8,7 +8,7 @@
  */
 
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
-import type {ReactScopeInstance} from 'shared/ReactTypes';
+import type {ReactScopeInstance} from '../../shared/ReactTypes';
 import type {
   ReactDOMEventHandle,
   ReactDOMEventHandleListener,
@@ -30,8 +30,8 @@ import {
 
 import {getParentSuspenseInstance} from './ReactDOMHostConfig';
 
-import invariant from 'shared/invariant';
-import {enableScopeAPI} from 'shared/ReactFeatureFlags';
+import invariant from '../../shared/invariant';
+import {enableScopeAPI} from '../../shared/ReactFeatureFlags';
 
 const randomKey = Math.random()
   .toString(36)

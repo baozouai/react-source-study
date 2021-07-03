@@ -12,10 +12,10 @@ import type {
   MutableSourceGetSnapshotFn,
   MutableSourceSubscribeFn,
   ReactContext,
-} from 'shared/ReactTypes';
+} from '../../shared/ReactTypes';
 import type {OpaqueIDType} from 'react-reconciler/src/ReactFiberHostConfig';
 
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
 import ReactCurrentDispatcher from './ReactCurrentDispatcher';
 
@@ -93,7 +93,7 @@ export function useReducer<S, I, A>(
   return dispatcher.useReducer(reducer, initialArg, init);
 }
 
-export function useRef<T>(initialValue: T): {|current: T|} {
+export function useRef<T>(initialValue: T): {current: T} {
   const dispatcher = resolveDispatcher();
   return dispatcher.useRef(initialValue);
 }
@@ -131,7 +131,7 @@ export function useMemo<T>(
 }
 
 export function useImperativeHandle<T>(
-  ref: {|current: T | null|} | ((inst: T | null) => mixed) | null | void,
+  ref: {current: T | null} | ((inst: T | null) => mixed) | null | void,
   create: () => T,
   deps: Array<mixed> | void | null,
 ): void {

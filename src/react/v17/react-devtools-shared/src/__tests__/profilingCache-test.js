@@ -204,7 +204,7 @@ describe('ProfilingCache', () => {
 
     class LegacyContextProvider extends React.Component<
       any,
-      {|count: number|},
+      {count: number},
     > {
       static childContextTypes = {
         count: PropTypes.number,

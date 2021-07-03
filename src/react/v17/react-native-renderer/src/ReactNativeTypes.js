@@ -35,10 +35,10 @@ export type MeasureLayoutOnSuccessCallback = (
 
 type AttributeType =
   | true
-  | $ReadOnly<{|
+  | $ReadOnly<{
       diff?: <T>(arg1: T, arg2: T) => boolean,
       process?: (arg1: any) => any,
-    |}>;
+    }>;
 
 export type AttributeConfiguration<
   TProps = string,
@@ -52,28 +52,28 @@ export type AttributeConfiguration<
 export type ReactNativeBaseComponentViewConfig<
   TProps = string,
   TStyleProps = string,
-> = $ReadOnly<{|
+> = $ReadOnly<{
   baseModuleName?: string,
   bubblingEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      phasedRegistrationNames: $ReadOnly<{|
+    [eventName: string]: $ReadOnly<{
+      phasedRegistrationNames: $ReadOnly<{
         captured: string,
         bubbled: string,
-      |}>,
-    |}>,
+      }>,
+    }>,
     ...,
   }>,
   Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
   directEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
+    [eventName: string]: $ReadOnly<{
       registrationName: string,
-    |}>,
+    }>,
     ...,
   }>,
   NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
   uiViewClassName: string,
   validAttributes: AttributeConfiguration<TProps, TStyleProps>,
-|}>;
+}>;
 
 export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
 
@@ -105,40 +105,40 @@ type InspectorDataProps = $ReadOnly<{
   ...,
 }>;
 
-type InspectorDataSource = $ReadOnly<{|
+type InspectorDataSource = $ReadOnly<{
   fileName?: string,
   lineNumber?: number,
-|}>;
+}>;
 
 type InspectorDataGetter = (
   (componentOrHandle: any) => ?number,
-) => $ReadOnly<{|
+) => $ReadOnly<{
   measure: Function,
   props: InspectorDataProps,
   source: InspectorDataSource,
-|}>;
+}>;
 
-export type InspectorData = $ReadOnly<{|
-  hierarchy: Array<{|
+export type InspectorData = $ReadOnly<{
+  hierarchy: Array<{
     name: ?string,
     getInspectorData: InspectorDataGetter,
-  |}>,
+  }>,
   selectedIndex: ?number,
   props: InspectorDataProps,
   source: ?InspectorDataSource,
-|}>;
+}>;
 
-export type TouchedViewDataAtPoint = $ReadOnly<{|
+export type TouchedViewDataAtPoint = $ReadOnly<{
   pointerY: number,
   touchedViewTag?: number,
-  frame: $ReadOnly<{|
+  frame: $ReadOnly<{
     top: number,
     left: number,
     width: number,
     height: number,
-  |}>,
+  }>,
   ...InspectorData,
-|}>;
+}>;
 
 /**
  * Flat ReactNative renderer bundles are too big for Flow to parse efficiently.
@@ -228,18 +228,18 @@ export type LayoutAnimationProperty =
   | 'scaleY'
   | 'scaleXY';
 
-export type LayoutAnimationAnimationConfig = $ReadOnly<{|
+export type LayoutAnimationAnimationConfig = $ReadOnly<{
   duration?: number,
   delay?: number,
   springDamping?: number,
   initialVelocity?: number,
   type?: LayoutAnimationType,
   property?: LayoutAnimationProperty,
-|}>;
+}>;
 
-export type LayoutAnimationConfig = $ReadOnly<{|
+export type LayoutAnimationConfig = $ReadOnly<{
   duration: number,
   create?: LayoutAnimationAnimationConfig,
   update?: LayoutAnimationAnimationConfig,
   delete?: LayoutAnimationAnimationConfig,
-|}>;
+}>;

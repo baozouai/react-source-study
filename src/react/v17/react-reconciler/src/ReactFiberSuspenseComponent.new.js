@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {ReactNodeList, Wakeable} from 'shared/ReactTypes';
+import type {ReactNodeList, Wakeable} from '../../shared/ReactTypes';
 import type {Fiber} from './ReactInternalTypes';
 import type {SuspenseInstance} from './ReactFiberHostConfig';
 import type {Lane} from './ReactFiberLane';
@@ -18,7 +18,7 @@ import {
   isSuspenseInstanceFallback,
 } from './ReactFiberHostConfig';
 
-export type SuspenseProps = {|
+export type SuspenseProps = {
   children?: ReactNodeList,
   fallback?: ReactNodeList,
 
@@ -26,7 +26,7 @@ export type SuspenseProps = {|
   suspenseCallback?: (Set<Wakeable> | null) => mixed,
 
   unstable_expectedLoadTime?: number,
-|};
+};
 
 // A null SuspenseState represents an unsuspended normal Suspense boundary.
 // A non-null SuspenseState means that it is blocked for one reason or another.
@@ -35,7 +35,7 @@ export type SuspenseProps = {|
 //     isSuspenseInstanceFallback to query the reason for being dehydrated.
 // - A null dehydrated field means it's blocked by something suspending and
 //   we're currently showing a fallback instead.
-export type SuspenseState = {|
+export type SuspenseState = {
   // If this boundary is still dehydrated, we store the SuspenseInstance
   // here to indicate that it is dehydrated (flag) and for quick access
   // to check things like isSuspenseInstancePending.
@@ -44,11 +44,11 @@ export type SuspenseState = {|
   // OffscreenLane is the default for dehydrated boundaries.
   // NoLane is the default for normal boundaries, which turns into "normal" pri.
   retryLane: Lane,
-|};
+};
 
 export type SuspenseListTailMode = 'collapsed' | 'hidden' | void;
 
-export type SuspenseListRenderState = {|
+export type SuspenseListRenderState = {
   isBackwards: boolean,
   // The currently rendering tail row.
   rendering: null | Fiber,
@@ -60,7 +60,7 @@ export type SuspenseListRenderState = {|
   tail: null | Fiber,
   // Tail insertions setting.
   tailMode: SuspenseListTailMode,
-|};
+};
 
 export function shouldCaptureSuspense(
   workInProgress: Fiber,

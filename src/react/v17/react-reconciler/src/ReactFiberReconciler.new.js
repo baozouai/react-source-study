@@ -18,7 +18,7 @@ import type {
 } from './ReactFiberHostConfig';
 import type {RendererInspectionConfig} from './ReactFiberHostConfig';
 import {FundamentalComponent} from './ReactWorkTags';
-import type {ReactNodeList} from 'shared/ReactTypes';
+import type {ReactNodeList} from '../../shared/ReactTypes';
 import type {Lane, LanePriority} from './ReactFiberLane';
 import type {SuspenseState} from './ReactFiberSuspenseComponent.new';
 
@@ -26,17 +26,17 @@ import {
   findCurrentHostFiber,
   findCurrentHostFiberWithNoPortals,
 } from './ReactFiberTreeReflection';
-import {get as getInstance} from 'shared/ReactInstanceMap';
+import {get as getInstance} from '../../shared/ReactInstanceMap';
 import {
   HostComponent,
   ClassComponent,
   HostRoot,
   SuspenseComponent,
 } from './ReactWorkTags';
-import getComponentName from 'shared/getComponentName';
-import invariant from 'shared/invariant';
-import {enableSchedulingProfiler} from 'shared/ReactFeatureFlags';
-import ReactSharedInternals from 'shared/ReactSharedInternals';
+import getComponentName from '../../shared/getComponentName';
+import invariant from '../../shared/invariant';
+import {enableSchedulingProfiler} from '../../shared/ReactFeatureFlags';
+import ReactSharedInternals from '../../shared/ReactSharedInternals';
 import {getPublicInstance} from './ReactFiberHostConfig';
 import {
   findCurrentUnmaskedContext,
@@ -112,7 +112,7 @@ type OpaqueRoot = FiberRoot;
 // Might add PROFILE later.
 type BundleType = 0 | 1;
 
-type DevToolsConfig = {|
+type DevToolsConfig = {
   bundleType: BundleType,
   version: string,
   rendererPackageName: string,
@@ -120,7 +120,7 @@ type DevToolsConfig = {|
   // Used by "inspect clicked DOM element" in React DevTools.
   findFiberByHostInstance?: (instance: Instance | TextInstance) => Fiber | null,
   rendererConfig?: RendererInspectionConfig,
-|};
+};
 
 let didWarnAboutNestedUpdates;
 let didWarnAboutFindNodeInStrictMode;

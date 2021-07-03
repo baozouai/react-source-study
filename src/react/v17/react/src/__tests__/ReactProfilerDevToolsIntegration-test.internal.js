@@ -8,7 +8,7 @@
  * @jest-environment node
  */
 
-'use strict';
+
 
 describe('ReactProfiler DevTools integration', () => {
   let React;
@@ -29,7 +29,7 @@ describe('ReactProfiler DevTools integration', () => {
 
     jest.resetModules();
 
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.enableProfilerTimer = true;
     ReactFeatureFlags.enableSchedulerTracing = true;
     Scheduler = require('scheduler');

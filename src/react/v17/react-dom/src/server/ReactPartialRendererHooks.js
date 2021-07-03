@@ -14,32 +14,32 @@ import type {
   MutableSourceGetSnapshotFn,
   MutableSourceSubscribeFn,
   ReactContext,
-} from 'shared/ReactTypes';
+} from '../../shared/ReactTypes';
 import type PartialRenderer from './ReactPartialRenderer';
 
 import {validateContextBounds} from './ReactPartialRendererContext';
 
-import invariant from 'shared/invariant';
-import is from 'shared/objectIs';
+import invariant from '../../shared/invariant';
+import is from '../../shared/objectIs';
 
 type BasicStateAction<S> = (S => S) | S;
 type Dispatch<A> = A => void;
 
-type Update<A> = {|
+type Update<A> = {
   action: A,
   next: Update<A> | null,
-|};
+};
 
-type UpdateQueue<A> = {|
+type UpdateQueue<A> = {
   last: Update<A> | null,
   dispatch: any,
-|};
+};
 
-type Hook = {|
+type Hook = {
   memoizedState: any,
   queue: UpdateQueue<any> | null,
   next: Hook | null,
-|};
+};
 
 type OpaqueIDType = string;
 
@@ -370,7 +370,7 @@ function useMemo<T>(nextCreate: () => T, deps: Array<mixed> | void | null): T {
   return nextValue;
 }
 
-function useRef<T>(initialValue: T): {|current: T|} {
+function useRef<T>(initialValue: T): {current: T} {
   currentlyRenderingComponent = resolveCurrentlyRenderingComponent();
   workInProgressHook = createWorkInProgressHook();
   const previousRef = workInProgressHook.memoizedState;
@@ -448,7 +448,7 @@ export function useCallback<T>(
   callback: T,
   deps: Array<mixed> | void | null,
 ): T {
-  return useMemo(() => callback, deps);
+  return useMemo(() => callback, [callback]);
 }
 
 // TODO Decide on how to implement this hook for server rendering.

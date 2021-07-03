@@ -25,7 +25,7 @@ import {
   SuspenseComponent,
 } from './ReactWorkTags';
 import {Deletion, Hydrating, Placement} from './ReactFiberFlags';
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
 import {
   createFiberFromHostInstanceForDeletion,
@@ -54,7 +54,7 @@ import {
   didNotFindHydratableTextInstance,
   didNotFindHydratableSuspenseInstance,
 } from './ReactFiberHostConfig';
-import {enableSuspenseServerRenderer} from 'shared/ReactFeatureFlags';
+import {enableSuspenseServerRenderer} from '../../shared/ReactFeatureFlags';
 import {OffscreenLane} from './ReactFiberLane';
 
 // The deepest Fiber on the stack involved in a hydration context.

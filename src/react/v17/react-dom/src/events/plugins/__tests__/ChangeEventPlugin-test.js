@@ -35,7 +35,7 @@ describe('ChangeEventPlugin', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     // TODO pull this into helper method, reduce repetition.
     // mock the browser APIs which are used in schedule:
     // - calling 'window.postMessage' should actually fire postmessage handlers

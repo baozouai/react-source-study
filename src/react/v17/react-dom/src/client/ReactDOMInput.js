@@ -9,7 +9,7 @@
 
 // TODO: direct imports like some-package/src/* are bad. Fix me.
 import {getCurrentFiberOwnerNameInDevOrNull} from 'react-reconciler/src/ReactCurrentFiber';
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
 import {setValueForProperty} from './DOMPropertyOperations';
 import {getFiberCurrentPropsFromNode} from './ReactDOMComponentTree';
@@ -17,7 +17,7 @@ import {getToStringValue, toString} from './ToStringValue';
 import {checkControlledValueProps} from '../shared/ReactControlledValuePropTypes';
 import {updateValueIfChanged} from './inputValueTracking';
 import getActiveElement from './getActiveElement';
-import {disableInputAttributeSyncing} from 'shared/ReactFeatureFlags';
+import {disableInputAttributeSyncing} from '../../shared/ReactFeatureFlags';
 
 import type {ToStringValue} from './ToStringValue';
 

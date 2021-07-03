@@ -17,7 +17,7 @@ let Scheduler;
 describe('ReactSuspense', () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.enableSuspenseCallback = true;
 
     React = require('react');
@@ -254,7 +254,7 @@ describe('ReactSuspense', () => {
 
       const errors = [];
       let hasCaughtError = false;
-      jest.mock('shared/ReactErrorUtils', () => ({
+      jest.mock('../../shared/ReactErrorUtils', () => ({
         invokeGuardedCallback(name, fn, context, ...args) {
           try {
             return fn.call(context, ...args);
@@ -272,7 +272,7 @@ describe('ReactSuspense', () => {
         },
       }));
 
-      ReactFeatureFlags = require('shared/ReactFeatureFlags');
+      ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
       ReactFeatureFlags.enableSuspenseCallback = true;
 
       React = require('react');

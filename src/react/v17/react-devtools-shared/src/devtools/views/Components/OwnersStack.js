@@ -33,23 +33,23 @@ import styles from './OwnersStack.css';
 
 type SelectOwner = (owner: Owner | null) => void;
 
-type ACTION_UPDATE_OWNER_ID = {|
+type ACTION_UPDATE_OWNER_ID = {
   type: 'UPDATE_OWNER_ID',
   ownerID: number | null,
   owners: Array<Owner>,
-|};
-type ACTION_UPDATE_SELECTED_INDEX = {|
+};
+type ACTION_UPDATE_SELECTED_INDEX = {
   type: 'UPDATE_SELECTED_INDEX',
   selectedIndex: number,
-|};
+};
 
 type Action = ACTION_UPDATE_OWNER_ID | ACTION_UPDATE_SELECTED_INDEX;
 
-type State = {|
+type State = {
   ownerID: number | null,
   owners: Array<Owner>,
   selectedIndex: number,
-|};
+};
 
 function dialogReducer(state, action) {
   switch (action.type) {
@@ -277,11 +277,11 @@ function ElementView({isSelected, owner, selectOwner}: ElementViewProps) {
   );
 }
 
-type BackToOwnerButtonProps = {|
+type BackToOwnerButtonProps = {
   owners: Array<Owner>,
   selectedIndex: number,
   selectOwner: SelectOwner,
-|};
+};
 function BackToOwnerButton({
   owners,
   selectedIndex,

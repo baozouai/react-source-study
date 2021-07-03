@@ -24,11 +24,11 @@ const ROW_COLUMN_NUMBER_REGEX = /:\d+:\d+(\n|$)/;
 
 const injectedRenderers: Map<
   ReactRenderer,
-  {|
+  {
     currentDispatcherRef: CurrentDispatcherRef,
     getCurrentFiber: () => Fiber | null,
     workTagMap: WorkTagMap,
-  |},
+  },
 > = new Map();
 
 let targetConsole: Object = console;

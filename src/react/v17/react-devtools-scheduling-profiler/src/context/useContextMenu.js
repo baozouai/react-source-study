@@ -17,12 +17,12 @@ export default function useContextMenu<T>({
   id,
   onChange,
   ref,
-}: {|
+}: {
   data: T,
   id: string,
   onChange: OnChangeFn,
   ref: {+current: HTMLElement | null},
-|}) {
+}) {
   const {showMenu} = useContext<RegistryContextType>(RegistryContext);
 
   useEffect(() => {

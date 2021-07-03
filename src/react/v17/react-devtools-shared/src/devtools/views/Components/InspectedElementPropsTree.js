@@ -22,12 +22,12 @@ import type {InspectedElement} from './types';
 import type {GetInspectedElementPath} from './InspectedElementContext';
 import type {FrontendBridge} from 'react-devtools-shared/src/bridge';
 
-type Props = {|
+type Props = {
   bridge: FrontendBridge,
   getInspectedElementPath: GetInspectedElementPath,
   inspectedElement: InspectedElement,
   store: Store,
-|};
+};
 
 export default function InspectedElementPropsTree({
   bridge,

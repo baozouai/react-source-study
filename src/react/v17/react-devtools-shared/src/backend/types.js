@@ -7,8 +7,8 @@
  * @flow
  */
 
-import type {ReactContext} from 'shared/ReactTypes';
-import type {Source} from 'shared/ReactElementType';
+import type {ReactContext} from '../../shared/ReactTypes';
+import type {Source} from '../../shared/ReactElementType';
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 import type {
   ComponentFilter,
@@ -25,7 +25,7 @@ export type WorkTag = number;
 export type WorkFlags = number;
 export type ExpirationTime = number;
 
-export type WorkTagMap = {|
+export type WorkTagMap = {
   Block: WorkTag,
   ClassComponent: WorkTag,
   ContextConsumer: WorkTag,
@@ -51,22 +51,22 @@ export type WorkTagMap = {|
   SuspenseComponent: WorkTag,
   SuspenseListComponent: WorkTag,
   YieldComponent: WorkTag,
-|};
+};
 
 // TODO: If it's useful for the frontend to know which types of data an Element has
 // (e.g. props, state, context, hooks) then we could add a bitmask field for this
 // to keep the number of attributes small.
-export type FiberData = {|
+export type FiberData = {
   key: string | null,
   displayName: string | null,
   type: ElementType,
-|};
+};
 
 export type NativeType = Object;
 export type RendererID = number;
 
 type Dispatcher = any;
-export type CurrentDispatcherRef = {|current: null | Dispatcher|};
+export type CurrentDispatcherRef = {current: null | Dispatcher};
 
 export type GetDisplayNameForFiberID = (
   id: number,
@@ -142,15 +142,15 @@ export type ReactRenderer = {
   ...
 };
 
-export type ChangeDescription = {|
+export type ChangeDescription = {
   context: Array<string> | boolean | null,
   didHooksChange: boolean,
   isFirstMount: boolean,
   props: Array<string> | null,
   state: Array<string> | null,
-|};
+};
 
-export type CommitDataBackend = {|
+export type CommitDataBackend = {
   // Tuple of fiber ID and change description
   changeDescriptions: Array<[number, ChangeDescription]> | null,
   duration: number,
@@ -161,9 +161,9 @@ export type CommitDataBackend = {|
   interactionIDs: Array<number>,
   priorityLevel: string | null,
   timestamp: number,
-|};
+};
 
-export type ProfilingDataForRootBackend = {|
+export type ProfilingDataForRootBackend = {
   commitData: Array<CommitDataBackend>,
   displayName: string,
   // Tuple of Fiber ID and base duration
@@ -172,38 +172,38 @@ export type ProfilingDataForRootBackend = {|
   interactionCommits: Array<[number, Array<number>]>,
   interactions: Array<[number, Interaction]>,
   rootID: number,
-|};
+};
 
 // Profiling data collected by the renderer interface.
 // This information will be passed to the frontend and combined with info it collects.
-export type ProfilingDataBackend = {|
+export type ProfilingDataBackend = {
   dataForRoots: Array<ProfilingDataForRootBackend>,
   rendererID: number,
-|};
+};
 
-export type PathFrame = {|
+export type PathFrame = {
   key: string | null,
   index: number,
   displayName: string | null,
-|};
+};
 
-export type PathMatch = {|
+export type PathMatch = {
   id: number,
   isFullMatch: boolean,
-|};
+};
 
-export type Owner = {|
+export type Owner = {
   displayName: string | null,
   id: number,
   type: ElementType,
-|};
+};
 
-export type OwnersList = {|
+export type OwnersList = {
   id: number,
   owners: Array<Owner> | null,
-|};
+};
 
-export type InspectedElement = {|
+export type InspectedElement = {
   id: number,
 
   displayName: string | null,
@@ -248,35 +248,35 @@ export type InspectedElement = {|
   // Meta information about the renderer that created this element.
   rendererPackageName: string | null,
   rendererVersion: string | null,
-|};
+};
 
 export const InspectElementFullDataType = 'full-data';
 export const InspectElementNoChangeType = 'no-change';
 export const InspectElementNotFoundType = 'not-found';
 export const InspectElementHydratedPathType = 'hydrated-path';
 
-type InspectElementFullData = {|
+type InspectElementFullData = {
   id: number,
   type: 'full-data',
   value: InspectedElement,
-|};
+};
 
-type InspectElementHydratedPath = {|
+type InspectElementHydratedPath = {
   id: number,
   type: 'hydrated-path',
   path: Array<string | number>,
   value: any,
-|};
+};
 
-type InspectElementNoChange = {|
+type InspectElementNoChange = {
   id: number,
   type: 'no-change',
-|};
+};
 
-type InspectElementNotFound = {|
+type InspectElementNotFound = {
   id: number,
   type: 'not-found',
-|};
+};
 
 export type InspectedElementPayload =
   | InspectElementFullData
@@ -284,10 +284,10 @@ export type InspectedElementPayload =
   | InspectElementNoChange
   | InspectElementNotFound;
 
-export type InstanceAndStyle = {|
+export type InstanceAndStyle = {
   instance: Object | null,
   style: Object | null,
-|};
+};
 
 type Type = 'props' | 'hooks' | 'state' | 'context';
 

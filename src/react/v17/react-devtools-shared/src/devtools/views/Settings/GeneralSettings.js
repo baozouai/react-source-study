@@ -15,7 +15,7 @@ import {CHANGE_LOG_URL} from 'react-devtools-shared/src/constants';
 
 import styles from './SettingsShared.css';
 
-export default function GeneralSettings(_: {||}) {
+export default function GeneralSettings(_: {}) {
   const {
     displayDensity,
     setDisplayDensity,

@@ -9,6 +9,14 @@
 
 import type {PriorityLevel} from './SchedulerPriorities';
 
+import {
+  ImmediatePriority,
+  UserBlockingPriority,
+  NormalPriority,
+  LowPriority,
+  IdlePriority,
+} from './SchedulerPriorities';
+
 declare class TaskController {
   constructor(priority?: string): TaskController;
   signal: mixed;
@@ -17,17 +25,9 @@ declare class TaskController {
 
 type PostTaskPriorityLevel = 'user-blocking' | 'user-visible' | 'background';
 
-type CallbackNode = {|
+type CallbackNode = {
   _controller: TaskController,
-|};
-
-import {
-  ImmediatePriority,
-  UserBlockingPriority,
-  NormalPriority,
-  LowPriority,
-  IdlePriority,
-} from './SchedulerPriorities';
+};
 
 export {
   ImmediatePriority as unstable_ImmediatePriority,

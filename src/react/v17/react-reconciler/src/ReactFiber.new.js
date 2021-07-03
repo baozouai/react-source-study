@@ -7,13 +7,13 @@
  * @flow
  */
 
-import type {ReactElement} from 'shared/ReactElementType';
+import type {ReactElement} from '../../shared/ReactElementType';
 import type {
   ReactFragment,
   ReactPortal,
   ReactFundamentalComponent,
   ReactScope,
-} from 'shared/ReactTypes';
+} from '../../shared/ReactTypes';
 import type {Fiber} from './ReactInternalTypes';
 import type {RootTag} from './ReactRootTags';
 import type {WorkTag} from './ReactWorkTags';
@@ -22,13 +22,13 @@ import type {Lanes} from './ReactFiberLane';
 import type {SuspenseInstance} from './ReactFiberHostConfig';
 import type {OffscreenProps} from './ReactFiberOffscreenComponent';
 
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 import {
   enableProfilerTimer,
   enableFundamentalAPI,
   enableScopeAPI,
   enableBlocksAPI,
-} from 'shared/ReactFeatureFlags';
+} from '../../shared/ReactFeatureFlags';
 import {NoFlags, Placement, StaticMask} from './ReactFiberFlags';
 import {ConcurrentRoot, BlockingRoot} from './ReactRootTags';
 import {
@@ -57,7 +57,7 @@ import {
   OffscreenComponent,
   LegacyHiddenComponent,
 } from './ReactWorkTags';
-import getComponentName from 'shared/getComponentName';
+import getComponentName from '../../shared/getComponentName';
 
 import {isDevToolsPresent} from './ReactFiberDevToolsHook.new';
 import {
@@ -91,7 +91,7 @@ import {
   REACT_BLOCK_TYPE,
   REACT_OFFSCREEN_TYPE,
   REACT_LEGACY_HIDDEN_TYPE,
-} from 'shared/ReactSymbols';
+} from '../../shared/ReactSymbols';
 
 export type {Fiber};
 

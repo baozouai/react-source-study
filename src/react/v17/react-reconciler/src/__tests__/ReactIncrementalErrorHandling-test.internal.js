@@ -10,7 +10,7 @@
 
 'use strict';
 
-let ReactFeatureFlags = require('shared/ReactFeatureFlags');
+let ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
 let PropTypes;
 let React;
 let ReactNoop;
@@ -19,7 +19,7 @@ let Scheduler;
 describe('ReactIncrementalErrorHandling', () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
     PropTypes = require('prop-types');
     React = require('react');

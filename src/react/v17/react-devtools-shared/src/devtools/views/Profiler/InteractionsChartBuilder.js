@@ -11,21 +11,21 @@ import ProfilerStore from 'react-devtools-shared/src/devtools/ProfilerStore';
 
 import type {Interaction} from './types';
 
-export type ChartData = {|
+export type ChartData = {
   interactions: Array<Interaction>,
   lastInteractionTime: number,
   maxCommitDuration: number,
-|};
+};
 
 const cachedChartData: Map<number, ChartData> = new Map();
 
 export function getChartData({
   profilerStore,
   rootID,
-}: {|
+}: {
   profilerStore: ProfilerStore,
   rootID: number,
-|}): ChartData {
+}): ChartData {
   if (cachedChartData.has(rootID)) {
     return ((cachedChartData.get(rootID): any): ChartData);
   }

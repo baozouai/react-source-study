@@ -7,10 +7,21 @@
  * @flow
  */
 
-import type {FiberRoot, ReactPriorityLevel} from './ReactInternalTypes';
+import type { FiberRoot, ReactPriorityLevel } from './ReactInternalTypes';
 
-export opaque type LanePriority =
-  | 0
+import invariant from '../../shared/invariant';
+
+import {
+  ImmediatePriority as ImmediateSchedulerPriority,
+  UserBlockingPriority as UserBlockingSchedulerPriority,
+  NormalPriority as NormalSchedulerPriority,
+  LowPriority as LowSchedulerPriority,
+  IdlePriority as IdleSchedulerPriority,
+  NoPriority as NoSchedulerPriority,
+} from './SchedulerWithReactIntegration.new';
+
+export type LanePriority =
+   0
   | 1
   | 2
   | 3
@@ -28,20 +39,9 @@ export opaque type LanePriority =
   | 15
   | 16
   | 17;
-export opaque type Lanes = number;
-export opaque type Lane = number;
-export opaque type LaneMap<T> = Array<T>;
-
-import invariant from 'shared/invariant';
-
-import {
-  ImmediatePriority as ImmediateSchedulerPriority,
-  UserBlockingPriority as UserBlockingSchedulerPriority,
-  NormalPriority as NormalSchedulerPriority,
-  LowPriority as LowSchedulerPriority,
-  IdlePriority as IdleSchedulerPriority,
-  NoPriority as NoSchedulerPriority,
-} from './SchedulerWithReactIntegration.new';
+export type Lanes = number;
+export type Lane = number;
+export type LaneMap<T> = Array<T>;
 
 export const SyncLanePriority: LanePriority = 15;
 export const SyncBatchedLanePriority: LanePriority = 14;
@@ -446,9 +446,9 @@ export function getMostRecentEventTime(root: FiberRoot, lanes: Lanes): number {
 }
 
 function computeExpirationTime(lane: Lane, currentTime: number) {
-/**
- *   这个函数是计算lane的过期时间的，与饥饿问题相关
- * */
+  /**
+   *   这个函数是计算lane的过期时间的，与饥饿问题相关
+   * */
 
   // TODO: Expiration heuristic is constant per lane, so could use a map.
   getHighestPriorityLanes(lane);

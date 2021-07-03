@@ -18,7 +18,7 @@ export type RNTopLevelEventType =
   | 'topTouchMove'
   | 'topTouchStart';
 
-export opaque type DOMTopLevelEventType = string;
+export type DOMTopLevelEventType = string;
 
 // Do not use the below two methods directly!
 // Instead use constants exported from DOMTopLevelEventTypes in ReactDOM.

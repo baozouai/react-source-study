@@ -26,12 +26,12 @@ import type {GetInspectedElementPath} from './InspectedElementContext';
 import type {HooksNode, HooksTree} from 'react-debug-tools/src/ReactDebugHooks';
 import type {FrontendBridge} from 'react-devtools-shared/src/bridge';
 
-type HooksTreeViewProps = {|
+type HooksTreeViewProps = {
   bridge: FrontendBridge,
   getInspectedElementPath: GetInspectedElementPath,
   inspectedElement: InspectedElement,
   store: Store,
-|};
+};
 
 export function InspectedElementHooksTree({
   bridge,
@@ -66,13 +66,13 @@ export function InspectedElementHooksTree({
   }
 }
 
-type InnerHooksTreeViewProps = {|
+type InnerHooksTreeViewProps = {
   getInspectedElementPath: GetInspectedElementPath,
   hooks: HooksTree,
   id: number,
   inspectedElement: InspectedElement,
   path: Array<string | number>,
-|};
+};
 
 export function InnerHooksTreeView({
   getInspectedElementPath,
@@ -94,13 +94,13 @@ export function InnerHooksTreeView({
   ));
 }
 
-type HookViewProps = {|
+type HookViewProps = {
   getInspectedElementPath: GetInspectedElementPath,
   hook: HooksNode,
   id: number,
   inspectedElement: InspectedElement,
   path: Array<string | number>,
-|};
+};
 
 function HookView({
   getInspectedElementPath,

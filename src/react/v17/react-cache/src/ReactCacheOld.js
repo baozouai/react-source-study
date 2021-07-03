@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Thenable} from 'shared/ReactTypes';
+import type {Thenable} from '../../shared/ReactTypes';
 
 import * as React from 'react';
 
@@ -15,20 +15,20 @@ import {createLRU} from './LRU';
 
 type Suspender = {then(resolve: () => mixed, reject: () => mixed): mixed, ...};
 
-type PendingResult = {|
+type PendingResult = {
   status: 0,
   value: Suspender,
-|};
+};
 
-type ResolvedResult<V> = {|
+type ResolvedResult<V> = {
   status: 1,
   value: V,
-|};
+};
 
-type RejectedResult = {|
+type RejectedResult = {
   status: 2,
   value: mixed,
-|};
+};
 
 type Result<V> = PendingResult | ResolvedResult<V> | RejectedResult;
 

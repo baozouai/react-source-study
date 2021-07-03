@@ -10,7 +10,7 @@
 import type {
   ReactFundamentalComponentInstance,
   ReactScopeInstance,
-} from 'shared/ReactTypes';
+} from '../../shared/ReactTypes';
 import type {DOMEventName} from '../events/DOMEventNames';
 
 export type ReactDOMFundamentalComponentInstance = ReactFundamentalComponentInstance<
@@ -23,8 +23,8 @@ export type ReactDOMEventHandle = (
   callback: (SyntheticEvent<EventTarget>) => void,
 ) => () => void;
 
-export type ReactDOMEventHandleListener = {|
+export type ReactDOMEventHandleListener = {
   callback: (SyntheticEvent<EventTarget>) => void,
   capture: boolean,
   type: DOMEventName,
-|};
+};

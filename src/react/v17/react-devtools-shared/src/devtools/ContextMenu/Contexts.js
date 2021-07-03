@@ -9,7 +9,7 @@
 
 import {createContext} from 'react';
 
-export type ShowFn = ({|data: Object, pageX: number, pageY: number|}) => void;
+export type ShowFn = ({data: Object, pageX: number, pageY: number}) => void;
 export type HideFn = () => void;
 
 const idToShowFnMap = new Map<string, ShowFn>();
@@ -28,12 +28,12 @@ function showMenu({
   id,
   pageX,
   pageY,
-}: {|
+}: {
   data: Object,
   id: string,
   pageX: number,
   pageY: number,
-|}) {
+}) {
   const showFn = idToShowFnMap.get(id);
   if (typeof showFn === 'function') {
     currentHideFn = idToHideFnMap.get(id);
@@ -55,16 +55,16 @@ function registerMenu(id: string, showFn: ShowFn, hideFn: HideFn) {
   };
 }
 
-export type RegistryContextType = {|
+export type RegistryContextType = {
   hideMenu: () => void,
-  showMenu: ({|
+  showMenu: ({
     data: Object,
     id: string,
     pageX: number,
     pageY: number,
-  |}) => void,
+  }) => void,
   registerMenu: (string, ShowFn, HideFn) => Function,
-|};
+};
 
 export const RegistryContext = createContext<RegistryContextType>({
   hideMenu,

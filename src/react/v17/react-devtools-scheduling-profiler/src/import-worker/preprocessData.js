@@ -24,20 +24,20 @@ import type {
 import {REACT_TOTAL_NUM_LANES} from '../constants';
 import InvalidProfileError from './InvalidProfileError';
 
-type MeasureStackElement = {|
+type MeasureStackElement = {
   type: ReactMeasureType,
   depth: number,
   index: number,
   startTime: Milliseconds,
   stopTime?: Milliseconds,
-|};
+};
 
-type ProcessorState = {|
+type ProcessorState = {
   nextRenderShouldGenerateNewBatchID: boolean,
   batchUID: BatchUID,
   uidCounter: BatchUID,
   measureStack: MeasureStackElement[],
-|};
+};
 
 // Exported for tests
 export function getLanesFromTransportDecimalBitmask(

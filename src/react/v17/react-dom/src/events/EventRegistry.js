@@ -9,7 +9,7 @@
 
 import type {DOMEventName} from './DOMEventNames';
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
+import {enableCreateEventHandleAPI} from '../../shared/ReactFeatureFlags';
 
 export const allNativeEvents: Set<DOMEventName> = new Set();
 

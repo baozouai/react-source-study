@@ -48,24 +48,24 @@ const LOCAL_STORAGE_COLLAPSE_ROOTS_BY_DEFAULT_KEY =
 const LOCAL_STORAGE_RECORD_CHANGE_DESCRIPTIONS_KEY =
   'React::DevTools::recordChangeDescriptions';
 
-type Config = {|
+type Config = {
   isProfiling?: boolean,
   supportsNativeInspection?: boolean,
   supportsReloadAndProfile?: boolean,
   supportsProfiling?: boolean,
   supportsTraceUpdates?: boolean,
-|};
+};
 
-export type Capabilities = {|
+export type Capabilities = {
   hasOwnerMetadata: boolean,
   supportsProfiling: boolean,
-|};
+};
 
 /**
  * The store is the single source of truth for updates from the backend.
  * ContextProviders can subscribe to the Store for specific things they want to provide.
  */
-export default class Store extends EventEmitter<{|
+export default class Store extends EventEmitter<{
   collapseNodesByDefault: [],
   componentFilters: [],
   mutated: [[Array<number>, Map<number, number>]],
@@ -75,7 +75,7 @@ export default class Store extends EventEmitter<{|
   supportsProfiling: [],
   supportsReloadAndProfile: [],
   unsupportedRendererVersionDetected: [],
-|}> {
+}> {
   _bridge: FrontendBridge;
 
   // Should new nodes be collapsed by default when added to the tree?
@@ -692,10 +692,10 @@ export default class Store extends EventEmitter<{|
   onBridgeNativeStyleEditorSupported = ({
     isSupported,
     validAttributes,
-  }: {|
+  }: {
     isSupported: boolean,
     validAttributes: ?$ReadOnlyArray<string>,
-  |}) => {
+  }) => {
     this._isNativeStyleEditorSupported = isSupported;
     this._nativeStyleEditorValidAttributes = validAttributes || null;
 

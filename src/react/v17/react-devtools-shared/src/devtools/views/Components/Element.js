@@ -159,10 +159,10 @@ const swallowDoubleClick = event => {
   event.stopPropagation();
 };
 
-type ExpandCollapseToggleProps = {|
+type ExpandCollapseToggleProps = {
   element: Element,
   store: Store,
-|};
+};
 
 function ExpandCollapseToggle({element, store}: ExpandCollapseToggleProps) {
   const {children, id, isCollapsed} = element;
@@ -194,10 +194,10 @@ function ExpandCollapseToggle({element, store}: ExpandCollapseToggleProps) {
   );
 }
 
-type DisplayNameProps = {|
+type DisplayNameProps = {
   displayName: string | null,
   id: number,
-|};
+};
 
 function DisplayName({displayName, id}: DisplayNameProps) {
   const {searchIndex, searchResults, searchText} = useContext(TreeStateContext);

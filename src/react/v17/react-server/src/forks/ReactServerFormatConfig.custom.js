@@ -24,7 +24,7 @@
 // really an argument to a top-level wrapping function.
 
 declare var $$$hostConfig: any;
-export opaque type Destination = mixed; // eslint-disable-line no-undef
+export type Destination = mixed; // eslint-disable-line no-undef
 
 export const formatChunkAsString = $$$hostConfig.formatChunkAsString;
 export const formatChunk = $$$hostConfig.formatChunk;

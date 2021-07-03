@@ -13,59 +13,59 @@ import type {Point} from './geometry';
 import {useEffect} from 'react';
 import {normalizeWheel} from './utils/normalizeWheel';
 
-export type MouseDownInteraction = {|
+export type MouseDownInteraction = {
   type: 'mousedown',
-  payload: {|
+  payload: {
     event: MouseEvent,
     location: Point,
-  |},
-|};
-export type MouseMoveInteraction = {|
+  },
+};
+export type MouseMoveInteraction = {
   type: 'mousemove',
-  payload: {|
+  payload: {
     event: MouseEvent,
     location: Point,
-  |},
-|};
-export type MouseUpInteraction = {|
+  },
+};
+export type MouseUpInteraction = {
   type: 'mouseup',
-  payload: {|
+  payload: {
     event: MouseEvent,
     location: Point,
-  |},
-|};
-export type WheelPlainInteraction = {|
+  },
+};
+export type WheelPlainInteraction = {
   type: 'wheel-plain',
-  payload: {|
+  payload: {
     event: WheelEvent,
     location: Point,
     delta: NormalizedWheelDelta,
-  |},
-|};
-export type WheelWithShiftInteraction = {|
+  },
+};
+export type WheelWithShiftInteraction = {
   type: 'wheel-shift',
-  payload: {|
+  payload: {
     event: WheelEvent,
     location: Point,
     delta: NormalizedWheelDelta,
-  |},
-|};
-export type WheelWithControlInteraction = {|
+  },
+};
+export type WheelWithControlInteraction = {
   type: 'wheel-control',
-  payload: {|
+  payload: {
     event: WheelEvent,
     location: Point,
     delta: NormalizedWheelDelta,
-  |},
-|};
-export type WheelWithMetaInteraction = {|
+  },
+};
+export type WheelWithMetaInteraction = {
   type: 'wheel-meta',
-  payload: {|
+  payload: {
     event: WheelEvent,
     location: Point,
     delta: NormalizedWheelDelta,
-  |},
-|};
+  },
+};
 
 export type Interaction =
   | MouseDownInteraction
@@ -96,7 +96,7 @@ function cacheFirstGetCanvasBoundingRect(
 }
 
 export function useCanvasInteraction(
-  canvasRef: {|current: HTMLCanvasElement | null|},
+  canvasRef: {current: HTMLCanvasElement | null},
   interactor: (interaction: Interaction) => void,
 ) {
   useEffect(() => {

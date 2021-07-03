@@ -21,47 +21,47 @@ export type Milliseconds = number;
 
 export type ReactLane = number;
 
-type BaseReactEvent = {|
+type BaseReactEvent = {
   +componentName?: string,
   +componentStack?: string,
   +timestamp: Milliseconds,
-|};
+};
 
-type BaseReactScheduleEvent = {|
+type BaseReactScheduleEvent = {
   ...BaseReactEvent,
   +lanes: ReactLane[],
-|};
-export type ReactScheduleRenderEvent = {|
+};
+export type ReactScheduleRenderEvent = {
   ...BaseReactScheduleEvent,
   type: 'schedule-render',
-|};
-export type ReactScheduleStateUpdateEvent = {|
+};
+export type ReactScheduleStateUpdateEvent = {
   ...BaseReactScheduleEvent,
   type: 'schedule-state-update',
   isCascading: boolean,
-|};
-export type ReactScheduleForceUpdateEvent = {|
+};
+export type ReactScheduleForceUpdateEvent = {
   ...BaseReactScheduleEvent,
   type: 'schedule-force-update',
   isCascading: boolean,
-|};
+};
 
-type BaseReactSuspenseEvent = {|
+type BaseReactSuspenseEvent = {
   ...BaseReactEvent,
   id: string,
-|};
-export type ReactSuspenseSuspendEvent = {|
+};
+export type ReactSuspenseSuspendEvent = {
   ...BaseReactSuspenseEvent,
   type: 'suspense-suspend',
-|};
-export type ReactSuspenseResolvedEvent = {|
+};
+export type ReactSuspenseResolvedEvent = {
   ...BaseReactSuspenseEvent,
   type: 'suspense-resolved',
-|};
-export type ReactSuspenseRejectedEvent = {|
+};
+export type ReactSuspenseRejectedEvent = {
   ...BaseReactSuspenseEvent,
   type: 'suspense-rejected',
-|};
+};
 
 export type ReactEvent =
   | ReactScheduleRenderEvent
@@ -83,31 +83,31 @@ export type ReactMeasureType =
 
 export type BatchUID = number;
 
-export type ReactMeasure = {|
+export type ReactMeasure = {
   +type: ReactMeasureType,
   +lanes: ReactLane[],
   +timestamp: Milliseconds,
   +duration: Milliseconds,
   +batchUID: BatchUID,
   +depth: number,
-|};
+};
 
 /**
  * A flamechart stack frame belonging to a stack trace.
  */
-export type FlamechartStackFrame = {|
+export type FlamechartStackFrame = {
   name: string,
   timestamp: Milliseconds,
   duration: Milliseconds,
   scriptUrl?: string,
   locationLine?: number,
   locationColumn?: number,
-|};
+};
 
-export type UserTimingMark = {|
+export type UserTimingMark = {
   name: string,
   timestamp: Milliseconds,
-|};
+};
 
 /**
  * A "layer" of stack frames in the profiler UI, i.e. all stack frames of the
@@ -117,19 +117,19 @@ export type FlamechartStackLayer = FlamechartStackFrame[];
 
 export type Flamechart = FlamechartStackLayer[];
 
-export type ReactProfilerData = {|
+export type ReactProfilerData = {
   startTime: number,
   duration: number,
   events: ReactEvent[],
   measures: ReactMeasure[],
   flamechart: Flamechart,
   otherUserTimingMarks: UserTimingMark[],
-|};
+};
 
-export type ReactHoverContextInfo = {|
+export type ReactHoverContextInfo = {
   event: ReactEvent | null,
   measure: ReactMeasure | null,
   data: $ReadOnly<ReactProfilerData> | null,
   flamechartStackFrame: FlamechartStackFrame | null,
   userTimingMark: UserTimingMark | null,
-|};
+};

@@ -7,18 +7,18 @@
  * @flow
  */
 
-import type {ReactFundamentalComponentInstance} from 'shared/ReactTypes';
+import type {ReactFundamentalComponentInstance} from '../../shared/ReactTypes';
 
-import {REACT_OPAQUE_ID_TYPE} from 'shared/ReactSymbols';
+import {REACT_OPAQUE_ID_TYPE} from '../../shared/ReactSymbols';
 
 export type Type = string;
 export type Props = Object;
-export type Container = {|
+export type Container = {
   children: Array<Instance | TextInstance>,
   createNodeMock: Function,
   tag: 'CONTAINER',
-|};
-export type Instance = {|
+};
+export type Instance = {
   type: string,
   props: Object,
   isHidden: boolean,
@@ -26,12 +26,12 @@ export type Instance = {|
   internalInstanceHandle: Object,
   rootContainerInstance: Container,
   tag: 'INSTANCE',
-|};
-export type TextInstance = {|
+};
+export type TextInstance = {
   text: string,
   isHidden: boolean,
   tag: 'TEXT',
-|};
+};
 export type HydratableInstance = Instance | TextInstance;
 export type PublicInstance = Instance | TextInstance;
 export type HostContext = Object;
@@ -40,14 +40,14 @@ export type ChildSet = void; // Unused
 export type TimeoutHandle = TimeoutID;
 export type NoTimeout = -1;
 export type EventResponder = any;
-export opaque type OpaqueIDType =
+export type OpaqueIDType =
   | string
   | {
       toString: () => string | void,
       valueOf: () => string | void,
     };
 
-export type RendererInspectionConfig = $ReadOnly<{||}>;
+export type RendererInspectionConfig = $ReadOnly<{}>;
 
 export * from 'react-reconciler/src/ReactFiberHostConfigWithNoPersistence';
 export * from 'react-reconciler/src/ReactFiberHostConfigWithNoHydration';

@@ -94,16 +94,16 @@ import {
 } from './ReactFiberNewContext.new';
 import {Callback, ShouldCapture, DidCapture} from './ReactFiberFlags';
 
-import {debugRenderPhaseSideEffectsForStrictMode} from 'shared/ReactFeatureFlags';
+import {debugRenderPhaseSideEffectsForStrictMode} from '../../shared/ReactFeatureFlags';
 
 import {StrictMode} from './ReactTypeOfMode';
 import {markSkippedUpdateLanes} from './ReactFiberWorkLoop.new';
 
-import invariant from 'shared/invariant';
+import invariant from '../../shared/invariant';
 
-import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
+import {disableLogs, reenableLogs} from '../../shared/ConsolePatchingDev';
 
-export type Update<State> = {|
+export type Update<State> = {
   // TODO: Temporary field. Will remove this by storing a map of
   // transition -> event time on the root.
   eventTime: number,
@@ -114,19 +114,19 @@ export type Update<State> = {|
   callback: (() => mixed) | null,
 
   next: Update<State> | null,
-|};
+};
 
-type SharedQueue<State> = {|
+type SharedQueue<State> = {
   pending: Update<State> | null,
-|};
+};
 
-export type UpdateQueue<State> = {|
+export type UpdateQueue<State> = {
   baseState: State,
   firstBaseUpdate: Update<State> | null,
   lastBaseUpdate: Update<State> | null,
   shared: SharedQueue<State>,
   effects: Array<Update<State>> | null,
-|};
+};
 
 export const UpdateState = 0;
 export const ReplaceState = 1;

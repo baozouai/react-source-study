@@ -48,7 +48,7 @@ import type {
   RegExpComponentFilter,
 } from 'react-devtools-shared/src/types';
 
-export default function ComponentsSettings(_: {||}) {
+export default function ComponentsSettings(_: {}) {
   const store = useContext(StoreContext);
 
   const collapseNodesByDefaultSubscription = useMemo(
@@ -378,10 +378,10 @@ export default function ComponentsSettings(_: {||}) {
   );
 }
 
-type ToggleIconProps = {|
+type ToggleIconProps = {
   isEnabled: boolean,
   isValid: boolean,
-|};
+};
 function ToggleIcon({isEnabled, isValid}: ToggleIconProps) {
   let className;
   if (isValid) {

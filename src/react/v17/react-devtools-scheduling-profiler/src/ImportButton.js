@@ -15,9 +15,9 @@ import ButtonIcon from 'react-devtools-shared/src/devtools/views/ButtonIcon';
 
 import styles from './ImportButton.css';
 
-type Props = {|
+type Props = {
   onFileSelect: (file: File) => void,
-|};
+};
 
 export default function ImportButton({onFileSelect}: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);

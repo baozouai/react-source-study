@@ -9,7 +9,7 @@
 
 import {Namespaces} from '../shared/DOMNamespaces';
 import createMicrosoftUnsafeLocalFunction from '../shared/createMicrosoftUnsafeLocalFunction';
-import {enableTrustedTypesIntegration} from 'shared/ReactFeatureFlags';
+import {enableTrustedTypesIntegration} from '../../shared/ReactFeatureFlags';
 
 // SVG temp container for IE lacking innerHTML
 let reusableSVGContainer;

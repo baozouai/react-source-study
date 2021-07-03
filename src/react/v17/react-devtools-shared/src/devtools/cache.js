@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Thenable} from 'shared/ReactTypes';
+import type {Thenable} from '../../shared/ReactTypes';
 
 import * as React from 'react';
 import {createContext} from 'react';
@@ -26,20 +26,20 @@ export type {Thenable};
 
 type Suspender = {then(resolve: () => mixed, reject: () => mixed): mixed, ...};
 
-type PendingResult = {|
+type PendingResult = {
   status: 0,
   value: Suspender,
-|};
+};
 
-type ResolvedResult<Value> = {|
+type ResolvedResult<Value> = {
   status: 1,
   value: Value,
-|};
+};
 
-type RejectedResult = {|
+type RejectedResult = {
   status: 2,
   value: mixed,
-|};
+};
 
 type Result<Value> = PendingResult | ResolvedResult<Value> | RejectedResult;
 

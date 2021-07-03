@@ -25,7 +25,7 @@ function initModules() {
   ReactDOMServer = require('react-dom/server');
   ReactTestUtils = require('react-dom/test-utils');
 
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
   ReactFeatureFlags.disableLegacyContext = true;
 
   // Make them available to the helpers.

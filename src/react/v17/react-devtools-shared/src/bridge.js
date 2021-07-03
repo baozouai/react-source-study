@@ -20,103 +20,103 @@ import type {StyleAndLayout as StyleAndLayoutPayload} from 'react-devtools-share
 
 const BATCH_DURATION = 100;
 
-type ElementAndRendererID = {|id: number, rendererID: RendererID|};
+type ElementAndRendererID = {id: number, rendererID: RendererID};
 
-type Message = {|
+type Message = {
   event: string,
   payload: any,
-|};
+};
 
-type HighlightElementInDOM = {|
+type HighlightElementInDOM = {
   ...ElementAndRendererID,
   displayName: string | null,
   hideAfterTimeout: boolean,
   openNativeElementsPanel: boolean,
   scrollIntoView: boolean,
-|};
+};
 
-type OverrideValue = {|
+type OverrideValue = {
   ...ElementAndRendererID,
   path: Array<string | number>,
   wasForwarded?: boolean,
   value: any,
-|};
+};
 
-type OverrideHookState = {|
+type OverrideHookState = {
   ...OverrideValue,
   hookID: number,
-|};
+};
 
 type PathType = 'props' | 'hooks' | 'state' | 'context';
 
-type DeletePath = {|
+type DeletePath = {
   ...ElementAndRendererID,
   type: PathType,
   hookID?: ?number,
   path: Array<string | number>,
-|};
+};
 
-type RenamePath = {|
+type RenamePath = {
   ...ElementAndRendererID,
   type: PathType,
   hookID?: ?number,
   oldPath: Array<string | number>,
   newPath: Array<string | number>,
-|};
+};
 
-type OverrideValueAtPath = {|
+type OverrideValueAtPath = {
   ...ElementAndRendererID,
   type: PathType,
   hookID?: ?number,
   path: Array<string | number>,
   value: any,
-|};
+};
 
-type OverrideSuspense = {|
+type OverrideSuspense = {
   ...ElementAndRendererID,
   forceFallback: boolean,
-|};
+};
 
-type CopyElementPathParams = {|
+type CopyElementPathParams = {
   ...ElementAndRendererID,
   path: Array<string | number>,
-|};
+};
 
-type ViewAttributeSourceParams = {|
+type ViewAttributeSourceParams = {
   ...ElementAndRendererID,
   path: Array<string | number>,
-|};
+};
 
-type InspectElementParams = {|
+type InspectElementParams = {
   ...ElementAndRendererID,
   path?: Array<string | number>,
-|};
+};
 
-type StoreAsGlobalParams = {|
+type StoreAsGlobalParams = {
   ...ElementAndRendererID,
   count: number,
   path: Array<string | number>,
-|};
+};
 
-type NativeStyleEditor_RenameAttributeParams = {|
+type NativeStyleEditor_RenameAttributeParams = {
   ...ElementAndRendererID,
   oldName: string,
   newName: string,
   value: string,
-|};
+};
 
-type NativeStyleEditor_SetValueParams = {|
+type NativeStyleEditor_SetValueParams = {
   ...ElementAndRendererID,
   name: string,
   value: string,
-|};
+};
 
-type UpdateConsolePatchSettingsParams = {|
+type UpdateConsolePatchSettingsParams = {
   appendComponentStack: boolean,
   breakOnConsoleErrors: boolean,
-|};
+};
 
-type BackendEvents = {|
+type BackendEvents = {
   extensionBackendInitialized: [],
   inspectedElement: [InspectedElementPayload],
   isBackendStorageAPISupported: [boolean],
@@ -135,17 +135,17 @@ type BackendEvents = {|
 
   // React Native style editor plug-in.
   isNativeStyleEditorSupported: [
-    {|isSupported: boolean, validAttributes: ?$ReadOnlyArray<string>|},
+    {isSupported: boolean, validAttributes: ?$ReadOnlyArray<string>},
   ],
   NativeStyleEditor_styleAndLayout: [StyleAndLayoutPayload],
-|};
+};
 
-type FrontendEvents = {|
+type FrontendEvents = {
   clearNativeElementHighlight: [],
   copyElementPath: [CopyElementPathParams],
   deletePath: [DeletePath],
   getOwnersList: [ElementAndRendererID],
-  getProfilingData: [{|rendererID: RendererID|}],
+  getProfilingData: [{rendererID: RendererID}],
   getProfilingStatus: [],
   highlightNativeElement: [HighlightElementInDOM],
   inspectElement: [InspectElementParams],
@@ -187,15 +187,15 @@ type FrontendEvents = {|
   overrideHookState: [OverrideHookState],
   overrideProps: [OverrideValue],
   overrideState: [OverrideValue],
-|};
+};
 
 class Bridge<
   OutgoingEvents: Object,
   IncomingEvents: Object,
-> extends EventEmitter<{|
+> extends EventEmitter<{
   ...IncomingEvents,
   ...OutgoingEvents,
-|}> {
+}> {
   _isShutdown: boolean = false;
   _messageQueue: Array<any> = [];
   _timeoutID: TimeoutID | null = null;

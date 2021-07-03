@@ -12,10 +12,10 @@ import type {FiberRoot} from './ReactInternalTypes';
 import type {Lane, Lanes} from './ReactFiberLane';
 import type {CapturedValue} from './ReactCapturedValue';
 import type {Update} from './ReactUpdateQueue.new';
-import type {Wakeable} from 'shared/ReactTypes';
+import type {Wakeable} from '../../shared/ReactTypes';
 import type {SuspenseContext} from './ReactFiberSuspenseContext.new';
 
-import getComponentName from 'shared/getComponentName';
+import getComponentName from '../../shared/getComponentName';
 import {
   ClassComponent,
   HostRoot,
@@ -35,7 +35,7 @@ import {NoMode, BlockingMode, DebugTracingMode} from './ReactTypeOfMode';
 import {
   enableDebugTracing,
   enableSchedulingProfiler,
-} from 'shared/ReactFeatureFlags';
+} from '../../shared/ReactFeatureFlags';
 import {createCapturedValue} from './ReactCapturedValue';
 import {
   enqueueCapturedUpdate,

@@ -24,8 +24,8 @@ describe('created with ReactFabric called with ReactNative', () => {
     jest.resetModules();
     UIManager = require('react-native/Libraries/ReactPrivate/ReactNativePrivateInterface')
       .UIManager;
-    jest.mock('shared/ReactFeatureFlags', () =>
-      require('shared/forks/ReactFeatureFlags.native-oss'),
+    jest.mock('../../shared/ReactFeatureFlags', () =>
+      require('../../shared/forks/ReactFeatureFlags.native-oss'),
     );
 
     React = require('react');
@@ -102,8 +102,8 @@ describe('created with ReactNative called with ReactFabric', () => {
     jest.resetModules();
     UIManager = require('react-native/Libraries/ReactPrivate/ReactNativePrivateInterface')
       .UIManager;
-    jest.mock('shared/ReactFeatureFlags', () =>
-      require('shared/forks/ReactFeatureFlags.native-oss'),
+    jest.mock('../../shared/ReactFeatureFlags', () =>
+      require('../../shared/forks/ReactFeatureFlags.native-oss'),
     );
     ReactNative = require('react-native-renderer');
 

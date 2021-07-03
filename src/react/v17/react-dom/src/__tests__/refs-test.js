@@ -156,7 +156,7 @@ describe('reactiverefs', () => {
   });
 });
 
-if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
+if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
   describe('factory components', () => {
     it('Should correctly get the ref', () => {
       function Comp() {

@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Wakeable} from 'shared/ReactTypes';
+import type {Wakeable} from '../../shared/ReactTypes';
 
 import {readCache} from 'react/unstable-cache';
 
@@ -15,20 +15,20 @@ const Pending = 0;
 const Resolved = 1;
 const Rejected = 2;
 
-type PendingResult = {|
+type PendingResult = {
   status: 0,
   value: Wakeable,
-|};
+};
 
-type ResolvedResult = {|
+type ResolvedResult = {
   status: 1,
   value: mixed,
-|};
+};
 
-type RejectedResult = {|
+type RejectedResult = {
   status: 2,
   value: mixed,
-|};
+};
 
 type Result = PendingResult | ResolvedResult | RejectedResult;
 

@@ -22,8 +22,8 @@ import {
   REACT_SUSPENSE_LIST_TYPE,
   REACT_LAZY_TYPE,
   REACT_BLOCK_TYPE,
-} from 'shared/ReactSymbols';
-import type {ReactContext, ReactProviderType} from 'shared/ReactTypes';
+} from '../../shared/ReactSymbols';
+import type {ReactContext, ReactProviderType} from '../../shared/ReactTypes';
 
 function getWrappedName(
   outerType: mixed,
