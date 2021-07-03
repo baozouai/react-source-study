@@ -156,12 +156,20 @@ if (__DEV__) {
  */
 export function initializeUpdateQueue<State>(fiber: Fiber): void {
   const queue: UpdateQueue<State> = {
+    // 前一次更新计算得出的状态，它是第一个被跳过的update之前的那些update计算得出的state。
+    // 会以它为基础计算本次的state
     baseState: fiber.memoizedState,
+    // 前一次更新时updateQueue中第一个被跳过的update对象
     firstBaseUpdate: null,
+    // 前一次更新中，updateQueue中以第一个被跳过的update为起点一直到的最后一个update
+    // 截取的队列中的最后一个update
     lastBaseUpdate: null,
+    // 存储着本次更新的update队列，是实际的updateQueue。
+    // shared的意思是current节点与workInProgress节点共享一条更新队列
     shared: {
       pending: null,
     },
+    // 数组。保存update.callback !== null的Update
     effects: null,
   };
   fiber.updateQueue = queue;
