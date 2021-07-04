@@ -25,7 +25,7 @@ describe('ReactHooks', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
     React = require('react');
     ReactTestRenderer = require('react-test-renderer');
@@ -1352,7 +1352,7 @@ describe('ReactHooks', () => {
     );
     expect(renderCount).toBe(__DEV__ ? 2 : 1);
 
-    if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
+    if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
       renderCount = 0;
       expect(() => renderer.update(<Factory />)).toErrorDev(
         'Warning: The <Factory /> component appears to be a function component that returns a class instance. ' +

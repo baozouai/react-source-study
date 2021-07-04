@@ -22,7 +22,7 @@ describe('ReactSuspensePlaceholder', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
     ReactFeatureFlags.enableProfilerTimer = true;
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;

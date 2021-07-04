@@ -9,7 +9,7 @@
 
 import type { FiberRoot, ReactPriorityLevel } from './ReactInternalTypes';
 
-import invariant from '../../shared/invariant';
+import invariant from 'shared/invariant';
 
 import {
   ImmediatePriority as ImmediateSchedulerPriority,

@@ -8,7 +8,7 @@
  */
 
 import type {HostComponent} from './ReactNativeTypes';
-import type {ReactNodeList} from '../../shared/ReactTypes';
+import type {ReactNodeList} from 'shared/ReactTypes';
 
 import './ReactNativeInjection';
 
@@ -31,7 +31,7 @@ import {
   setBatchingImplementation,
   batchedUpdates,
 } from './legacy-events/ReactGenericBatching';
-import ReactVersion from '../../shared/ReactVersion';
+import ReactVersion from 'shared/ReactVersion';
 // Module provided by RN:
 import {UIManager} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 
@@ -41,8 +41,8 @@ import {
   getInspectorDataForViewAtPoint,
 } from './ReactNativeFiberInspector';
 import {LegacyRoot} from 'react-reconciler/src/ReactRootTags';
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
-import getComponentName from '../../shared/getComponentName';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
+import getComponentName from 'shared/getComponentName';
 
 const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 

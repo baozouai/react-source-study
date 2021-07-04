@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Thenable} from '../../shared/ReactTypes';
+import type {Thenable} from 'shared/ReactTypes';
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 import type {FiberRoot} from 'react-reconciler/src/ReactInternalTypes';
 import type {Instance, TextInstance} from './ReactTestHostConfig';
@@ -43,11 +43,11 @@ import {
   IncompleteClassComponent,
   ScopeComponent,
 } from 'react-reconciler/src/ReactWorkTags';
-import invariant from '../../shared/invariant';
-import getComponentName from '../../shared/getComponentName';
-import ReactVersion from '../../shared/ReactVersion';
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
-import enqueueTask from '../../shared/enqueueTask';
+import invariant from 'shared/invariant';
+import getComponentName from 'shared/getComponentName';
+import ReactVersion from 'shared/ReactVersion';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
+import enqueueTask from 'shared/enqueueTask';
 
 import {getPublicInstance} from './ReactTestHostConfig';
 import {ConcurrentRoot, LegacyRoot} from 'react-reconciler/src/ReactRootTags';

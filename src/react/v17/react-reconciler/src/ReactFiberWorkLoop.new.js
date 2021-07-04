@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Thenable, Wakeable} from '../../shared/ReactTypes';
+import type {Thenable, Wakeable} from 'shared/ReactTypes';
 import type {Fiber, FiberRoot} from './ReactInternalTypes';
 import type {Lanes, Lane} from './ReactFiberLane';
 import type {ReactPriorityLevel} from './ReactInternalTypes';
@@ -32,9 +32,9 @@ import {
   enableScopeAPI,
   skipUnmountedBoundaries,
   enableDoubleInvokingEffects,
-} from '../../shared/ReactFeatureFlags';
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
-import invariant from '../../shared/invariant';
+} from 'shared/ReactFeatureFlags';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
+import invariant from 'shared/invariant';
 
 import {
   scheduleCallback,
@@ -228,7 +228,7 @@ import {
 } from './ReactProfilerTimer.new';
 
 // DEV stuff
-import getComponentName from '../../shared/getComponentName';
+import getComponentName from 'shared/getComponentName';
 import ReactStrictModeWarnings from './ReactStrictModeWarnings.new';
 import {
   isRendering as ReactCurrentDebugFiberIsRenderingInDEV,
@@ -240,12 +240,12 @@ import {
   invokeGuardedCallback,
   hasCaughtError,
   clearCaughtError,
-} from '../../shared/ReactErrorUtils';
+} from 'shared/ReactErrorUtils';
 import {onCommitRoot as onCommitRootDevTools} from './ReactFiberDevToolsHook.new';
 import {onCommitRoot as onCommitRootTestSelector} from './ReactTestSelectors';
 
 // Used by `act`
-import enqueueTask from '../../shared/enqueueTask';
+import enqueueTask from 'shared/enqueueTask';
 import {doesFiberContain} from './ReactFiberTreeReflection';
 
 const ceil = Math.ceil;

@@ -9,7 +9,7 @@
 
 import type {Container} from './ReactDOMHostConfig';
 import type {RootType} from './ReactDOMRoot';
-import type {ReactNodeList} from '../../shared/ReactTypes';
+import type {ReactNodeList} from 'shared/ReactTypes';
 
 import {
   getInstanceFromNode,
@@ -32,10 +32,10 @@ import {
   findHostInstance,
   findHostInstanceWithWarning,
 } from 'react-reconciler/src/ReactFiberReconciler';
-import getComponentName from '../../shared/getComponentName';
-import invariant from '../../shared/invariant';
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
-import {has as hasInstance} from '../../shared/ReactInstanceMap';
+import getComponentName from 'shared/getComponentName';
+import invariant from 'shared/invariant';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
+import {has as hasInstance} from 'shared/ReactInstanceMap';
 
 const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 

@@ -52,11 +52,11 @@ import {
   enableCreateEventHandleAPI,
   enableScopeAPI,
   enableEagerRootListeners,
-} from '../../shared/ReactFeatureFlags';
+} from 'shared/ReactFeatureFlags';
 import {
   invokeGuardedCallbackAndCatchFirstError,
   rethrowCaughtError,
-} from '../../shared/ReactErrorUtils';
+} from 'shared/ReactErrorUtils';
 import {DOCUMENT_NODE} from '../shared/HTMLNodeType';
 import {createEventListenerWrapperWithPriority} from './ReactDOMEventListener';
 import {

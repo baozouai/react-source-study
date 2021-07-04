@@ -12,7 +12,7 @@ import type {
   MutableSourceGetSnapshotFn,
   MutableSourceSubscribeFn,
   ReactContext,
-} from '../../shared/ReactTypes';
+} from 'shared/ReactTypes';
 import type {Fiber, Dispatcher} from './ReactInternalTypes';
 import type {Lanes, Lane} from './ReactFiberLane';
 import type {HookFlags} from './ReactHookEffectTags';
@@ -20,14 +20,14 @@ import type {ReactPriorityLevel} from './ReactInternalTypes';
 import type {FiberRoot} from './ReactInternalTypes';
 import type {OpaqueIDType} from './ReactFiberHostConfig';
 
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
 import {
   enableDebugTracing,
   enableSchedulingProfiler,
   enableNewReconciler,
   decoupleUpdatePriorityFromScheduler,
   enableDoubleInvokingEffects,
-} from '../../shared/ReactFeatureFlags';
+} from 'shared/ReactFeatureFlags';
 
 import {NoMode, BlockingMode, DebugTracingMode} from './ReactTypeOfMode';
 import {
@@ -68,9 +68,9 @@ import {
   markSkippedUpdateLanes,
 } from './ReactFiberWorkLoop.new';
 
-import invariant from '../../shared/invariant';
-import getComponentName from '../../shared/getComponentName';
-import is from '../../shared/objectIs';
+import invariant from 'shared/invariant';
+import getComponentName from 'shared/getComponentName';
+import is from 'shared/objectIs';
 import {markWorkInProgressReceivedUpdate} from './ReactFiberBeginWork.new';
 import {
   UserBlockingPriority,

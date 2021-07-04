@@ -14,7 +14,7 @@ let React;
 let ReactDOMServer;
 let PropTypes;
 let ReactCurrentDispatcher;
-const enableSuspenseServerRenderer = require('../../shared/ReactFeatureFlags')
+const enableSuspenseServerRenderer = require('shared/ReactFeatureFlags')
   .enableSuspenseServerRenderer;
 
 describe('ReactDOMServer', () => {

@@ -25,7 +25,7 @@ import {
   describeBuiltInComponentFrame,
   describeFunctionComponentFrame,
   describeClassComponentFrame,
-} from '../../shared/ReactComponentStackFrame';
+} from 'shared/ReactComponentStackFrame';
 
 function describeFiber(fiber: Fiber): string {
   const owner: null | Function = __DEV__

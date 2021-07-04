@@ -16,19 +16,19 @@
 
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 import type {UpdateQueue} from 'react-reconciler/src/ReactUpdateQueue';
-import type {ReactNodeList, Thenable} from '../../shared/ReactTypes';
+import type {ReactNodeList, Thenable} from 'shared/ReactTypes';
 import type {RootTag} from 'react-reconciler/src/ReactRootTags';
 
 import * as Scheduler from '../../scheduler/unstable_mock';
-import {REACT_FRAGMENT_TYPE, REACT_ELEMENT_TYPE} from '../../shared/ReactSymbols';
+import {REACT_FRAGMENT_TYPE, REACT_ELEMENT_TYPE} from 'shared/ReactSymbols';
 import {
   ConcurrentRoot,
   BlockingRoot,
   LegacyRoot,
 } from 'react-reconciler/src/ReactRootTags';
 
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
-import enqueueTask from '../../shared/enqueueTask';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
+import enqueueTask from 'shared/enqueueTask';
 const {IsSomeRendererActing} = ReactSharedInternals;
 
 type Container = {

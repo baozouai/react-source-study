@@ -17,7 +17,7 @@ import type {LanePriority} from 'react-reconciler/src/ReactFiberLane';
 import {
   enableSelectiveHydration,
   enableEagerRootListeners,
-} from '../../shared/ReactFeatureFlags';
+} from 'shared/ReactFeatureFlags';
 import {
   unstable_runWithPriority as runWithPriority,
   unstable_scheduleCallback as scheduleCallback,

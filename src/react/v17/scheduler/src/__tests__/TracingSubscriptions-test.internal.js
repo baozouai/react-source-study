@@ -39,7 +39,7 @@ describe('TracingSubscriptions', () => {
 
     currentTime = 0;
 
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
     ReactFeatureFlags.enableSchedulerTracing = enableSchedulerTracing;
 
     SchedulerTracing = require('scheduler/tracing');

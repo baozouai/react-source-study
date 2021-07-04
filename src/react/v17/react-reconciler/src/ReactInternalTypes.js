@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Source} from '../../shared/ReactElementType';
+import type {Source} from 'shared/ReactElementType';
 import type {
   RefObject,
   ReactContext,
@@ -15,7 +15,7 @@ import type {
   MutableSourceGetSnapshotFn,
   MutableSourceVersion,
   MutableSource,
-} from '../../shared/ReactTypes';
+} from 'shared/ReactTypes';
 import type {SuspenseInstance} from './ReactFiberHostConfig';
 import type {WorkTag} from './ReactWorkTags';
 import type {TypeOfMode} from './ReactTypeOfMode';
@@ -24,7 +24,7 @@ import type {Lane, LanePriority, Lanes, LaneMap} from './ReactFiberLane';
 import type {HookType} from './ReactFiberHooks.old';
 import type {RootTag} from './ReactRootTags';
 import type {TimeoutHandle, NoTimeout} from './ReactFiberHostConfig';
-import type {Wakeable} from '../../shared/ReactTypes';
+import type {Wakeable} from 'shared/ReactTypes';
 import type {Interaction} from '../../scheduler/src/Tracing';
 
 export type ReactPriorityLevel = 99 | 98 | 97 | 96 | 95 | 90;

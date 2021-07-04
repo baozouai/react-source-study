@@ -7,16 +7,7 @@
  * @flow
  */
 
-import {enableNewReconciler} from '../../shared/ReactFeatureFlags';
-
-export type {
-  Family,
-  RefreshUpdate,
-  SetRefreshHandler,
-  ScheduleRefresh,
-  ScheduleRoot,
-  FindHostInstancesForRefresh,
-} from './ReactFiberHotReloading';
+import {enableNewReconciler} from 'shared/ReactFeatureFlags';
 
 import {
   setRefreshHandler as setRefreshHandler_old,
@@ -41,6 +32,15 @@ import {
   scheduleRoot as scheduleRoot_new,
   findHostInstancesForRefresh as findHostInstancesForRefresh_new,
 } from './ReactFiberHotReloading.new';
+
+export type {
+  Family,
+  RefreshUpdate,
+  SetRefreshHandler,
+  ScheduleRefresh,
+  ScheduleRoot,
+  FindHostInstancesForRefresh,
+} from './ReactFiberHotReloading';
 
 export const setRefreshHandler = enableNewReconciler
   ? setRefreshHandler_new

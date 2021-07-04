@@ -457,7 +457,7 @@ describe('ReactCompositeComponent-state', () => {
     ]);
   });
 
-  if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('should support stateful module pattern components', () => {
       function Child() {
         return {

@@ -14,7 +14,7 @@ describe('ReactDOMComponent', () => {
   let ReactTestUtils;
   let ReactDOM;
   let ReactDOMServer;
-  const ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+  const ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
   beforeEach(() => {
     jest.resetModules();

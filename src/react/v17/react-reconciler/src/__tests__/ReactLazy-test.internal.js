@@ -18,7 +18,7 @@ function normalizeCodeLocInfo(str) {
 describe('ReactLazy', () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
     PropTypes = require('prop-types');

@@ -8,9 +8,9 @@
  */
 
 import type {Lane, Lanes} from './ReactFiberLane';
-import type {Wakeable} from '../../shared/ReactTypes';
+import type {Wakeable} from 'shared/ReactTypes';
 
-import {enableDebugTracing} from '../../shared/ReactFeatureFlags';
+import {enableDebugTracing} from 'shared/ReactFeatureFlags';
 
 const nativeConsole: Object = console;
 let nativeConsoleLog: null | Function = null;

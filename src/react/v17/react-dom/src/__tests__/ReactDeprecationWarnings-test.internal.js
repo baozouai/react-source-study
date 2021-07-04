@@ -19,7 +19,7 @@ describe('ReactDeprecationWarnings', () => {
   beforeEach(() => {
     jest.resetModules();
     React = require('react');
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
     ReactNoop = require('react-noop-renderer');
     Scheduler = require('scheduler');
     if (__DEV__) {

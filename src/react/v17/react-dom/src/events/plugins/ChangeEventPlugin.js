@@ -14,7 +14,7 @@ import type {EventSystemFlags} from '../EventSystemFlags';
 import {registerTwoPhaseEvent} from '../EventRegistry';
 import {SyntheticEvent} from '../SyntheticEvent';
 import isTextInputElement from '../isTextInputElement';
-import {canUseDOM} from '../../shared/ExecutionEnvironment';
+import {canUseDOM} from 'shared/ExecutionEnvironment';
 
 import getEventTarget from '../getEventTarget';
 import isEventSupported from '../isEventSupported';
@@ -23,7 +23,7 @@ import {updateValueIfChanged} from '../../client/inputValueTracking';
 import {setDefaultValue} from '../../client/ReactDOMInput';
 import {enqueueStateRestore} from '../ReactDOMControlledComponent';
 
-import {disableInputAttributeSyncing} from '../../shared/ReactFeatureFlags';
+import {disableInputAttributeSyncing} from 'shared/ReactFeatureFlags';
 import {batchedUpdates} from '../ReactDOMUpdateBatching';
 import {
   processDispatchQueue,

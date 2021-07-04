@@ -24,8 +24,8 @@ const DISPATCH_COMMAND_REQUIRES_HOST_COMPONENT =
   "Warning: dispatchCommand was called with a ref that isn't a " +
   'native component. Use React.forwardRef to get access to the underlying native component';
 
-jest.mock('../../shared/ReactFeatureFlags', () =>
-  require('../../shared/forks/ReactFeatureFlags.native-oss'),
+jest.mock('shared/ReactFeatureFlags', () =>
+  require('shared/forks/ReactFeatureFlags.native-oss'),
 );
 
 describe('ReactFabric', () => {

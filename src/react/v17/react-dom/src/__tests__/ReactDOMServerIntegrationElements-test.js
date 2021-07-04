@@ -643,7 +643,7 @@ describe('ReactDOMServerIntegration', () => {
         checkFooDiv(await render(<ClassComponent />));
       });
 
-      if (require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
+      if (require('shared/ReactFeatureFlags').disableModulePatternComponents) {
         itThrowsWhenRendering(
           'factory components',
           async render => {

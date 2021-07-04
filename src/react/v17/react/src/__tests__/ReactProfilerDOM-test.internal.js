@@ -16,7 +16,7 @@ let SchedulerTracing;
 let Scheduler;
 
 function loadModules() {
-  ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+  ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
   ReactFeatureFlags.enableProfilerTimer = true;
   ReactFeatureFlags.enableSchedulerTracing = true;

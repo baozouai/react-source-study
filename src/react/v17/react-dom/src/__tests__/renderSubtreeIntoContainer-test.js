@@ -16,7 +16,7 @@ const ReactTestUtils = require('react-dom/test-utils');
 const renderSubtreeIntoContainer = require('react-dom')
   .unstable_renderSubtreeIntoContainer;
 
-const ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+const ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
 describe('renderSubtreeIntoContainer', () => {
   it('should pass context when rendering subtree elsewhere', () => {

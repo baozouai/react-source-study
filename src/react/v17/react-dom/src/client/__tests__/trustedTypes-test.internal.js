@@ -31,7 +31,7 @@ describe('when Trusted Types are available in global object', () => {
       isScript: () => false,
       isScriptURL: () => false,
     };
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
     ReactFeatureFlags.enableTrustedTypesIntegration = true;
     React = require('react');
     ReactDOM = require('react-dom');

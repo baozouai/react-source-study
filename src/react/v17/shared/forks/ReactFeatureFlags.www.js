@@ -7,7 +7,7 @@
  * @flow
  */
 
-import typeof * as FeatureFlagsType from '../../shared/ReactFeatureFlags';
+import typeof * as FeatureFlagsType from 'shared/ReactFeatureFlags';
 import typeof * as ExportsType from './ReactFeatureFlags.www';
 import typeof * as DynamicFeatureFlags from './ReactFeatureFlags.www-dynamic';
 

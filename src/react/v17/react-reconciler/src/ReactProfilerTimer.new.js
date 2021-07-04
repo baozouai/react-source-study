@@ -12,7 +12,7 @@ import type {Fiber} from './ReactInternalTypes';
 import {
   enableProfilerTimer,
   enableProfilerCommitHooks,
-} from '../../shared/ReactFeatureFlags';
+} from 'shared/ReactFeatureFlags';
 import {Profiler} from './ReactWorkTags';
 
 // Intentionally not named imports because Rollup would use dynamic dispatch for

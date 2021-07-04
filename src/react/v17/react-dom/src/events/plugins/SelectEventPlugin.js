@@ -12,11 +12,11 @@ import type {DOMEventName} from '../DOMEventNames';
 import type {DispatchQueue} from '../DOMPluginEventSystem';
 import type {EventSystemFlags} from '../EventSystemFlags';
 
-import {canUseDOM} from '../../shared/ExecutionEnvironment';
+import {canUseDOM} from 'shared/ExecutionEnvironment';
 import {SyntheticEvent} from '../../events/SyntheticEvent';
 import isTextInputElement from '../isTextInputElement';
-import shallowEqual from '../../shared/shallowEqual';
-import {enableEagerRootListeners} from '../../shared/ReactFeatureFlags';
+import shallowEqual from 'shared/shallowEqual';
+import {enableEagerRootListeners} from 'shared/ReactFeatureFlags';
 
 import {registerTwoPhaseEvent} from '../EventRegistry';
 import getActiveElement from '../../client/getActiveElement';
@@ -25,7 +25,7 @@ import {
   getEventListenerSet,
 } from '../../client/ReactDOMComponentTree';
 import {hasSelectionCapabilities} from '../../client/ReactInputSelection';
-import {DOCUMENT_NODE} from '../../shared/HTMLNodeType';
+import {DOCUMENT_NODE} from 'shared/HTMLNodeType';
 import {accumulateTwoPhaseListeners} from '../DOMPluginEventSystem';
 
 const skipSelectionChangeEvent =

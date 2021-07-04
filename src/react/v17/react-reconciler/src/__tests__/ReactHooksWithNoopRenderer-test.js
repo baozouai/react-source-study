@@ -210,7 +210,7 @@ describe('ReactHooksWithNoopRenderer', () => {
     expect(Scheduler).toFlushAndYield([10]);
   });
 
-  if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('throws inside module-style components', () => {
       function Counter() {
         return {

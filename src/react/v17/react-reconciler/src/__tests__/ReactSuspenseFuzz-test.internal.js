@@ -20,7 +20,7 @@ function prettyFormat(thing) {
 describe('ReactSuspenseFuzz', () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
     React = require('react');
@@ -98,7 +98,7 @@ describe('ReactSuspenseFuzz', () => {
             cleanUps.forEach(cleanUp => cleanUp());
           };
         }
-      }, [updates]);
+      }, [text, updates]);
 
       const fullText = `${text}:${step}`;
 

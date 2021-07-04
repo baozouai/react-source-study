@@ -9,7 +9,7 @@
 
 import type {Container} from './ReactDOMHostConfig';
 import type {RootTag} from 'react-reconciler/src/ReactRootTags';
-import type {MutableSource, ReactNodeList} from '../../shared/ReactTypes';
+import type {MutableSource, ReactNodeList} from 'shared/ReactTypes';
 import type {FiberRoot} from 'react-reconciler/src/ReactInternalTypes';
 
 export type RootType = {
@@ -51,8 +51,8 @@ import {
   findHostInstanceWithNoPortals,
   registerMutableSourceForHydration,
 } from 'react-reconciler/src/ReactFiberReconciler';
-import invariant from '../../shared/invariant';
-import {enableEagerRootListeners} from '../../shared/ReactFeatureFlags';
+import invariant from 'shared/invariant';
+import {enableEagerRootListeners} from 'shared/ReactFeatureFlags';
 import {
   BlockingRoot,
   ConcurrentRoot,

@@ -7,9 +7,9 @@
  * @flow
  */
 
-import type {Wakeable, Thenable} from '../../shared/ReactTypes';
+import type {Wakeable, Thenable} from 'shared/ReactTypes';
 
-import {REACT_LAZY_TYPE} from '../../shared/ReactSymbols';
+import {REACT_LAZY_TYPE} from 'shared/ReactSymbols';
 
 const Uninitialized = -1;
 const Pending = 0;

@@ -7,10 +7,10 @@
  * @flow
  */
 
-import type {Source} from '../../shared/ReactElementType';
+import type {Source} from 'shared/ReactElementType';
 import type {LazyComponent} from 'react/src/ReactLazy';
 
-import {enableComponentStackLocations} from '../../shared/ReactFeatureFlags';
+import {enableComponentStackLocations} from 'shared/ReactFeatureFlags';
 
 import {
   REACT_SUSPENSE_TYPE,
@@ -19,11 +19,11 @@ import {
   REACT_MEMO_TYPE,
   REACT_BLOCK_TYPE,
   REACT_LAZY_TYPE,
-} from '../../shared/ReactSymbols';
+} from 'shared/ReactSymbols';
 
-import {disableLogs, reenableLogs} from '../../shared/ConsolePatchingDev';
+import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
 
-import ReactSharedInternals from '../../shared/ReactSharedInternals';
+import ReactSharedInternals from 'shared/ReactSharedInternals';
 
 const {ReactCurrentDispatcher} = ReactSharedInternals;
 

@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {EventPriority} from '../../shared/ReactTypes';
+import type {EventPriority} from 'shared/ReactTypes';
 import type {DOMEventName} from './DOMEventNames';
 
 import {registerTwoPhaseEvent} from './EventRegistry';
@@ -21,9 +21,9 @@ import {
   DiscreteEvent,
   UserBlockingEvent,
   ContinuousEvent,
-} from '../../shared/ReactTypes';
+} from 'shared/ReactTypes';
 
-import {enableCreateEventHandleAPI} from '../../shared/ReactFeatureFlags';
+import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
 
 export const topLevelEventsToReactNames: Map<
   DOMEventName,

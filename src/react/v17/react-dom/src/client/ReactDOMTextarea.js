@@ -7,14 +7,14 @@
  * @flow
  */
 
-import invariant from '../../shared/invariant';
+import invariant from 'shared/invariant';
 
 import {checkControlledValueProps} from '../shared/ReactControlledValuePropTypes';
 import {getCurrentFiberOwnerNameInDevOrNull} from 'react-reconciler/src/ReactCurrentFiber';
 import {getToStringValue, toString} from './ToStringValue';
 import type {ToStringValue} from './ToStringValue';
 
-import {disableTextareaChildren} from '../../shared/ReactFeatureFlags';
+import {disableTextareaChildren} from 'shared/ReactFeatureFlags';
 
 let didWarnValDefaultVal = false;
 

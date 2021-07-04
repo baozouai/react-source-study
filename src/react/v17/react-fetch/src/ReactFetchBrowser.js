@@ -7,7 +7,7 @@
  * @flow
  */
 
-import type {Wakeable} from '../../shared/ReactTypes';
+import type {Wakeable} from 'shared/ReactTypes';
 
 import {readCache} from 'react/unstable-cache';
 

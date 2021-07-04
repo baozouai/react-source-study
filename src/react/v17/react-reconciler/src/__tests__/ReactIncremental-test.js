@@ -1920,7 +1920,7 @@ describe('ReactIncremental', () => {
     );
   });
 
-  if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
+  if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
     it('does not leak own context into context provider (factory components)', () => {
       function Recurse(props, context) {
         return {

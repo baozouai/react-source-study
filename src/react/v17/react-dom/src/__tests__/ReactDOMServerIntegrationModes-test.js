@@ -42,7 +42,7 @@ describe('ReactDOMServerIntegration', () => {
   // Test pragmas don't support itRenders abstraction
   if (
     __EXPERIMENTAL__ &&
-    require('../../shared/ReactFeatureFlags').enableDebugTracing
+    require('shared/ReactFeatureFlags').enableDebugTracing
   ) {
     describe('React.unstable_DebugTracingMode', () => {
       beforeEach(() => {

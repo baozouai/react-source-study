@@ -6,8 +6,8 @@
  * @flow
  */
 
-import invariant from '../../shared/invariant';
-import {rethrowCaughtError} from '../../shared/ReactErrorUtils';
+import invariant from 'shared/invariant';
+import {rethrowCaughtError} from 'shared/ReactErrorUtils';
 
 import type {ReactSyntheticEvent} from './ReactSyntheticEventType';
 import accumulateInto from './accumulateInto';

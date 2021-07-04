@@ -11,11 +11,11 @@ import type {Fiber} from './ReactInternalTypes';
 import type {StackCursor} from './ReactFiberStack.new';
 
 import {isFiberMounted} from './ReactFiberTreeReflection';
-import {disableLegacyContext} from '../../shared/ReactFeatureFlags';
+import {disableLegacyContext} from 'shared/ReactFeatureFlags';
 import {ClassComponent, HostRoot} from './ReactWorkTags';
-import getComponentName from '../../shared/getComponentName';
-import invariant from '../../shared/invariant';
-import checkPropTypes from '../../shared/checkPropTypes';
+import getComponentName from 'shared/getComponentName';
+import invariant from 'shared/invariant';
+import checkPropTypes from 'shared/checkPropTypes';
 
 import {createCursor, push, pop} from './ReactFiberStack.new';
 

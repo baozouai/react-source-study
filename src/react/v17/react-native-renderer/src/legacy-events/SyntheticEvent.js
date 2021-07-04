@@ -7,7 +7,7 @@
 
 /* eslint valid-typeof: 0 */
 
-import invariant from '../../shared/invariant';
+import invariant from 'shared/invariant';
 
 const EVENT_POOL_SIZE = 10;
 

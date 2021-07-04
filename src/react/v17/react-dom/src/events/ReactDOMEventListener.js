@@ -42,12 +42,12 @@ import {
   enableLegacyFBSupport,
   enableEagerRootListeners,
   decoupleUpdatePriorityFromScheduler,
-} from '../../shared/ReactFeatureFlags';
+} from 'shared/ReactFeatureFlags';
 import {
   UserBlockingEvent,
   ContinuousEvent,
   DiscreteEvent,
-} from '../../shared/ReactTypes';
+} from 'shared/ReactTypes';
 import {getEventPriorityForPluginSystem} from './DOMEventProperties';
 import {dispatchEventForPluginEventSystem} from './DOMPluginEventSystem';
 import {

@@ -17,7 +17,7 @@ let React;
 let ReactDOM;
 let ReactTestUtils;
 
-let ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+let ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
 describe('ReactElementValidator', () => {
   let ComponentClass;
@@ -26,7 +26,7 @@ describe('ReactElementValidator', () => {
     jest.resetModules();
 
     PropTypes = require('prop-types');
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
     React = require('react');
     ReactDOM = require('react-dom');

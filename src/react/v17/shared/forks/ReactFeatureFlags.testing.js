@@ -7,7 +7,7 @@
  * @flow
  */
 
-import typeof * as FeatureFlagsType from '../../shared/ReactFeatureFlags';
+import typeof * as FeatureFlagsType from 'shared/ReactFeatureFlags';
 import typeof * as ExportsType from './ReactFeatureFlags.testing';
 
 export const debugRenderPhaseSideEffectsForStrictMode = false;

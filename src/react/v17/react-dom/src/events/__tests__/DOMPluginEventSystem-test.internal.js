@@ -60,7 +60,7 @@ describe('DOMPluginEventSystem', () => {
       () => {
         beforeEach(() => {
           jest.resetModules();
-          ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+          ReactFeatureFlags = require('shared/ReactFeatureFlags');
           ReactFeatureFlags.enableLegacyFBSupport = enableLegacyFBSupport;
 
           React = require('react');
@@ -1228,7 +1228,7 @@ describe('DOMPluginEventSystem', () => {
         describe('ReactDOM.createEventHandle', () => {
           beforeEach(() => {
             jest.resetModules();
-            ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+            ReactFeatureFlags = require('shared/ReactFeatureFlags');
             ReactFeatureFlags.enableLegacyFBSupport = enableLegacyFBSupport;
             ReactFeatureFlags.enableCreateEventHandleAPI = true;
 
@@ -2704,7 +2704,7 @@ describe('DOMPluginEventSystem', () => {
           describe('Compatibility with Scopes API', () => {
             beforeEach(() => {
               jest.resetModules();
-              ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+              ReactFeatureFlags = require('shared/ReactFeatureFlags');
               ReactFeatureFlags.enableCreateEventHandleAPI = true;
               ReactFeatureFlags.enableScopeAPI = true;
 

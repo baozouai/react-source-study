@@ -15,7 +15,7 @@ import type {
   ObserveVisibleRectsCallback,
 } from 'react-reconciler/src/ReactTestSelectors';
 import type {RootType} from './ReactDOMRoot';
-import type {ReactScopeInstance} from '../../shared/ReactTypes';
+import type {ReactScopeInstance} from 'shared/ReactTypes';
 import type {ReactDOMFundamentalComponentInstance} from '../shared/ReactDOMTypes';
 
 import {
@@ -59,7 +59,7 @@ import {
 } from '../shared/HTMLNodeType';
 import dangerousStyleValue from '../shared/dangerousStyleValue';
 
-import {REACT_OPAQUE_ID_TYPE} from '../../shared/ReactSymbols';
+import {REACT_OPAQUE_ID_TYPE} from 'shared/ReactSymbols';
 import {retryIfBlockedOn} from '../events/ReactDOMEventReplaying';
 
 import {
@@ -68,7 +68,7 @@ import {
   enableCreateEventHandleAPI,
   enableScopeAPI,
   enableEagerRootListeners,
-} from '../../shared/ReactFeatureFlags';
+} from 'shared/ReactFeatureFlags';
 import {HostComponent, HostText} from 'react-reconciler/src/ReactWorkTags';
 import {
   listenToReactEvent,

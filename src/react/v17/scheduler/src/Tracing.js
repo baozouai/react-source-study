@@ -7,7 +7,7 @@
  * @flow
  */
 
-import {enableSchedulerTracing} from '../../shared/ReactFeatureFlags';
+import {enableSchedulerTracing} from 'shared/ReactFeatureFlags';
 
 export type Interaction = {
   __count: number,

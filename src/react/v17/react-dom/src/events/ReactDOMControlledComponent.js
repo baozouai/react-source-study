@@ -7,7 +7,7 @@
  * @flow
  */
 
-import invariant from '../../shared/invariant';
+import invariant from 'shared/invariant';
 import {
   getInstanceFromNode,
   getFiberCurrentPropsFromNode,

@@ -26,7 +26,7 @@ describe('Tracing', () => {
       currentTime += amount;
     };
 
-    ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
     ReactFeatureFlags.enableSchedulerTracing = enableSchedulerTracing;
 
     SchedulerTracing = require('scheduler/tracing');

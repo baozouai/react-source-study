@@ -19,7 +19,7 @@ describe('ReactDOMTextarea', () => {
 
   let renderTextarea;
 
-  const ReactFeatureFlags = require('../../shared/ReactFeatureFlags');
+  const ReactFeatureFlags = require('shared/ReactFeatureFlags');
 
   beforeEach(() => {
     jest.resetModules();

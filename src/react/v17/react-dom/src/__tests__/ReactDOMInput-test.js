@@ -10,7 +10,7 @@
 
 
 // Set by `yarn test-fire`.
-const {disableInputAttributeSyncing} = require('../../shared/ReactFeatureFlags');
+const {disableInputAttributeSyncing} = require('shared/ReactFeatureFlags');
 
 function emptyFunction() {}
 

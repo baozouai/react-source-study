@@ -1379,7 +1379,7 @@ describe('ReactFreshIntegration', () => {
       }
     });
 
-    if (!require('../../shared/ReactFeatureFlags').disableModulePatternComponents) {
+    if (!require('shared/ReactFeatureFlags').disableModulePatternComponents) {
       it('remounts deprecated factory components', () => {
         if (__DEV__) {
           expect(() => {

@@ -10,9 +10,9 @@
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 import type {Instance} from './ReactFiberHostConfig';
 
-import invariant from '../../shared/invariant';
+import invariant from 'shared/invariant';
 import {HostComponent, HostText} from 'react-reconciler/src/ReactWorkTags';
-import getComponentName from '../../shared/getComponentName';
+import getComponentName from 'shared/getComponentName';
 import {
   findFiberRoot,
   getBoundingRect,
