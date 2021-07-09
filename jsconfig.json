@@ -4,7 +4,7 @@
       "jsx": "react",
       "baseUrl": "./",
       "paths": {
-        "react": [".src/react/v17/react/index.js"],
+        "react": [".src/react/v17/react"],
 
         "react-dom": ["./src/react/v17/react-dom"],
     
@@ -14,7 +14,7 @@
     
         "scheduler": ["./src/react/v17/scheduler"],
     
-        "react-reconciler": ["./src/react/v17/react-reconciler"],
+        "react-reconciler": ["./src/react/v17/react-reconciler"]
       }
   },
   "exclude": ["node_modules", "dist"],

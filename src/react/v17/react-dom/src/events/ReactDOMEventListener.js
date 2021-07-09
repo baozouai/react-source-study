@@ -96,15 +96,19 @@ export function createEventListenerWrapperWithPriority(
   domEventName: DOMEventName,
   eventSystemFlags: EventSystemFlags,
 ): Function {
+  // debugger        
   const eventPriority = getEventPriorityForPluginSystem(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
+    // 0
     case DiscreteEvent:
       listenerWrapper = dispatchDiscreteEvent;
       break;
+    // 1
     case UserBlockingEvent:
       listenerWrapper = dispatchUserBlockingUpdate;
       break;
+    // 2
     case ContinuousEvent:
     default:
       listenerWrapper = dispatchEvent;
@@ -124,6 +128,8 @@ function dispatchDiscreteEvent(
   container,
   nativeEvent,
 ) {
+  debugger
+  // enableLegacyFBSupport = false
   if (
     !enableLegacyFBSupport ||
     // If we are in Legacy FB support mode, it means we've already

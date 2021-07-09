@@ -404,17 +404,13 @@ function updateMemoComponent(
       Component.defaultProps === undefined
     ) {
       let resolvedType = type;
-      if (__DEV__) {
-        resolvedType = resolveFunctionForHotReloading(type);
-      }
+
       // If this is a plain function component without default props,
       // and with only the default shallow comparison, we upgrade it
       // to a SimpleMemoComponent to allow fast path updates.
       workInProgress.tag = SimpleMemoComponent;
       workInProgress.type = resolvedType;
-      if (__DEV__) {
-        validateFunctionComponentInDev(workInProgress, type);
-      }
+
       return updateSimpleMemoComponent(
         current,
         workInProgress,
@@ -423,19 +419,6 @@ function updateMemoComponent(
         updateLanes,
         renderLanes,
       );
-    }
-    if (__DEV__) {
-      const innerPropTypes = type.propTypes;
-      if (innerPropTypes) {
-        // Inner memo component props aren't currently validated in createElement.
-        // We could move it there, but we'd still need this for lazy code path.
-        checkPropTypes(
-          innerPropTypes,
-          nextProps, // Resolved props
-          'prop',
-          getComponentName(type),
-        );
-      }
     }
     const child = createFiberFromTypeAndProps(
       Component.type,
@@ -2074,6 +2057,7 @@ function createWorkInProgressOffscreenFiber(
   current: Fiber,
   offscreenProps: OffscreenProps,
 ) {
+  debugger
   // The props argument to `createWorkInProgress` is `any` typed, so we use this
   // wrapper function to constrain it.
   return createWorkInProgress(current, offscreenProps);
@@ -2085,6 +2069,7 @@ function updateSuspensePrimaryChildren(
   primaryChildren,
   renderLanes,
 ) {
+  debugger
   const currentPrimaryChildFragment: Fiber = (current.child: any);
   const currentFallbackChildFragment: Fiber | null =
     currentPrimaryChildFragment.sibling;
@@ -2124,6 +2109,7 @@ function updateSuspenseFallbackChildren(
   fallbackChildren,
   renderLanes,
 ) {
+  debugger
   const mode = workInProgress.mode;
   const currentPrimaryChildFragment: Fiber = (current.child: any);
   const currentFallbackChildFragment: Fiber | null =

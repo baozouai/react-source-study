@@ -32,7 +32,7 @@ import {
   updateContainer,
   findHostInstanceWithNoPortals,
   registerMutableSourceForHydration,
-} from '../../../../v17/react-reconciler/src/ReactFiberReconciler';
+} from 'react-reconciler/src/ReactFiberReconciler';
 import invariant from 'shared/invariant';
 import {enableEagerRootListeners} from 'shared/ReactFeatureFlags';
 import {
@@ -138,7 +138,9 @@ function createRootImpl(
   markContainerAsRoot(root.current, container);
   const containerNodeType = container.nodeType;
 
-  if (enableEagerRootListeners) {
+  if (enableEagerRootListeners) { //enableEagerRootListeners = true
+    // COMMENT_NODE = 8，代表注释，nodeType = 1, 代表元素
+    // nodeType详细可看https://www.w3school.com.cn/jsref/prop_node_nodetype.asp
     const rootContainerElement =
       container.nodeType === COMMENT_NODE ? container.parentNode : container;
     listenToAllSupportedEvents(rootContainerElement);

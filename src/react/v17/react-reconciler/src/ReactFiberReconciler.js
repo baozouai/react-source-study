@@ -14,45 +14,45 @@ import {enableNewReconciler} from 'shared/ReactFeatureFlags';
 // modules, otherwise both reconcilers would be initialized. So this is really
 // only here for Flow purposes.
 
-import {
-  createContainer as createContainer_old,
-  updateContainer as updateContainer_old,
-  batchedEventUpdates as batchedEventUpdates_old,
-  batchedUpdates as batchedUpdates_old,
-  unbatchedUpdates as unbatchedUpdates_old,
-  deferredUpdates as deferredUpdates_old,
-  discreteUpdates as discreteUpdates_old,
-  flushDiscreteUpdates as flushDiscreteUpdates_old,
-  flushControlled as flushControlled_old,
-  flushSync as flushSync_old,
-  flushPassiveEffects as flushPassiveEffects_old,
-  IsThisRendererActing as IsThisRendererActing_old,
-  getPublicRootInstance as getPublicRootInstance_old,
-  attemptSynchronousHydration as attemptSynchronousHydration_old,
-  attemptUserBlockingHydration as attemptUserBlockingHydration_old,
-  attemptContinuousHydration as attemptContinuousHydration_old,
-  attemptHydrationAtCurrentPriority as attemptHydrationAtCurrentPriority_old,
-  findHostInstance as findHostInstance_old,
-  findHostInstanceWithWarning as findHostInstanceWithWarning_old,
-  findHostInstanceWithNoPortals as findHostInstanceWithNoPortals_old,
-  shouldSuspend as shouldSuspend_old,
-  injectIntoDevTools as injectIntoDevTools_old,
-  act as act_old,
-  createPortal as createPortal_old,
-  createComponentSelector as createComponentSelector_old,
-  createHasPsuedoClassSelector as createHasPsuedoClassSelector_old,
-  createRoleSelector as createRoleSelector_old,
-  createTestNameSelector as createTestNameSelector_old,
-  createTextSelector as createTextSelector_old,
-  getFindAllNodesFailureDescription as getFindAllNodesFailureDescription_old,
-  findAllNodes as findAllNodes_old,
-  findBoundingRects as findBoundingRects_old,
-  focusWithin as focusWithin_old,
-  observeVisibleRects as observeVisibleRects_old,
-  registerMutableSourceForHydration as registerMutableSourceForHydration_old,
-  runWithPriority as runWithPriority_old,
-  getCurrentUpdateLanePriority as getCurrentUpdateLanePriority_old,
-} from './ReactFiberReconciler.old';
+// import {
+//   createContainer as createContainer_old,
+//   updateContainer as updateContainer_old,
+//   batchedEventUpdates as batchedEventUpdates_old,
+//   batchedUpdates as batchedUpdates_old,
+//   unbatchedUpdates as unbatchedUpdates_old,
+//   deferredUpdates as deferredUpdates_old,
+//   discreteUpdates as discreteUpdates_old,
+//   flushDiscreteUpdates as flushDiscreteUpdates_old,
+//   flushControlled as flushControlled_old,
+//   flushSync as flushSync_old,
+//   flushPassiveEffects as flushPassiveEffects_old,
+//   IsThisRendererActing as IsThisRendererActing_old,
+//   getPublicRootInstance as getPublicRootInstance_old,
+//   attemptSynchronousHydration as attemptSynchronousHydration_old,
+//   attemptUserBlockingHydration as attemptUserBlockingHydration_old,
+//   attemptContinuousHydration as attemptContinuousHydration_old,
+//   attemptHydrationAtCurrentPriority as attemptHydrationAtCurrentPriority_old,
+//   findHostInstance as findHostInstance_old,
+//   findHostInstanceWithWarning as findHostInstanceWithWarning_old,
+//   findHostInstanceWithNoPortals as findHostInstanceWithNoPortals_old,
+//   shouldSuspend as shouldSuspend_old,
+//   injectIntoDevTools as injectIntoDevTools_old,
+//   act as act_old,
+//   createPortal as createPortal_old,
+//   createComponentSelector as createComponentSelector_old,
+//   createHasPsuedoClassSelector as createHasPsuedoClassSelector_old,
+//   createRoleSelector as createRoleSelector_old,
+//   createTestNameSelector as createTestNameSelector_old,
+//   createTextSelector as createTextSelector_old,
+//   getFindAllNodesFailureDescription as getFindAllNodesFailureDescription_old,
+//   findAllNodes as findAllNodes_old,
+//   findBoundingRects as findBoundingRects_old,
+//   focusWithin as focusWithin_old,
+//   observeVisibleRects as observeVisibleRects_old,
+//   registerMutableSourceForHydration as registerMutableSourceForHydration_old,
+//   runWithPriority as runWithPriority_old,
+//   getCurrentUpdateLanePriority as getCurrentUpdateLanePriority_old,
+// } from './ReactFiberReconciler.old';
 
 import {
   createContainer as createContainer_new,
@@ -94,112 +94,77 @@ import {
   getCurrentUpdateLanePriority as getCurrentUpdateLanePriority_new,
 } from './ReactFiberReconciler.new';
 
-export const createContainer = enableNewReconciler
-  ? createContainer_new
-  : createContainer_old;
-export const updateContainer = enableNewReconciler
-  ? updateContainer_new
-  : updateContainer_old;
-export const batchedEventUpdates = enableNewReconciler
-  ? batchedEventUpdates_new
-  : batchedEventUpdates_old;
-export const batchedUpdates = enableNewReconciler
-  ? batchedUpdates_new
-  : batchedUpdates_old;
-export const unbatchedUpdates = enableNewReconciler
-  ? unbatchedUpdates_new
-  : unbatchedUpdates_old;
-export const deferredUpdates = enableNewReconciler
-  ? deferredUpdates_new
-  : deferredUpdates_old;
-export const discreteUpdates = enableNewReconciler
-  ? discreteUpdates_new
-  : discreteUpdates_old;
-export const flushDiscreteUpdates = enableNewReconciler
-  ? flushDiscreteUpdates_new
-  : flushDiscreteUpdates_old;
-export const flushControlled = enableNewReconciler
-  ? flushControlled_new
-  : flushControlled_old;
-export const flushSync = enableNewReconciler ? flushSync_new : flushSync_old;
-export const flushPassiveEffects = enableNewReconciler
-  ? flushPassiveEffects_new
-  : flushPassiveEffects_old;
-export const IsThisRendererActing = enableNewReconciler
-  ? IsThisRendererActing_new
-  : IsThisRendererActing_old;
-export const getPublicRootInstance = enableNewReconciler
-  ? getPublicRootInstance_new
-  : getPublicRootInstance_old;
-export const attemptSynchronousHydration = enableNewReconciler
-  ? attemptSynchronousHydration_new
-  : attemptSynchronousHydration_old;
-export const attemptUserBlockingHydration = enableNewReconciler
-  ? attemptUserBlockingHydration_new
-  : attemptUserBlockingHydration_old;
-export const attemptContinuousHydration = enableNewReconciler
-  ? attemptContinuousHydration_new
-  : attemptContinuousHydration_old;
-export const attemptHydrationAtCurrentPriority = enableNewReconciler
-  ? attemptHydrationAtCurrentPriority_new
-  : attemptHydrationAtCurrentPriority_old;
-export const getCurrentUpdateLanePriority = enableNewReconciler
-  ? getCurrentUpdateLanePriority_new
-  : getCurrentUpdateLanePriority_old;
-export const findHostInstance = enableNewReconciler
-  ? findHostInstance_new
-  : findHostInstance_old;
-export const findHostInstanceWithWarning = enableNewReconciler
-  ? findHostInstanceWithWarning_new
-  : findHostInstanceWithWarning_old;
-export const findHostInstanceWithNoPortals = enableNewReconciler
-  ? findHostInstanceWithNoPortals_new
-  : findHostInstanceWithNoPortals_old;
-export const shouldSuspend = enableNewReconciler
-  ? shouldSuspend_new
-  : shouldSuspend_old;
-export const injectIntoDevTools = enableNewReconciler
-  ? injectIntoDevTools_new
-  : injectIntoDevTools_old;
-export const act = enableNewReconciler ? act_new : act_old;
-export const createPortal = enableNewReconciler
-  ? createPortal_new
-  : createPortal_old;
-export const createComponentSelector = enableNewReconciler
-  ? createComponentSelector_new
-  : createComponentSelector_old;
+export const createContainer = createContainer_new
+
+export const updateContainer = updateContainer_new
+
+export const batchedEventUpdates = batchedEventUpdates_new
+
+export const batchedUpdates = batchedUpdates_new
+
+export const unbatchedUpdates = unbatchedUpdates_new
+
+export const deferredUpdates = deferredUpdates_new
+
+export const discreteUpdates = discreteUpdates_new
+
+export const flushDiscreteUpdates = flushDiscreteUpdates_new
+
+export const flushControlled = flushControlled_new
+
+export const flushSync = flushSync_new
+export const flushPassiveEffects = flushPassiveEffects_new
+
+export const IsThisRendererActing = IsThisRendererActing_new
+
+export const getPublicRootInstance = getPublicRootInstance_new
+
+export const attemptSynchronousHydration = attemptSynchronousHydration_new
+
+export const attemptUserBlockingHydration = attemptUserBlockingHydration_new
+
+export const attemptContinuousHydration = attemptContinuousHydration_new
+
+export const attemptHydrationAtCurrentPriority = attemptHydrationAtCurrentPriority_new
+
+export const getCurrentUpdateLanePriority = getCurrentUpdateLanePriority_new
+
+export const findHostInstance = findHostInstance_new
+
+export const findHostInstanceWithWarning = findHostInstanceWithWarning_new
+
+export const findHostInstanceWithNoPortals = findHostInstanceWithNoPortals_new
+
+export const shouldSuspend = shouldSuspend_new
+
+export const injectIntoDevTools = injectIntoDevTools_new
+
+export const act = act_new
+export const createPortal = createPortal_new
+
+export const createComponentSelector = createComponentSelector_new
+
 
 //TODO: "psuedo" is spelled "pseudo"
-export const createHasPsuedoClassSelector = enableNewReconciler
-  ? createHasPsuedoClassSelector_new
-  : createHasPsuedoClassSelector_old;
-export const createRoleSelector = enableNewReconciler
-  ? createRoleSelector_new
-  : createRoleSelector_old;
-export const createTextSelector = enableNewReconciler
-  ? createTextSelector_new
-  : createTextSelector_old;
-export const createTestNameSelector = enableNewReconciler
-  ? createTestNameSelector_new
-  : createTestNameSelector_old;
-export const getFindAllNodesFailureDescription = enableNewReconciler
-  ? getFindAllNodesFailureDescription_new
-  : getFindAllNodesFailureDescription_old;
-export const findAllNodes = enableNewReconciler
-  ? findAllNodes_new
-  : findAllNodes_old;
-export const findBoundingRects = enableNewReconciler
-  ? findBoundingRects_new
-  : findBoundingRects_old;
-export const focusWithin = enableNewReconciler
-  ? focusWithin_new
-  : focusWithin_old;
-export const observeVisibleRects = enableNewReconciler
-  ? observeVisibleRects_new
-  : observeVisibleRects_old;
-export const registerMutableSourceForHydration = enableNewReconciler
-  ? registerMutableSourceForHydration_new
-  : registerMutableSourceForHydration_old;
-export const runWithPriority = enableNewReconciler
-  ? runWithPriority_new
-  : runWithPriority_old;
+export const createHasPsuedoClassSelector = createHasPsuedoClassSelector_new
+
+export const createRoleSelector = createRoleSelector_new
+
+export const createTextSelector = createTextSelector_new
+
+export const createTestNameSelector = createTestNameSelector_new
+
+export const getFindAllNodesFailureDescription = getFindAllNodesFailureDescription_new
+
+export const findAllNodes = findAllNodes_new
+
+export const findBoundingRects = findBoundingRects_new
+
+export const focusWithin = focusWithin_new
+
+export const observeVisibleRects = observeVisibleRects_new
+
+export const registerMutableSourceForHydration = registerMutableSourceForHydration_new
+
+export const runWithPriority = runWithPriority_new
+

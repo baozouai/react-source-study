@@ -1421,6 +1421,7 @@ export function cloneChildFibers(
   current: Fiber | null,
   workInProgress: Fiber,
 ): void {
+  debugger
   invariant(
     current === null || workInProgress.child === current.child,
     'Resuming work not yet implemented.',

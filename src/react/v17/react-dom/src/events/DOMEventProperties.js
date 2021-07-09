@@ -193,6 +193,7 @@ export function getEventPriorityForPluginSystem(
   // Default to a ContinuousEvent. Note: we might
   // want to warn if we can't detect the priority
   // for the event.
+  // ContinuousEvent = 2
   return priority === undefined ? ContinuousEvent : priority;
 }
 

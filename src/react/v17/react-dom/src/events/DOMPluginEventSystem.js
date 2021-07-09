@@ -320,15 +320,17 @@ const listeningMarker =
     .slice(2);
 
 export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
-  if (enableEagerRootListeners) {
-    if ((rootContainerElement: any)[listeningMarker]) {
+  debugger
+  if (enableEagerRootListeners) { // enableEagerRootListeners = true
+    if (rootContainerElement[listeningMarker]) {
+      // 第一次的是false
       // Performance optimization: don't iterate through events
       // for the same portal container or root node more than once.
       // TODO: once we remove the flag, we may be able to also
       // remove some of the bookkeeping maps used for laziness.
       return;
     }
-    (rootContainerElement: any)[listeningMarker] = true;
+    rootContainerElement[listeningMarker] = true;
     allNativeEvents.forEach(domEventName => {
       if (!nonDelegatedEvents.has(domEventName)) {
         listenToNativeEvent(
@@ -390,7 +392,9 @@ export function listenToNativeEvent(
     eventSystemFlags |= IS_NON_DELEGATED;
     target = targetElement;
   }
+  // 给dom设置一个属性值（new Set()),如果已有则返回原先的
   const listenerSet = getEventListenerSet(target);
+  // 根据domEventName和释放是捕获，生成最终的eventName，如cancel__capture或cancel__bubble
   const listenerSetKey = getListenerSetKey(
     domEventName,
     isCapturePhaseListener,
@@ -472,6 +476,7 @@ function addTrappedEventListener(
   isCapturePhaseListener: boolean,
   isDeferredListenerForLegacyFBSupport?: boolean,
 ) {
+  // debugger
   let listener = createEventListenerWrapperWithPriority(
     targetContainer,
     domEventName,
@@ -480,6 +485,7 @@ function addTrappedEventListener(
   // If passive option is not supported, then the event will be
   // active and not passive.
   let isPassiveListener = undefined;
+  // passiveBrowserEventsSupported = true
   if (passiveBrowserEventsSupported) {
     // Browsers introduced an intervention, making these events
     // passive by default on document. React doesn't bind them
@@ -495,7 +501,7 @@ function addTrappedEventListener(
       isPassiveListener = true;
     }
   }
-
+  // enableLegacyFBSupport = false
   targetContainer =
     enableLegacyFBSupport && isDeferredListenerForLegacyFBSupport
       ? (targetContainer: any).ownerDocument

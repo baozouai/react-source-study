@@ -13,7 +13,7 @@ import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
 
 export const allNativeEvents: Set<DOMEventName> = new Set();
 
-if (enableCreateEventHandleAPI) {
+if (enableCreateEventHandleAPI) { // enableCreateEventHandleAPI = false
   allNativeEvents.add('beforeblur');
   allNativeEvents.add('afterblur');
 }
