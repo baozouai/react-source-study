@@ -329,6 +329,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   function useFiber(fiber: Fiber, pendingProps: mixed): Fiber {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
+    console.log('ReactChildFiber.new: performConcurrentWorkOnRoot')
     debugger
     const clone = createWorkInProgress(fiber, pendingProps);
     clone.index = 0;
@@ -341,6 +342,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lastPlacedIndex: number,
     newIndex: number,
   ): number {
+    console.log('ReactChildFiber.new: placeChild')
     debugger
     newFiber.index = newIndex;
     if (!shouldTrackSideEffects) {
@@ -399,6 +401,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     element: ReactElement,
     lanes: Lanes,
   ): Fiber {
+    console.log('ReactChildFiber.new: updateElement')
     debugger
     if (current !== null) {
       if (
@@ -572,6 +575,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    console.log('ReactChildFiber.new: updateSlot')
     debugger
     // Update the fiber if the keys match, otherwise return null.
 
@@ -798,6 +802,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         knownKeys = warnOnInvalidKey(child, knownKeys, returnFiber);
       }
     }
+    console.log('ReactChildFiber.new: reconcileChildrenArray')
     debugger
     let resultingFirstChild: Fiber | null = null;
     let previousNewFiber: Fiber | null = null;
@@ -1278,6 +1283,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    console.log('ReactChildFiber.new: reconcileChildFibers')
     debugger
     // This function is not recursive.
     // If the top level item is an array, we treat it as a set of children,
@@ -1421,7 +1427,8 @@ export function cloneChildFibers(
   current: Fiber | null,
   workInProgress: Fiber,
 ): void {
-  debugger
+  console.log('ReactChildFiber.new: cloneChildFibers')
+    debugger
   invariant(
     current === null || workInProgress.child === current.child,
     'Resuming work not yet implemented.',

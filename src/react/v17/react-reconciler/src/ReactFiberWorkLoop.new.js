@@ -509,6 +509,7 @@ export function scheduleUpdateOnFiber(
   lane: Lane,
   eventTime: number,
 ) {
+  console.log('ReactFiberWorkLoop: scheduleUpdateOnFiber')
   debugger
   checkForNestedUpdates();
   warnAboutRenderPhaseUpdatesInDEV(fiber);
@@ -649,6 +650,8 @@ function markUpdateLaneFromFiberToRoot(
 // root has work on. This function is called on every update, and right before
 // exiting a task.
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
+  console.log('ReactFiberWorkLoop: ensureRootIsScheduled')
+  debugger
   const existingCallbackNode = root.callbackNode;
 
   // Check if any lanes are being starved by other work. If so, mark them as
@@ -715,6 +718,8 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 // This is the entry point for every concurrent task, i.e. anything that
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
+  console.log('ReactFiberWorkLoop: performConcurrentWorkOnRoot')
+  debugger
   // Since we know we're in a React event, we can clear the current
   // event time. The next update will compute a new event time.
   currentEventTime = NoTimestamp;
@@ -1261,6 +1266,8 @@ export function popRenderLanes(fiber: Fiber) {
 }
 
 function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
+  console.log('ReactFiberWorkLoop: prepareFreshStack')
+  debugger
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
 
@@ -1447,6 +1454,8 @@ export function renderHasNotSuspendedYet(): boolean {
 }
 
 function renderRootSync(root: FiberRoot, lanes: Lanes) {
+  console.log('ReactFiberWorkLoop: renderRootSync')
+  debugger
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1503,15 +1512,19 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
 // The work loop is an extremely hot path. Tell Closure not to inline it.
 /** @noinline */
 function workLoopSync() {
+  console.log('ReactFiberWorkLoop: workLoopSync')
   debugger
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
-    debugger
+    console.log('ReactFiberWorkLoop: workLoopSync')
+  debugger
     performUnitOfWork(workInProgress);
   }
 }
 
 function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
+  console.log('ReactFiberWorkLoop: renderRootConcurrent')
+  debugger
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1577,6 +1590,7 @@ function workLoopConcurrent() {
 }
 
 function performUnitOfWork(unitOfWork: Fiber): void {
+  console.log('ReactFiberWorkLoop: performUnitOfWork')
   debugger
   // The current, flushed, state of this fiber is the alternate. Ideally
   // nothing should rely on this, but relying on it here means that we don't
@@ -1609,6 +1623,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   // Attempt to complete the current unit of work, then move to the next
   // sibling. If there are no more siblings, return to the parent fiber.
   let completedWork = unitOfWork;
+  console.log('ReactFiberWorkLoop: completeUnitOfWork')
   debugger
   do {
     // The current, flushed, state of this fiber is the alternate. Ideally

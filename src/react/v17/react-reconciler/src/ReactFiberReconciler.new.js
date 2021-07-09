@@ -244,6 +244,7 @@ export function createContainer(
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
+  console.log('ReactFiberReconciler: createContainer')
   debugger
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
@@ -255,6 +256,7 @@ export function updateContainer(
   callback: ?Function,
 ): Lane {
 
+  console.log('ReactFiberReconciler: updateContainer')
   debugger
   const current = container.current;
   const eventTime = requestEventTime();

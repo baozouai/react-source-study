@@ -150,6 +150,7 @@ if (__DEV__) {
 }
 
 export function initializeUpdateQueue<State>(fiber: Fiber): void {
+  console.log('ReactUpdateQueue: initializeUpdateQueue')
   debugger
   const queue: UpdateQueue<State> = {
     // 前一次更新计算得出的状态，它是第一个被跳过的update之前的那些update计算得出的state。
@@ -205,6 +206,7 @@ export function createUpdate(eventTime: number, lane: Lane): Update<*> {
 }
 
 export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
+  console.log('ReactUpdateQueue: enqueueUpdate')
   debugger
   const updateQueue = fiber.updateQueue;
   if (updateQueue === null) {

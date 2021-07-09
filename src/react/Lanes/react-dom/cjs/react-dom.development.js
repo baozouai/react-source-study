@@ -18035,6 +18035,7 @@ function ChildReconciler(shouldTrackSideEffects) {
 var reconcileChildFibers = ChildReconciler(true);
 var mountChildFibers = ChildReconciler(false);
 function cloneChildFibers(current$$1, workInProgress) {
+  debugger
   if (!(current$$1 === null || workInProgress.child === current$$1.child)) {
     {
       throw Error("Resuming work not yet implemented.");

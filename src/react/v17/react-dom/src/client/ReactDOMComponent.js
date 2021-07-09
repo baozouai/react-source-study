@@ -405,6 +405,7 @@ export function createElement(
   parentNamespace: string,
 ): Element {
   let isCustomComponentTag;
+  console.log('ReactDomComponent: createElement')
   debugger
   // We create tags in the namespace of their parent container, except HTML
   // tags get no namespace.
@@ -664,6 +665,7 @@ export function diffProperties(
   if (__DEV__) {
     validatePropertiesInDevelopment(tag, nextRawProps);
   }
+  console.log('ReactDomComponent: diffProperties')
   debugger
   let updatePayload: null | Array<any> = null;
 
