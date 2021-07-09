@@ -405,7 +405,7 @@ export function createElement(
   parentNamespace: string,
 ): Element {
   let isCustomComponentTag;
-
+  debugger
   // We create tags in the namespace of their parent container, except HTML
   // tags get no namespace.
   const ownerDocument: Document = getOwnerDocumentFromRootContainer(
@@ -664,7 +664,7 @@ export function diffProperties(
   if (__DEV__) {
     validatePropertiesInDevelopment(tag, nextRawProps);
   }
-
+  debugger
   let updatePayload: null | Array<any> = null;
 
   let lastProps: Object;

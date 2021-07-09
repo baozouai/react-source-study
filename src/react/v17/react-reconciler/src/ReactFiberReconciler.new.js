@@ -244,6 +244,7 @@ export function createContainer(
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
+  debugger
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
 
@@ -256,6 +257,7 @@ export function updateContainer(
   if (__DEV__) {
     onScheduleRoot(container, element);
   }
+  debugger
   const current = container.current;
   const eventTime = requestEventTime();
   if (__DEV__) {

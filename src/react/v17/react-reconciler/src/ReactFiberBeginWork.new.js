@@ -237,6 +237,7 @@ export function reconcileChildren(
   nextChildren: any,
   renderLanes: Lanes,
 ) {
+  debugger
   if (current === null) {
     // If this is a fresh new component that hasn't been rendered yet, we
     // won't update its child set by applying minimal side-effects. Instead,
@@ -249,6 +250,7 @@ export function reconcileChildren(
       renderLanes,
     );
   } else {
+    debugger
     // If the current child is the same as the work in progress, it means that
     // we haven't yet started any work on these children. Therefore, we use
     // the clone algorithm to create a copy of all the current children.
@@ -256,9 +258,13 @@ export function reconcileChildren(
     // If we had any progressed work already, that is invalid at this point so
     // let's throw it out.
     workInProgress.child = reconcileChildFibers(
+      // 作为父节点传入，新生成的第一个fiber的return会指向它
       workInProgress,
+      // 旧fiber节点，diff生成新fiber节点时会用新生成的ReactElement和它作比较。
       current.child,
+      // 新生成的ReactElement，会以它为标准生成新的fiber节点
       nextChildren,
+      // 本次的渲染优先级，最终会被挂载到新fiber的lanes属性上
       renderLanes,
     );
   }
@@ -871,7 +877,7 @@ function updateClassComponent(
       }
     }
   }
-
+  debugger
   // Push context providers early to prevent context stack mismatches.
   // During mounting we don't know the child context yet as the instance doesn't exist.
   // We will invalidate the child context in finishClassComponent() right after rendering.
@@ -910,6 +916,7 @@ function updateClassComponent(
       renderLanes,
     );
   } else {
+    // 计算状态
     shouldUpdate = updateClassInstance(
       current,
       workInProgress,
@@ -918,6 +925,7 @@ function updateClassComponent(
       renderLanes,
     );
   }
+  // 执行render，进入diff，为fiber打上effectTag
   const nextUnitOfWork = finishClassComponent(
     current,
     workInProgress,
@@ -950,6 +958,7 @@ function finishClassComponent(
   hasContext: boolean,
   renderLanes: Lanes,
 ) {
+  debugger
   // Refs should update even if shouldComponentUpdate returns false
   markRef(current, workInProgress);
 
@@ -1018,6 +1027,7 @@ function finishClassComponent(
       renderLanes,
     );
   } else {
+    // 做diff
     reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   }
 
@@ -1049,6 +1059,7 @@ function pushHostRootContext(workInProgress) {
 }
 
 function updateHostRoot(current, workInProgress, renderLanes) {
+  debugger
   pushHostRootContext(workInProgress);
   const updateQueue = workInProgress.updateQueue;
   invariant(
@@ -1356,6 +1367,7 @@ function mountIndeterminateComponent(
   Component,
   renderLanes,
 ) {
+  debugger
   if (_current !== null) {
     // An indeterminate component only mounts if it suspended inside a non-
     // concurrent tree, in an inconsistent state. We want to treat it like
@@ -3081,6 +3093,7 @@ function beginWork(
   workInProgress: Fiber,
   renderLanes: Lanes,
 ): Fiber | null {
+  debugger
   // 获取workInProgress.lanes，可通过判断它是否为空去判断该节点是否需要更新
   const updateLanes = workInProgress.lanes;
 

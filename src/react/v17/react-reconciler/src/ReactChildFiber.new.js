@@ -329,6 +329,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   function useFiber(fiber: Fiber, pendingProps: mixed): Fiber {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
+    debugger
     const clone = createWorkInProgress(fiber, pendingProps);
     clone.index = 0;
     clone.sibling = null;
@@ -340,6 +341,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lastPlacedIndex: number,
     newIndex: number,
   ): number {
+    debugger
     newFiber.index = newIndex;
     if (!shouldTrackSideEffects) {
       // Noop.
@@ -397,6 +399,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     element: ReactElement,
     lanes: Lanes,
   ): Fiber {
+    debugger
     if (current !== null) {
       if (
         current.elementType === element.type ||
@@ -569,6 +572,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    debugger
     // Update the fiber if the keys match, otherwise return null.
 
     const key = oldFiber !== null ? oldFiber.key : null;
@@ -760,7 +764,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
     return knownKeys;
   }
-
+  // 多节点diff
   function reconcileChildrenArray(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
@@ -794,7 +798,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         knownKeys = warnOnInvalidKey(child, knownKeys, returnFiber);
       }
     }
-
+    debugger
     let resultingFirstChild: Fiber | null = null;
     let previousNewFiber: Fiber | null = null;
 
@@ -1124,7 +1128,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     created.return = returnFiber;
     return created;
   }
-
+  // 单节点diff
   function reconcileSingleElement(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
@@ -1186,7 +1190,9 @@ function ChildReconciler(shouldTrackSideEffects) {
                 ? isCompatibleFamilyForHotReloading(child, element)
                 : false)
             ) {
+              // 先删除剩下的oldFiber节点
               deleteRemainingChildren(returnFiber, child.sibling);
+              // 基于oldFiber节点和新节点的props新建新的fiber节点
               const existing = useFiber(child, element.props);
               existing.ref = coerceRef(returnFiber, child, element);
               existing.return = returnFiber;
@@ -1203,6 +1209,8 @@ function ChildReconciler(shouldTrackSideEffects) {
         deleteRemainingChildren(returnFiber, child);
         break;
       } else {
+        // 没匹配到说明新的fiber节点无法从oldFiber节点新建
+        // 删除掉所有oldFiber节点
         deleteChild(returnFiber, child);
       }
       child = child.sibling;
@@ -1270,6 +1278,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    debugger
     // This function is not recursive.
     // If the top level item is an array, we treat it as a set of children,
     // not as a fragment. Nested arrays on the other hand will be treated as
@@ -1291,6 +1300,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     const isObject = typeof newChild === 'object' && newChild !== null;
 
     if (isObject) {
+      // 处理单节点
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
@@ -1326,6 +1336,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     if (typeof newChild === 'string' || typeof newChild === 'number') {
+      // 处理文本节点
       return placeSingleChild(
         reconcileSingleTextNode(
           returnFiber,
@@ -1337,6 +1348,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     if (isArray(newChild)) {
+      // 处理多节点
       return reconcileChildrenArray(
         returnFiber,
         currentFirstChild,

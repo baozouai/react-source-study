@@ -267,6 +267,7 @@ export function createInstance(
   internalInstanceHandle: Object,
 ): Instance {
   let parentNamespace: string;
+  debugger
   if (__DEV__) {
     // TODO: take namespace into account when validating.
     const hostContextDev = ((hostContext: any): HostContextDev);
@@ -338,6 +339,7 @@ export function prepareUpdate(
       validateDOMNesting(null, string, ownAncestorInfo);
     }
   }
+  debugger
   return diffProperties(
     domElement,
     type,

@@ -47,6 +47,7 @@ export function precacheFiberNode(
   hostInst: Fiber,
   node: Instance | TextInstance | SuspenseInstance | ReactScopeInstance,
 ): void {
+  debugger
   (node: any)[internalInstanceKey] = hostInst;
 }
 
@@ -193,6 +194,7 @@ export function updateFiberProps(
   node: Instance | TextInstance | SuspenseInstance,
   props: Props,
 ): void {
+  debugger
   (node: any)[internalPropsKey] = props;
 }
 

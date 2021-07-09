@@ -90,7 +90,8 @@ export const warnAboutSpreadingKeyToJSX = false;
 
 export const enableComponentStackLocations = true;
 
-export const enableNewReconciler = false;
+// export const enableNewReconciler = false;
+export const enableNewReconciler = __NEW_RECONCILER__;
 
 // Errors that are thrown while unmounting (or after in the case of passive effects)
 // should bypass any error boundaries that are also unmounting (or have unmounted)

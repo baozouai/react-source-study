@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+      "target": "ES6",
+      "jsx": "react",
+      "baseUrl": "./",
+      "paths": {
+        "react": [".src/react/v17/react/index.js"],
+
+        "react-dom": ["./src/react/v17/react-dom"],
+    
+        "legacy-events": ["./src/react/v17/legacy-events"],
+    
+        "shared": ["./src/react/v17/shared"],
+    
+        "scheduler": ["./src/react/v17/scheduler"],
+    
+        "react-reconciler": ["./src/react/v17/react-reconciler"],
+      }
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*"]
+}

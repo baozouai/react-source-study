@@ -1,4 +1,4 @@
-'use strict';
+
 
 const fs = require('fs');
 const path = require('path');
@@ -100,8 +100,8 @@ function getClientEnvironment(publicUrl) {
 
     "__EXPERIMENTAL__": true,
 
-    "__UMD__": true
-
+    "__UMD__": true,
+    __NEW_RECONCILER__: true,
   };
 
   return { raw, stringified };

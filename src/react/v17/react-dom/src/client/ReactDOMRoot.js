@@ -12,24 +12,6 @@ import type {RootTag} from 'react-reconciler/src/ReactRootTags';
 import type {MutableSource, ReactNodeList} from 'shared/ReactTypes';
 import type {FiberRoot} from 'react-reconciler/src/ReactInternalTypes';
 
-export type RootType = {
-  render(children: ReactNodeList): void,
-  unmount(): void,
-  _internalRoot: FiberRoot,
-  ...
-};
-
-export type RootOptions = {
-  hydrate?: boolean,
-  hydrationOptions?: {
-    onHydrated?: (suspenseNode: Comment) => void,
-    onDeleted?: (suspenseNode: Comment) => void,
-    mutableSources?: Array<MutableSource<any>>,
-    ...
-  },
-  ...
-};
-
 import {
   isContainerMarkedAsRoot,
   markContainerAsRoot,
@@ -50,7 +32,7 @@ import {
   updateContainer,
   findHostInstanceWithNoPortals,
   registerMutableSourceForHydration,
-} from 'react-reconciler/src/ReactFiberReconciler';
+} from '../../../../v17/react-reconciler/src/ReactFiberReconciler';
 import invariant from 'shared/invariant';
 import {enableEagerRootListeners} from 'shared/ReactFeatureFlags';
 import {
@@ -59,7 +41,26 @@ import {
   LegacyRoot,
 } from 'react-reconciler/src/ReactRootTags';
 
+export type RootType = {
+  render(children: ReactNodeList): void,
+  unmount(): void,
+  _internalRoot: FiberRoot,
+  ...
+};
+
+export type RootOptions = {
+  hydrate?: boolean,
+  hydrationOptions?: {
+    onHydrated?: (suspenseNode: Comment) => void,
+    onDeleted?: (suspenseNode: Comment) => void,
+    mutableSources?: Array<MutableSource<any>>,
+    ...
+  },
+  ...
+};
+
 function ReactDOMRoot(container: Container, options: void | RootOptions) {
+  debugger
   this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
 }
 
@@ -74,6 +75,7 @@ function ReactDOMBlockingRoot(
 ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function(
   children: ReactNodeList,
 ): void {
+  debugger
   const root = this._internalRoot;
   if (__DEV__) {
     if (typeof arguments[1] === 'function') {
@@ -122,6 +124,7 @@ function createRootImpl(
   tag: RootTag,
   options: void | RootOptions,
 ) {
+  debugger
   // Tag is either LegacyRoot or Concurrent Root
   const hydrate = options != null && options.hydrate === true;
   const hydrationCallbacks =
@@ -172,6 +175,7 @@ export function createRoot(
   container: Container,
   options?: RootOptions,
 ): RootType {
+  debugger
   invariant(
     isValidContainer(container),
     'createRoot(...): Target container is not a DOM element.',

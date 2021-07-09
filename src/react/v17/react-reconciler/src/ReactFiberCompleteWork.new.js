@@ -208,6 +208,7 @@ if (supportsMutation) {
     // We only have the top Fiber that was created but we need recurse down its
     // children to find all the terminal nodes.
     let node = workInProgress.child;
+    debugger
     while (node !== null) {
       if (node.tag === HostComponent || node.tag === HostText) {
         appendInitialChild(parent, node.stateNode);
@@ -246,6 +247,7 @@ if (supportsMutation) {
     newProps: Props,
     rootContainerInstance: Container,
   ) {
+    debugger
     // If we have an alternate, that means this is an update and we need to
     // schedule a side-effect to do the updates.
     const oldProps = current.memoizedProps;
@@ -305,7 +307,7 @@ if (supportsMutation) {
     let node = workInProgress.child;
     while (node !== null) {
       // eslint-disable-next-line no-labels
-      branches: if (node.tag === HostComponent) {
+      if (node.tag === HostComponent) {
         let instance = node.stateNode;
         if (needsVisibilityToggle && isHidden) {
           // This child is inside a timed out tree. Hide it.
@@ -399,7 +401,7 @@ if (supportsMutation) {
     let node = workInProgress.child;
     while (node !== null) {
       // eslint-disable-next-line no-labels
-      branches: if (node.tag === HostComponent) {
+      if (node.tag === HostComponent) {
         let instance = node.stateNode;
         if (needsVisibilityToggle && isHidden) {
           // This child is inside a timed out tree. Hide it.
@@ -691,7 +693,7 @@ function bubbleProperties(completedWork: Fiber) {
   const didBailout =
     completedWork.alternate !== null &&
     completedWork.alternate.child === completedWork.child;
-
+    debugger
   let newChildLanes = NoLanes;
   let subtreeFlags = NoFlags;
 
@@ -803,7 +805,7 @@ function completeWork(
   renderLanes: Lanes,
 ): Fiber | null {
   const newProps = workInProgress.pendingProps;
-
+  debugger
   switch (workInProgress.tag) {
     case IndeterminateComponent:
     case LazyComponent:

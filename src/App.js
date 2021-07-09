@@ -39,10 +39,23 @@ function App() {
   // return <TasksWithDifferentPriorities/>
 
   // context
-  return <ContextDemo/>
+  // return <ContextDemo/>
 
   // diff 算法
   // return <Diff ref={'diffRef'}/>
+  // return <Diff />
+  const [state, setState] = useState([1])
+
+
+
+    return <p onClick={() => setState(state => ([...state, state.length + 1]))}>
+      {
+          state.map(v => {
+              return <div key={v}>{v}</div>
+          })
+      }
+    </p>
+
 }
 
 export default App;
