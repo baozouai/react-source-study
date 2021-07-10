@@ -102,6 +102,7 @@ function getClientEnvironment(publicUrl) {
 
     "__UMD__": true,
     __NEW_RECONCILER__: true,
+    '__LOG_NAMES__': JSON.stringify(['workLoop']),
   };
 
   return { raw, stringified };

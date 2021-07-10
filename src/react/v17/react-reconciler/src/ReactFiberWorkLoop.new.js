@@ -509,8 +509,11 @@ export function scheduleUpdateOnFiber(
   lane: Lane,
   eventTime: number,
 ) {
-  console.log('ReactFiberWorkLoop: scheduleUpdateOnFiber')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) {
+    console.log('ReactFiberWorkLoop: scheduleUpdateOnFiber')
   debugger
+  }
   checkForNestedUpdates();
   warnAboutRenderPhaseUpdatesInDEV(fiber);
 
@@ -650,8 +653,11 @@ function markUpdateLaneFromFiberToRoot(
 // root has work on. This function is called on every update, and right before
 // exiting a task.
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
-  console.log('ReactFiberWorkLoop: ensureRootIsScheduled')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) {
+    console.log('ReactFiberWorkLoop: ensureRootIsScheduled')
   debugger
+  }
   const existingCallbackNode = root.callbackNode;
 
   // Check if any lanes are being starved by other work. If so, mark them as
@@ -718,8 +724,11 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 // This is the entry point for every concurrent task, i.e. anything that
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
-  console.log('ReactFiberWorkLoop: performConcurrentWorkOnRoot')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) {
+    console.log('ReactFiberWorkLoop: performConcurrentWorkOnRoot')
   debugger
+  }
   // Since we know we're in a React event, we can clear the current
   // event time. The next update will compute a new event time.
   currentEventTime = NoTimestamp;
@@ -842,9 +851,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
       // should immediately commit it or wait a bit.
 
       if (
-        includesOnlyRetries(lanes) &&
-        // do not delay if we're inside an act() scope
-        !shouldForceFlushFallbacksInDEV()
+        includesOnlyRetries(lanes)
       ) {
         // This render only included retries, no updates. Throttle committing
         // retries so that we don't show too many loading states too quickly.
@@ -892,7 +899,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
         break;
       }
 
-      if (!shouldForceFlushFallbacksInDEV()) {
+
         // This is not a transition, but we did trigger an avoided state.
         // Schedule a placeholder to display after a short delay, using the Just
         // Noticeable Difference.
@@ -900,22 +907,22 @@ function finishConcurrentRender(root, exitStatus, lanes) {
         // the only reason we track the event time, then probably not.
         // Consider removing.
 
-        const mostRecentEventTime = getMostRecentEventTime(root, lanes);
-        const eventTimeMs = mostRecentEventTime;
-        const timeElapsedMs = now() - eventTimeMs;
-        const msUntilTimeout = jnd(timeElapsedMs) - timeElapsedMs;
+      const mostRecentEventTime = getMostRecentEventTime(root, lanes);
+      const eventTimeMs = mostRecentEventTime;
+      const timeElapsedMs = now() - eventTimeMs;
+      const msUntilTimeout = jnd(timeElapsedMs) - timeElapsedMs;
 
-        // Don't bother with a very short suspense time.
-        if (msUntilTimeout > 10) {
-          // Instead of committing the fallback immediately, wait for more data
-          // to arrive.
-          root.timeoutHandle = scheduleTimeout(
-            commitRoot.bind(null, root),
-            msUntilTimeout,
-          );
-          break;
-        }
+      // Don't bother with a very short suspense time.
+      if (msUntilTimeout > 10) {
+        // Instead of committing the fallback immediately, wait for more data
+        // to arrive.
+        root.timeoutHandle = scheduleTimeout(
+          commitRoot.bind(null, root),
+          msUntilTimeout,
+        );
+        break;
       }
+
 
       // Commit the placeholder.
       commitRoot(root);
@@ -949,7 +956,11 @@ function performSyncWorkOnRoot(root) {
     (executionContext & (RenderContext | CommitContext)) === NoContext,
     'Should not already be working.',
   );
-
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performSyncWorkOnRoot')) {
+    console.log('ReactFiberWorkLoop.new: performSyncWorkOnRoot')
+  debugger
+  }
   flushPassiveEffects();
 
   let lanes;
@@ -1266,8 +1277,11 @@ export function popRenderLanes(fiber: Fiber) {
 }
 
 function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
-  console.log('ReactFiberWorkLoop: prepareFreshStack')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('prepareFreshStack')) {
+    console.log('ReactFiberWorkLoop: prepareFreshStack')
   debugger
+  }
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
 
@@ -1454,8 +1468,11 @@ export function renderHasNotSuspendedYet(): boolean {
 }
 
 function renderRootSync(root: FiberRoot, lanes: Lanes) {
-  console.log('ReactFiberWorkLoop: renderRootSync')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootSync')) {
+    console.log('ReactFiberWorkLoop: renderRootSync')
   debugger
+  }
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1512,19 +1529,27 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
 // The work loop is an extremely hot path. Tell Closure not to inline it.
 /** @noinline */
 function workLoopSync() {
-  console.log('ReactFiberWorkLoop: workLoopSync')
-  debugger
-  // Already timed out, so perform work without checking if we need to yield.
-  while (workInProgress !== null) {
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) {
     console.log('ReactFiberWorkLoop: workLoopSync')
   debugger
+  }
+  // Already timed out, so perform work without checking if we need to yield.
+  while (workInProgress !== null) {
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) {
+      console.log('ReactFiberWorkLoop: workLoopSync in while')
+    debugger
+    }
     performUnitOfWork(workInProgress);
   }
 }
 
 function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
-  console.log('ReactFiberWorkLoop: renderRootConcurrent')
-  debugger
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootConcurrent')) {
+    console.log('ReactFiberWorkLoop: renderRootConcurrent')
+    debugger
+  }
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1590,8 +1615,11 @@ function workLoopConcurrent() {
 }
 
 function performUnitOfWork(unitOfWork: Fiber): void {
-  console.log('ReactFiberWorkLoop: performUnitOfWork')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performUnitOfWork')) {
+    console.log('ReactFiberWorkLoop: performUnitOfWork')
   debugger
+  }
   // The current, flushed, state of this fiber is the alternate. Ideally
   // nothing should rely on this, but relying on it here means that we don't
   // need an additional field on the work in progress.
@@ -1623,8 +1651,11 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   // Attempt to complete the current unit of work, then move to the next
   // sibling. If there are no more siblings, return to the parent fiber.
   let completedWork = unitOfWork;
-  console.log('ReactFiberWorkLoop: completeUnitOfWork')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeUnitOfWork')) {
+    console.log('ReactFiberWorkLoop: completeUnitOfWork')
   debugger
+  }
   do {
     // The current, flushed, state of this fiber is the alternate. Ideally
     // nothing should rely on this, but relying on it here means that we don't
@@ -2864,10 +2895,6 @@ function finishPendingInteractions(root, committedLanes) {
 let isFlushingAct = false;
 let isInsideThisAct = false;
 
-function shouldForceFlushFallbacksInDEV() {
-  // Never force flush in production. This function should get stripped out.
-  return __DEV__ && actingUpdatesScopeDepth > 0;
-}
 
 const flushMockScheduler = Scheduler.unstable_flushAllWithoutAsserting;
 const isSchedulerMocked = typeof flushMockScheduler === 'function';

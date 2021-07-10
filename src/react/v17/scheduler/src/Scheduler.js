@@ -126,8 +126,11 @@ function handleTimeout(currentTime) {
 }
 
 function flushWork(hasTimeRemaining, initialTime) {
-  console.log('Scheduler: flushWork')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushWork')) {
+    console.log('Scheduler: flushWork')
   debugger
+  }
   if (enableProfiling) {
     markSchedulerUnsuspended(initialTime);
   }
@@ -170,6 +173,10 @@ function flushWork(hasTimeRemaining, initialTime) {
 }
 
 function workLoop(hasTimeRemaining, initialTime) {
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) {
+    console.log('Scheduler: workLoop')
+    debugger
+  }
   let currentTime = initialTime;
   advanceTimers(currentTime);
   // 获取taskQueue中最紧急的任务
@@ -298,8 +305,11 @@ function unstable_wrapCallback(callback) {
 }
 
 function unstable_scheduleCallback(priorityLevel, callback, options) {
-  console.log('Scheduler: unstable_scheduleCallback')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('unstable_scheduleCallback')) {
+    console.log('Scheduler: unstable_scheduleCallback')
   debugger
+  }
   var currentTime = getCurrentTime();
   // 确定当前时间 startTime 和延迟更新时间 timeout
   var startTime;

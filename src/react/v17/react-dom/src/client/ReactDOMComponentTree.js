@@ -47,14 +47,20 @@ export function precacheFiberNode(
   hostInst: Fiber,
   node: Instance | TextInstance | SuspenseInstance | ReactScopeInstance,
 ): void {
-  console.log('ReactDomComponentTree: createElement')
-  debugger
+
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) {
+    console.log('ReactDomComponentTree: createElement')
+    debugger
+  }
   (node: any)[internalInstanceKey] = hostInst;
 }
 
 export function markContainerAsRoot(hostRoot: Fiber, node: Container): void {
-  console.log('ReactDomComponentTree: createElement')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('markContainerAsRoot')) {
+    console.log('ReactDomComponentTree: markContainerAsRoot')
   debugger
+  }
   node[internalContainerInstanceKey] = hostRoot;
 }
 
@@ -197,8 +203,11 @@ export function updateFiberProps(
   node: Instance | TextInstance | SuspenseInstance,
   props: Props,
 ): void {
-  console.log('ReactDomComponentTree: updateFiberProps')
-  debugger
+ 
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateFiberProps')) {
+    console.log('ReactDomComponentTree: updateFiberProps')
+    debugger
+  }
   (node: any)[internalPropsKey] = props;
 }
 

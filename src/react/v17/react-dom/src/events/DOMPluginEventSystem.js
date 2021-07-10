@@ -320,8 +320,11 @@ const listeningMarker =
     .slice(2);
 
 export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
-  console.log('DomPluginEventSystem: listenToAllSupportedEvents')
-  debugger
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToAllSupportedEvents')) {
+    console.log('DomPluginEventSystem: listenToAllSupportedEvents')
+    debugger
+  }
   if (enableEagerRootListeners) { // enableEagerRootListeners = true
     if (rootContainerElement[listeningMarker]) {
       // 第一次的是false

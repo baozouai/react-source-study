@@ -329,8 +329,11 @@ function ChildReconciler(shouldTrackSideEffects) {
   function useFiber(fiber: Fiber, pendingProps: mixed): Fiber {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
-    console.log('ReactChildFiber.new: performConcurrentWorkOnRoot')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) {
+      console.log('ReactChildFiber.new: performConcurrentWorkOnRoot')
     debugger
+    }
     const clone = createWorkInProgress(fiber, pendingProps);
     clone.index = 0;
     clone.sibling = null;
@@ -342,8 +345,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     lastPlacedIndex: number,
     newIndex: number,
   ): number {
-    console.log('ReactChildFiber.new: placeChild')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('placeChild')) {
+      console.log('ReactChildFiber.new: placeChild')
     debugger
+    }
     newFiber.index = newIndex;
     if (!shouldTrackSideEffects) {
       // Noop.
@@ -401,8 +407,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     element: ReactElement,
     lanes: Lanes,
   ): Fiber {
-    console.log('ReactChildFiber.new: updateElement')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) {
+      console.log('ReactChildFiber.new: updateElement')
     debugger
+    }
     if (current !== null) {
       if (
         current.elementType === element.type ||
@@ -575,8 +584,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
-    console.log('ReactChildFiber.new: updateSlot')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSlot')) {
+      console.log('ReactChildFiber.new: updateSlot')
     debugger
+    }
     // Update the fiber if the keys match, otherwise return null.
 
     const key = oldFiber !== null ? oldFiber.key : null;
@@ -794,16 +806,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     // If you change this code, also update reconcileChildrenIterator() which
     // uses the same algorithm.
 
-    if (__DEV__) {
-      // First, validate keys.
-      let knownKeys = null;
-      for (let i = 0; i < newChildren.length; i++) {
-        const child = newChildren[i];
-        knownKeys = warnOnInvalidKey(child, knownKeys, returnFiber);
-      }
-    }
-    console.log('ReactChildFiber.new: reconcileChildrenArray')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildrenArray')) {
+      console.log('ReactChildFiber.new: reconcileChildrenArray')
     debugger
+    }
     let resultingFirstChild: Fiber | null = null;
     let previousNewFiber: Fiber | null = null;
 
@@ -1283,8 +1290,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
-    console.log('ReactChildFiber.new: reconcileChildFibers')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) {
+      console.log('ReactChildFiber.new: reconcileChildFibers')
     debugger
+    }
     // This function is not recursive.
     // If the top level item is an array, we treat it as a set of children,
     // not as a fragment. Nested arrays on the other hand will be treated as
@@ -1427,8 +1437,11 @@ export function cloneChildFibers(
   current: Fiber | null,
   workInProgress: Fiber,
 ): void {
-  console.log('ReactChildFiber.new: cloneChildFibers')
+  
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('cloneChildFibers')) {
+      console.log('ReactChildFiber.new: cloneChildFibers')
     debugger
+    }
   invariant(
     current === null || workInProgress.child === current.child,
     'Resuming work not yet implemented.',

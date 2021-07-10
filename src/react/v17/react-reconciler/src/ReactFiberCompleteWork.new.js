@@ -208,8 +208,11 @@ if (supportsMutation) {
     // We only have the top Fiber that was created but we need recurse down its
     // children to find all the terminal nodes.
     let node = workInProgress.child;
-    console.log('ReactFiberCompleteWork: hadNoMutationsEffects')
+    
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('hadNoMutationsEffects')) {
+      console.log('ReactFiberCompleteWork: hadNoMutationsEffects')
     debugger
+    }
     while (node !== null) {
       if (node.tag === HostComponent || node.tag === HostText) {
         appendInitialChild(parent, node.stateNode);
@@ -248,8 +251,11 @@ if (supportsMutation) {
     newProps: Props,
     rootContainerInstance: Container,
   ) {
+   
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
     console.log('ReactFiberCompleteWork: FiberNode')
-  debugger
+    debugger
+  }
     // If we have an alternate, that means this is an update and we need to
     // schedule a side-effect to do the updates.
     const oldProps = current.memoizedProps;
@@ -695,8 +701,11 @@ function bubbleProperties(completedWork: Fiber) {
   const didBailout =
     completedWork.alternate !== null &&
     completedWork.alternate.child === completedWork.child;
+    
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('bubbleProperties')) {
     console.log('ReactFiberCompleteWork: bubbleProperties')
-  debugger
+    debugger
+  }
   let newChildLanes = NoLanes;
   let subtreeFlags = NoFlags;
 
@@ -808,8 +817,11 @@ function completeWork(
   renderLanes: Lanes,
 ): Fiber | null {
   const newProps = workInProgress.pendingProps;
-  console.log('ReactFiberCompleteWork: completeWork')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeWork')) {
+    console.log('ReactFiberCompleteWork: completeWork')
   debugger
+  }
   switch (workInProgress.tag) {
     case IndeterminateComponent:
     case LazyComponent:

@@ -86,8 +86,11 @@ export function createFiberRoot(
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): FiberRoot {
-  console.log('ReactFiberRoot: createFiberRoot')
+  
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberRoot')) {
+    console.log('ReactFiberRoot: createFiberRoot')
   debugger
+  }
   const root: FiberRoot = (new FiberRootNode(containerInfo, tag, hydrate): any);
   if (enableSuspenseCallback) {
     root.hydrationCallbacks = hydrationCallbacks;
