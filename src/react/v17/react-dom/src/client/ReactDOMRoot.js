@@ -61,8 +61,8 @@ export type RootOptions = {
 
 function ReactDOMRoot(container: Container, options: void | RootOptions) {
   
+  console.log('ReactDomRoot: ReactDOMRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactDOMRoot')) {
-    console.log('ReactDomRoot: ReactDOMRoot')
   debugger
   }
   this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
@@ -79,8 +79,8 @@ function ReactDOMBlockingRoot(
 ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function(
   children: ReactNodeList,
 ): void {
+  console.log('Scheduler: render')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) {
-    console.log('Scheduler: render')
     debugger
   }
   const root = this._internalRoot;
@@ -103,8 +103,8 @@ function createRootImpl(
   options: void | RootOptions,
 ) {
   
+  console.log('ReactDomRoot: createRootImpl')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createRootImpl')) {
-    console.log('ReactDomRoot: createRootImpl')
   debugger
   }
   // Tag is either LegacyRoot or Concurrent Root
@@ -160,8 +160,8 @@ export function createRoot(
   options?: RootOptions,
 ): RootType {
   
+  console.log('ReactDomRoot: createRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createRoot')) {
-    console.log('ReactDomRoot: createRoot')
   debugger
   }
   invariant(

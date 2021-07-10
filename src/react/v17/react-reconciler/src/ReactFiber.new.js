@@ -128,8 +128,8 @@ function FiberNode(
 
   this.mode = mode;
   
+  console.log('ReactFiber.new: FiberNode')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
-    console.log('ReactFiber.new: FiberNode')
   debugger
   }
   // Effects
@@ -190,8 +190,8 @@ const createFiber = function(
   mode: TypeOfMode,
 ): Fiber {
  
+  console.log('ReactFiber.new: createFiber')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiber')) {
-    console.log('ReactFiber.new: createFiber')
     debugger
   }
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
@@ -235,8 +235,8 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
   
+  console.log('ReactFiber.new: createWorkInProgress')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) {
-    console.log('ReactFiber.new: createWorkInProgress')
   debugger
   }
   if (workInProgress === null) {
@@ -385,8 +385,8 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 
 export function createHostRootFiber(tag: RootTag): Fiber {
   
+  console.log('ReactFiber.new: createHostRootFiber')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) {
-    console.log('ReactFiber.new: createHostRootFiber')
   debugger
   }
   let mode;
@@ -417,8 +417,8 @@ export function createFiberFromTypeAndProps(
   lanes: Lanes,
 ): Fiber {
   
+  console.log('ReactFiber.new: createFiberFromTypeAndProps')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) {
-    console.log('ReactFiber.new: createFiberFromTypeAndProps')
   debugger
   }
   let fiberTag = IndeterminateComponent;
@@ -520,8 +520,8 @@ export function createFiberFromElement(
   lanes: Lanes,
 ): Fiber {
   
+  console.log('ReactFiber.new: createFiberFromElement')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) {
-    console.log('ReactFiber.new: createFiberFromElement')
   debugger
   }
   let owner = null;

@@ -236,8 +236,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
     
+    console.log('ReactChildFiber.new: performConcurrentWorkOnRoot')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) {
-      console.log('ReactChildFiber.new: performConcurrentWorkOnRoot')
     debugger
     }
     const clone = createWorkInProgress(fiber, pendingProps);
@@ -252,8 +252,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     newIndex: number,
   ): number {
     
+    console.log('ReactChildFiber.new: placeChild')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('placeChild')) {
-      console.log('ReactChildFiber.new: placeChild')
     debugger
     }
     newFiber.index = newIndex;
@@ -314,8 +314,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber {
     
+    console.log('ReactChildFiber.new: updateElement')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) {
-      console.log('ReactChildFiber.new: updateElement')
     debugger
     }
     if (current !== null) {
@@ -476,8 +476,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
+    console.log('ReactChildFiber.new: updateSlot')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSlot')) {
-      console.log('ReactChildFiber.new: updateSlot')
     debugger
     }
     // Update the fiber if the keys match, otherwise return null.
@@ -647,8 +647,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     // uses the same algorithm.
 
     
+    console.log('ReactChildFiber.new: reconcileChildrenArray')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildrenArray')) {
-      console.log('ReactChildFiber.new: reconcileChildrenArray')
     debugger
     }
     let resultingFirstChild: Fiber | null = null;
@@ -1074,8 +1074,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
+    console.log('ReactChildFiber.new: reconcileChildFibers')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) {
-      console.log('ReactChildFiber.new: reconcileChildFibers')
     debugger
     }
     // This function is not recursive.
@@ -1210,8 +1210,8 @@ export function cloneChildFibers(
   workInProgress: Fiber,
 ): void {
   
+  console.log('ReactChildFiber.new: cloneChildFibers')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('cloneChildFibers')) {
-      console.log('ReactChildFiber.new: cloneChildFibers')
     debugger
     }
   invariant(

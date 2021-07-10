@@ -182,8 +182,8 @@ export function createContainer(
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
   
+  console.log('ReactFiberReconciler: createContainer')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createContainer')) {
-    console.log('ReactFiberReconciler: createContainer')
   debugger
   }
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);

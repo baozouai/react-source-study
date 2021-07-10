@@ -251,8 +251,8 @@ export function createInstance(
 ): Instance {
   let parentNamespace: string;
   
+  console.log('ReactChildHostConfig: createInstance')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createInstance')) {
-    console.log('ReactChildHostConfig: createInstance')
     debugger
   }
     parentNamespace = ((hostContext: any): HostContextProd);

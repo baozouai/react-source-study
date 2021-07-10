@@ -244,8 +244,8 @@ export function createElement(
 ): Element {
   let isCustomComponentTag;
 
+  console.log('ReactDomComponent: createElement')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) {
-    console.log('ReactDomComponent: createElement')
     debugger
   }
   
@@ -458,9 +458,9 @@ export function diffProperties(
   nextRawProps: Object,
   rootContainerElement: Element | Document,
 ): null | Array<mixed> {
+  console.log('ReactDomComponent: diffProperties')
   
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) {
-    console.log('ReactDomComponent: diffProperties')
     debugger
   }
   let updatePayload: null | Array<any> = null;

@@ -321,8 +321,8 @@ const listeningMarker =
 
 export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   
+  console.log('DomPluginEventSystem: listenToAllSupportedEvents')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToAllSupportedEvents')) {
-    console.log('DomPluginEventSystem: listenToAllSupportedEvents')
     debugger
   }
   if (enableEagerRootListeners) { // enableEagerRootListeners = true

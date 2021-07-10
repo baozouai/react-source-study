@@ -129,8 +129,8 @@ function dispatchDiscreteEvent(
   nativeEvent,
 ) {
   
+  console.log('ReactDomEventListener: dispatchDiscreteEvent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchDiscreteEvent')) {
-    console.log('ReactDomEventListener: dispatchDiscreteEvent')
   debugger
   }
   // enableLegacyFBSupport === false

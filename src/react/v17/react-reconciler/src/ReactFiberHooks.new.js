@@ -217,8 +217,8 @@ export function renderWithHooks<Props, SecondArg>(
   nextRenderLanes: Lanes,
 ): any {
   
+  console.log('ReactFiberHooks.new: renderWithHooks')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) {
-    console.log('ReactFiberHooks.new: renderWithHooks')
   debugger
   }
   renderLanes = nextRenderLanes;

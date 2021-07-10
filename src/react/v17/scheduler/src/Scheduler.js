@@ -127,8 +127,8 @@ function handleTimeout(currentTime) {
 
 function flushWork(hasTimeRemaining, initialTime) {
   
+  console.log('Scheduler: flushWork')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushWork')) {
-    console.log('Scheduler: flushWork')
   debugger
   }
   if (enableProfiling) {
@@ -173,8 +173,8 @@ function flushWork(hasTimeRemaining, initialTime) {
 }
 
 function workLoop(hasTimeRemaining, initialTime) {
+  console.log('Scheduler: workLoop')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) {
-    console.log('Scheduler: workLoop')
     debugger
   }
   let currentTime = initialTime;
@@ -306,8 +306,8 @@ function unstable_wrapCallback(callback) {
 
 function unstable_scheduleCallback(priorityLevel, callback, options) {
   
+  console.log('Scheduler: unstable_scheduleCallback')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('unstable_scheduleCallback')) {
-    console.log('Scheduler: unstable_scheduleCallback')
   debugger
   }
   var currentTime = getCurrentTime();

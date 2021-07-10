@@ -227,8 +227,8 @@ export function reconcileChildren(
   renderLanes: Lanes,
 ) {
   
+  console.log('ReactFiberBeginWork: reconcileChildren')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildren')) {
-    console.log('ReactFiberBeginWork: reconcileChildren')
   debugger
   }
   if (current === null) {
@@ -343,8 +343,8 @@ function updateMemoComponent(
   renderLanes: Lanes,
 ): null | Fiber {
   
+  console.log('ReactFiber.new: updateMemoComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateMemoComponent')) {
-    console.log('ReactFiber.new: updateMemoComponent')
   debugger
   }
   if (current === null) {
@@ -678,8 +678,8 @@ function updateClassComponent(
   renderLanes: Lanes,
 ) {
   
+  console.log('ReactFiber.new: updateClassComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateClassComponent')) {
-    console.log('ReactFiber.new: updateClassComponent')
   debugger
   }
   // Push context providers early to prevent context stack mismatches.
@@ -750,8 +750,8 @@ function finishClassComponent(
   renderLanes: Lanes,
 ) {
   
+  console.log('ReactFiber.new: finishClassComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('finishClassComponent')) {
-    console.log('ReactFiber.new: finishClassComponent')
   debugger
   }
   // Refs should update even if shouldComponentUpdate returns false
@@ -838,8 +838,8 @@ function pushHostRootContext(workInProgress) {
 
 function updateHostRoot(current, workInProgress, renderLanes) {
   
+  console.log('ReactFiber.new: updateHostRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostRoot')) {
-    console.log('ReactFiber.new: updateHostRoot')
   debugger
   }
   pushHostRootContext(workInProgress);
@@ -1115,8 +1115,8 @@ function mountIndeterminateComponent(
   renderLanes,
 ) {
   
+  console.log('ReactFiber.new: mountIndeterminateComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountIndeterminateComponent')) {
-    console.log('ReactFiber.new: mountIndeterminateComponent')
   debugger
   }
   if (_current !== null) {
@@ -1639,8 +1639,8 @@ function createWorkInProgressOffscreenFiber(
   offscreenProps: OffscreenProps,
 ) {
   
+  console.log('ReactFiber.new: createWorkInProgressOffscreenFiber')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgressOffscreenFiber')) {
-    console.log('ReactFiber.new: createWorkInProgressOffscreenFiber')
   debugger
   }
   // The props argument to `createWorkInProgress` is `any` typed, so we use this
@@ -1655,8 +1655,8 @@ function updateSuspensePrimaryChildren(
   renderLanes,
 ) {
   
+  console.log('ReactFiber.new: updateSuspensePrimaryChildren')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspensePrimaryChildren')) {
-    console.log('ReactFiber.new: updateSuspensePrimaryChildren')
   debugger
   }
   const currentPrimaryChildFragment: Fiber = (current.child: any);
@@ -1699,8 +1699,8 @@ function updateSuspenseFallbackChildren(
   renderLanes,
 ) {
   
+  console.log('ReactFiber.new: updateSuspenseFallbackChildren')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspenseFallbackChildren')) {
-    console.log('ReactFiber.new: updateSuspenseFallbackChildren')
   debugger
   }
   const mode = workInProgress.mode;
@@ -2412,8 +2412,8 @@ function beginWork(
   renderLanes: Lanes,
 ): Fiber | null {
   
+  console.log('ReactFiber.new: beginWork')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('beginWork')) {
-    console.log('ReactFiber.new: beginWork')
   debugger
   }
   // 获取workInProgress.lanes，可通过判断它是否为空去判断该节点是否需要更新
