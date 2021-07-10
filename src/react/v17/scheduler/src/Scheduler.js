@@ -126,6 +126,8 @@ function handleTimeout(currentTime) {
 }
 
 function flushWork(hasTimeRemaining, initialTime) {
+  console.log('Scheduler: flushWork')
+  debugger
   if (enableProfiling) {
     markSchedulerUnsuspended(initialTime);
   }
@@ -296,6 +298,8 @@ function unstable_wrapCallback(callback) {
 }
 
 function unstable_scheduleCallback(priorityLevel, callback, options) {
+  console.log('Scheduler: unstable_scheduleCallback')
+  debugger
   var currentTime = getCurrentTime();
   // 确定当前时间 startTime 和延迟更新时间 timeout
   var startTime;

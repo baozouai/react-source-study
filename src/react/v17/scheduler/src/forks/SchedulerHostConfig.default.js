@@ -183,6 +183,8 @@ if (
   };
 
   const performWorkUntilDeadline = () => {
+    console.log('ScheduleHostConfig.default.js: performWorkUntilDeadline')
+    debugger
     if (scheduledHostCallback !== null) {
       const currentTime = getCurrentTime();
       // Yield after `yieldInterval` ms, regardless of where we are in the vsync
@@ -223,6 +225,8 @@ if (
   channel.port1.onmessage = performWorkUntilDeadline;
 
   requestHostCallback = function(callback) {
+    console.log('SchedulerHostConfig.default.js: requestHostCallback')
+    debugger
     scheduledHostCallback = callback;
     if (!isMessageLoopRunning) {
       isMessageLoopRunning = true;
