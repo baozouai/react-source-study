@@ -555,14 +555,7 @@ export function attach(
   }
 
   function pushOperation(op: number): void {
-    if (__DEV__) {
-      if (!Number.isInteger(op)) {
-        console.error(
-          'pushOperation() was called but the value is not an integer.',
-          op,
-        );
-      }
-    }
+
     pendingOperations.push(op);
   }
 

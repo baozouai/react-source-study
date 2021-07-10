@@ -212,30 +212,7 @@ function createElement(type, key, props): React$Element<any> {
     // Record the component responsible for creating this element.
     _owner: null,
   };
-  if (__DEV__) {
-    // We don't really need to add any of these but keeping them for good measure.
-    // Unfortunately, _store is enumerable in jest matchers so for equality to
-    // work, I need to keep it or make _store non-enumerable in the other file.
-    element._store = {};
-    Object.defineProperty(element._store, 'validated', {
-      configurable: false,
-      enumerable: false,
-      writable: true,
-      value: true, // This element has already been validated on the server.
-    });
-    Object.defineProperty(element, '_self', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: null,
-    });
-    Object.defineProperty(element, '_source', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: null,
-    });
-  }
+
   return element;
 }
 

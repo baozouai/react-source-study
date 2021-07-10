@@ -38,10 +38,7 @@ import {enableSuspenseServerRenderer} from 'shared/ReactFeatureFlags';
 const valueCursor: StackCursor<mixed> = createCursor(null);
 
 let rendererSigil;
-if (__DEV__) {
-  // Use this to detect multiple renderers using the same context
-  rendererSigil = {};
-}
+
 
 let currentlyRenderingFiber: Fiber | null = null;
 let lastContextDependency: ContextDependency<mixed> | null = null;
@@ -55,21 +52,15 @@ export function resetContextDependencies(): void {
   currentlyRenderingFiber = null;
   lastContextDependency = null;
   lastContextWithAllBitsObserved = null;
-  if (__DEV__) {
-    isDisallowedContextReadInDEV = false;
-  }
+
 }
 
 export function enterDisallowedContextReadInDEV(): void {
-  if (__DEV__) {
-    isDisallowedContextReadInDEV = true;
-  }
+
 }
 
 export function exitDisallowedContextReadInDEV(): void {
-  if (__DEV__) {
-    isDisallowedContextReadInDEV = false;
-  }
+
 }
 
 export function pushProvider<T>(providerFiber: Fiber, nextValue: T): void {
@@ -79,36 +70,12 @@ export function pushProvider<T>(providerFiber: Fiber, nextValue: T): void {
     push(valueCursor, context._currentValue, providerFiber);
 
     context._currentValue = nextValue;
-    if (__DEV__) {
-      if (
-        context._currentRenderer !== undefined &&
-        context._currentRenderer !== null &&
-        context._currentRenderer !== rendererSigil
-      ) {
-        console.error(
-          'Detected multiple renderers concurrently rendering the ' +
-            'same context provider. This is currently unsupported.',
-        );
-      }
-      context._currentRenderer = rendererSigil;
-    }
+
   } else {
     push(valueCursor, context._currentValue2, providerFiber);
 
     context._currentValue2 = nextValue;
-    if (__DEV__) {
-      if (
-        context._currentRenderer2 !== undefined &&
-        context._currentRenderer2 !== null &&
-        context._currentRenderer2 !== rendererSigil
-      ) {
-        console.error(
-          'Detected multiple renderers concurrently rendering the ' +
-            'same context provider. This is currently unsupported.',
-        );
-      }
-      context._currentRenderer2 = rendererSigil;
-    }
+
   }
 }
 
@@ -139,15 +106,6 @@ export function calculateChangedBits<T>(
         ? context._calculateChangedBits(oldValue, newValue)
         : MAX_SIGNED_31_BIT_INT;
 
-    if (__DEV__) {
-      if ((changedBits & MAX_SIGNED_31_BIT_INT) !== changedBits) {
-        console.error(
-          'calculateChangedBits: Expected the return value to be a ' +
-            '31-bit integer. Instead received: %s',
-          changedBits,
-        );
-      }
-    }
     return changedBits | 0;
   }
 }
@@ -319,18 +277,7 @@ export function readContext<T>(
   context: ReactContext<T>,
   observedBits: void | number | boolean,
 ): T {
-  if (__DEV__) {
-    // This warning would fire if you read context inside a Hook like useMemo.
-    // Unlike the class check below, it's not enforced in production for perf.
-    if (isDisallowedContextReadInDEV) {
-      console.error(
-        'Context can only be read while React is rendering. ' +
-          'In classes, you can read it in the render method or getDerivedStateFromProps. ' +
-          'In function components, you can read it directly in the function body, but not ' +
-          'inside Hooks like useReducer() or useMemo().',
-      );
-    }
-  }
+
 
   if (lastContextWithAllBitsObserved === context) {
     // Nothing to do. We already observe everything in this context.

@@ -35,17 +35,6 @@ function processEventTypes(
 ): void {
   const {bubblingEventTypes, directEventTypes} = viewConfig;
 
-  if (__DEV__) {
-    if (bubblingEventTypes != null && directEventTypes != null) {
-      for (const topLevelType in directEventTypes) {
-        invariant(
-          bubblingEventTypes[topLevelType] == null,
-          'Event cannot be both direct and bubbling: %s',
-          topLevelType,
-        );
-      }
-    }
-  }
 
   if (bubblingEventTypes != null) {
     for (const topLevelType in bubblingEventTypes) {

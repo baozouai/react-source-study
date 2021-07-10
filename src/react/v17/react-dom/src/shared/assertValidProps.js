@@ -37,20 +37,7 @@ function assertValidProps(tag: string, props: ?Object) {
         'for more information.',
     );
   }
-  if (__DEV__) {
-    if (
-      !props.suppressContentEditableWarning &&
-      props.contentEditable &&
-      props.children != null
-    ) {
-      console.error(
-        'A component is `contentEditable` and contains `children` managed by ' +
-          'React. It is now your responsibility to guarantee that none of ' +
-          'those nodes are unexpectedly modified or duplicated. This is ' +
-          'probably not intentional.',
-      );
-    }
-  }
+
   invariant(
     props.style == null || typeof props.style === 'object',
     'The `style` prop expects a mapping from style properties to values, ' +

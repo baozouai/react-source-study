@@ -84,9 +84,7 @@ export function isAttributeNameSafe(attributeName: string): boolean {
     return true;
   }
   illegalAttributeNameCache[attributeName] = true;
-  if (__DEV__) {
-    console.error('Invalid attribute name: `%s`', attributeName);
-  }
+
   return false;
 }
 
@@ -166,26 +164,7 @@ export function shouldRemoveAttribute(
   if (propertyInfo !== null) {
     if (enableFilterEmptyStringAttributesDOM) {
       if (propertyInfo.removeEmptyString && value === '') {
-        if (__DEV__) {
-          if (name === 'src') {
-            console.error(
-              'An empty string ("") was passed to the %s attribute. ' +
-                'This may cause the browser to download the whole page again over the network. ' +
-                'To fix this, either do not render the element at all ' +
-                'or pass null to %s instead of an empty string.',
-              name,
-              name,
-            );
-          } else {
-            console.error(
-              'An empty string ("") was passed to the %s attribute. ' +
-                'To fix this, either do not render the element at all ' +
-                'or pass null to %s instead of an empty string.',
-              name,
-              name,
-            );
-          }
-        }
+
         return true;
       }
     }

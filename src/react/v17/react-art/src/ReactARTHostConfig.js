@@ -15,10 +15,7 @@ const pooledTransform = new Transform();
 
 const NO_CONTEXT = {};
 const UPDATE_SIGNAL = {};
-if (__DEV__) {
-  Object.freeze(NO_CONTEXT);
-  Object.freeze(UPDATE_SIGNAL);
-}
+
 
 /** Helper Methods */
 

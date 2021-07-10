@@ -80,29 +80,11 @@ let hasWarnedAboutDeprecatedIsConcurrentMode = false;
 
 // AsyncMode should be deprecated
 export function isAsyncMode(object: any) {
-  if (__DEV__) {
-    if (!hasWarnedAboutDeprecatedIsAsyncMode) {
-      hasWarnedAboutDeprecatedIsAsyncMode = true;
-      // Using console['warn'] to evade Babel and ESLint
-      console['warn'](
-        'The ReactIs.isAsyncMode() alias has been deprecated, ' +
-          'and will be removed in React 18+.',
-      );
-    }
-  }
+
   return false;
 }
 export function isConcurrentMode(object: any) {
-  if (__DEV__) {
-    if (!hasWarnedAboutDeprecatedIsConcurrentMode) {
-      hasWarnedAboutDeprecatedIsConcurrentMode = true;
-      // Using console['warn'] to evade Babel and ESLint
-      console['warn'](
-        'The ReactIs.isConcurrentMode() alias has been deprecated, ' +
-          'and will be removed in React 18+.',
-      );
-    }
-  }
+
   return false;
 }
 export function isContextConsumer(object: any) {

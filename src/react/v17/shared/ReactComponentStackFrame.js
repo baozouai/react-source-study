@@ -47,19 +47,14 @@ export function describeBuiltInComponentFrame(
     return '\n' + prefix + name;
   } else {
     let ownerName = null;
-    if (__DEV__ && ownerFn) {
-      ownerName = ownerFn.displayName || ownerFn.name || null;
-    }
+
     return describeComponentFrame(name, source, ownerName);
   }
 }
 
 let reentry = false;
 let componentFrameCache;
-if (__DEV__) {
-  const PossiblyWeakMap = typeof WeakMap === 'function' ? WeakMap : Map;
-  componentFrameCache = new PossiblyWeakMap();
-}
+
 
 export function describeNativeComponentFrame(
   fn: Function,
@@ -70,12 +65,7 @@ export function describeNativeComponentFrame(
     return '';
   }
 
-  if (__DEV__) {
-    const frame = componentFrameCache.get(fn);
-    if (frame !== undefined) {
-      return frame;
-    }
-  }
+
 
   let control;
 
@@ -84,13 +74,7 @@ export function describeNativeComponentFrame(
   // $FlowFixMe It does accept undefined.
   Error.prepareStackTrace = undefined;
   let previousDispatcher;
-  if (__DEV__) {
-    previousDispatcher = ReactCurrentDispatcher.current;
-    // Set the dispatcher in DEV because this might be call in the render function
-    // for warnings.
-    ReactCurrentDispatcher.current = null;
-    disableLogs();
-  }
+
   try {
     // This should throw.
     if (construct) {
@@ -167,11 +151,7 @@ export function describeNativeComponentFrame(
               if (c < 0 || sampleLines[s] !== controlLines[c]) {
                 // V8 adds a "new" prefix for native classes. Let's remove it to make it prettier.
                 const frame = '\n' + sampleLines[s].replace(' at new ', ' at ');
-                if (__DEV__) {
-                  if (typeof fn === 'function') {
-                    componentFrameCache.set(fn, frame);
-                  }
-                }
+
                 // Return the line we found.
                 return frame;
               }
@@ -183,20 +163,13 @@ export function describeNativeComponentFrame(
     }
   } finally {
     reentry = false;
-    if (__DEV__) {
-      ReactCurrentDispatcher.current = previousDispatcher;
-      reenableLogs();
-    }
+
     Error.prepareStackTrace = previousPrepareStackTrace;
   }
   // Fallback to just using the name if we couldn't make it throw.
   const name = fn ? fn.displayName || fn.name : '';
   const syntheticFrame = name ? describeBuiltInComponentFrame(name) : '';
-  if (__DEV__) {
-    if (typeof fn === 'function') {
-      componentFrameCache.set(fn, syntheticFrame);
-    }
-  }
+
   return syntheticFrame;
 }
 
@@ -208,23 +181,7 @@ function describeComponentFrame(
   ownerName: null | string,
 ) {
   let sourceInfo = '';
-  if (__DEV__ && source) {
-    const path = source.fileName;
-    let fileName = path.replace(BEFORE_SLASH_RE, '');
-    // In DEV, include code for a common special case:
-    // prefer "folder/index.js" instead of just "index.js".
-    if (/^index\./.test(fileName)) {
-      const match = path.match(BEFORE_SLASH_RE);
-      if (match) {
-        const pathBeforeSlash = match[1];
-        if (pathBeforeSlash) {
-          const folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
-          fileName = folderName + '/' + fileName;
-        }
-      }
-    }
-    sourceInfo = ' (at ' + fileName + ':' + source.lineNumber + ')';
-  } else if (ownerName) {
+  if (ownerName) {
     sourceInfo = ' (created by ' + ownerName + ')';
   }
   return '\n    in ' + (name || 'Unknown') + sourceInfo;

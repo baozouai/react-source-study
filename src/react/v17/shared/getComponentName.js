@@ -46,14 +46,7 @@ function getComponentName(type: mixed): string | null {
     // Host root, text node or just invalid type.
     return null;
   }
-  if (__DEV__) {
-    if (typeof (type: any).tag === 'number') {
-      console.error(
-        'Received an unexpected object in getComponentName(). ' +
-          'This is likely a bug in React. Please file an issue.',
-      );
-    }
-  }
+
   if (typeof type === 'function') {
     return (type: any).displayName || type.name || null;
   }

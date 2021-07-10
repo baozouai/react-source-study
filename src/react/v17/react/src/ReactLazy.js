@@ -60,18 +60,7 @@ function lazyInitializer<T>(payload: Payload<T>): T {
       moduleObject => {
         if (payload._status === Pending) {
           const defaultExport = moduleObject.default;
-          if (__DEV__) {
-            if (defaultExport === undefined) {
-              console.error(
-                'lazy: Expected the result of a dynamic import() call. ' +
-                  'Instead received: %s\n\nYour code should look like: \n  ' +
-                  // Break up imports to avoid accidentally parsing them as dependencies.
-                  'const MyComponent = lazy(() => imp' +
-                  "ort('./MyComponent'))",
-                moduleObject,
-              );
-            }
-          }
+
           // Transition to the next state.
           const resolved: ResolvedPayload<T> = (payload: any);
           resolved._status = Resolved;
@@ -110,52 +99,6 @@ export function lazy<T>(
     _init: lazyInitializer,
   };
 
-  if (__DEV__) {
-    // In production, this would just set it on the object.
-    let defaultProps;
-    let propTypes;
-    // $FlowFixMe
-    Object.defineProperties(lazyType, {
-      defaultProps: {
-        configurable: true,
-        get() {
-          return defaultProps;
-        },
-        set(newDefaultProps) {
-          console.error(
-            'React.lazy(...): It is not supported to assign `defaultProps` to ' +
-              'a lazy component import. Either specify them where the component ' +
-              'is defined, or create a wrapping component around it.',
-          );
-          defaultProps = newDefaultProps;
-          // Match production behavior more closely:
-          // $FlowFixMe
-          Object.defineProperty(lazyType, 'defaultProps', {
-            enumerable: true,
-          });
-        },
-      },
-      propTypes: {
-        configurable: true,
-        get() {
-          return propTypes;
-        },
-        set(newPropTypes) {
-          console.error(
-            'React.lazy(...): It is not supported to assign `propTypes` to ' +
-              'a lazy component import. Either specify them where the component ' +
-              'is defined, or create a wrapping component around it.',
-          );
-          propTypes = newPropTypes;
-          // Match production behavior more closely:
-          // $FlowFixMe
-          Object.defineProperty(lazyType, 'propTypes', {
-            enumerable: true,
-          });
-        },
-      },
-    });
-  }
 
   return lazyType;
 }

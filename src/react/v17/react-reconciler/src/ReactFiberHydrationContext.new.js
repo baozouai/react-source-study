@@ -64,13 +64,7 @@ let nextHydratableInstance: null | HydratableInstance = null;
 let isHydrating: boolean = false;
 
 function warnIfHydrating() {
-  if (__DEV__) {
-    if (isHydrating) {
-      console.error(
-        'We should not be hydrating here. This is a bug in React. Please file a bug.',
-      );
-    }
-  }
+
 }
 
 function enterHydrationState(fiber: Fiber): boolean {
@@ -102,24 +96,7 @@ function deleteHydratableInstance(
   returnFiber: Fiber,
   instance: HydratableInstance,
 ) {
-  if (__DEV__) {
-    switch (returnFiber.tag) {
-      case HostRoot:
-        didNotHydrateContainerInstance(
-          returnFiber.stateNode.containerInfo,
-          instance,
-        );
-        break;
-      case HostComponent:
-        didNotHydrateInstance(
-          returnFiber.type,
-          returnFiber.memoizedProps,
-          returnFiber.stateNode,
-          instance,
-        );
-        break;
-    }
-  }
+
 
   const childToDelete = createFiberFromHostInstanceForDeletion();
   childToDelete.stateNode = instance;
@@ -137,65 +114,7 @@ function deleteHydratableInstance(
 
 function insertNonHydratedInstance(returnFiber: Fiber, fiber: Fiber) {
   fiber.flags = (fiber.flags & ~Hydrating) | Placement;
-  if (__DEV__) {
-    switch (returnFiber.tag) {
-      case HostRoot: {
-        const parentContainer = returnFiber.stateNode.containerInfo;
-        switch (fiber.tag) {
-          case HostComponent:
-            const type = fiber.type;
-            const props = fiber.pendingProps;
-            didNotFindHydratableContainerInstance(parentContainer, type, props);
-            break;
-          case HostText:
-            const text = fiber.pendingProps;
-            didNotFindHydratableContainerTextInstance(parentContainer, text);
-            break;
-          case SuspenseComponent:
-            didNotFindHydratableContainerSuspenseInstance(parentContainer);
-            break;
-        }
-        break;
-      }
-      case HostComponent: {
-        const parentType = returnFiber.type;
-        const parentProps = returnFiber.memoizedProps;
-        const parentInstance = returnFiber.stateNode;
-        switch (fiber.tag) {
-          case HostComponent:
-            const type = fiber.type;
-            const props = fiber.pendingProps;
-            didNotFindHydratableInstance(
-              parentType,
-              parentProps,
-              parentInstance,
-              type,
-              props,
-            );
-            break;
-          case HostText:
-            const text = fiber.pendingProps;
-            didNotFindHydratableTextInstance(
-              parentType,
-              parentProps,
-              parentInstance,
-              text,
-            );
-            break;
-          case SuspenseComponent:
-            didNotFindHydratableSuspenseInstance(
-              parentType,
-              parentProps,
-              parentInstance,
-            );
-            break;
-        }
-        break;
-      }
-      default:
-        return;
-    }
-  }
+
 }
 
 function tryHydrate(fiber, nextInstance) {
@@ -331,39 +250,7 @@ function prepareToHydrateHostTextInstance(fiber: Fiber): boolean {
   const textInstance: TextInstance = fiber.stateNode;
   const textContent: string = fiber.memoizedProps;
   const shouldUpdate = hydrateTextInstance(textInstance, textContent, fiber);
-  if (__DEV__) {
-    if (shouldUpdate) {
-      // We assume that prepareToHydrateHostTextInstance is called in a context where the
-      // hydration parent is the parent host component of this host text.
-      const returnFiber = hydrationParentFiber;
-      if (returnFiber !== null) {
-        switch (returnFiber.tag) {
-          case HostRoot: {
-            const parentContainer = returnFiber.stateNode.containerInfo;
-            didNotMatchHydratedContainerTextInstance(
-              parentContainer,
-              textInstance,
-              textContent,
-            );
-            break;
-          }
-          case HostComponent: {
-            const parentType = returnFiber.type;
-            const parentProps = returnFiber.memoizedProps;
-            const parentInstance = returnFiber.stateNode;
-            didNotMatchHydratedTextInstance(
-              parentType,
-              parentProps,
-              parentInstance,
-              textInstance,
-              textContent,
-            );
-            break;
-          }
-        }
-      }
-    }
-  }
+
   return shouldUpdate;
 }
 

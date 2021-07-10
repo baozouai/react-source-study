@@ -57,10 +57,7 @@ const NO_CONTEXT = {};
 const UPDATE_SIGNAL = {};
 const nodeToInstanceMap = new WeakMap();
 
-if (__DEV__) {
-  Object.freeze(NO_CONTEXT);
-  Object.freeze(UPDATE_SIGNAL);
-}
+
 
 export function getPublicInstance(inst: Instance | TextInstance): * {
   switch (inst.tag) {
@@ -83,16 +80,7 @@ export function appendChild(
   parentInstance: Instance | Container,
   child: Instance | TextInstance,
 ): void {
-  if (__DEV__) {
-    if (!Array.isArray(parentInstance.children)) {
-      console.error(
-        'An invalid container has been provided. ' +
-          'This may indicate that another renderer is being used in addition to the test renderer. ' +
-          '(For example, ReactDOM.createPortal inside of a ReactTestRenderer tree.) ' +
-          'This is not supported.',
-      );
-    }
-  }
+
   const index = parentInstance.children.indexOf(child);
   if (index !== -1) {
     parentInstance.children.splice(index, 1);

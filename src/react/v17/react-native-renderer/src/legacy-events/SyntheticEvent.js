@@ -64,14 +64,7 @@ function SyntheticEvent(
   nativeEvent,
   nativeEventTarget,
 ) {
-  if (__DEV__) {
-    // these have a getter/setter for warnings
-    delete this.nativeEvent;
-    delete this.preventDefault;
-    delete this.stopPropagation;
-    delete this.isDefaultPrevented;
-    delete this.isPropagationStopped;
-  }
+
 
   this.dispatchConfig = dispatchConfig;
   this._targetInst = targetInst;
@@ -84,9 +77,7 @@ function SyntheticEvent(
     if (!Interface.hasOwnProperty(propName)) {
       continue;
     }
-    if (__DEV__) {
-      delete this[propName]; // this has a getter/setter for warnings
-    }
+
     const normalize = Interface[propName];
     if (normalize) {
       this[propName] = normalize(nativeEvent);
@@ -170,15 +161,9 @@ Object.assign(SyntheticEvent.prototype, {
   destructor: function() {
     const Interface = this.constructor.Interface;
     for (const propName in Interface) {
-      if (__DEV__) {
-        Object.defineProperty(
-          this,
-          propName,
-          getPooledWarningPropertyDefinition(propName, Interface[propName]),
-        );
-      } else {
+
         this[propName] = null;
-      }
+
     }
     this.dispatchConfig = null;
     this._targetInst = null;
@@ -187,39 +172,7 @@ Object.assign(SyntheticEvent.prototype, {
     this.isPropagationStopped = functionThatReturnsFalse;
     this._dispatchListeners = null;
     this._dispatchInstances = null;
-    if (__DEV__) {
-      Object.defineProperty(
-        this,
-        'nativeEvent',
-        getPooledWarningPropertyDefinition('nativeEvent', null),
-      );
-      Object.defineProperty(
-        this,
-        'isDefaultPrevented',
-        getPooledWarningPropertyDefinition(
-          'isDefaultPrevented',
-          functionThatReturnsFalse,
-        ),
-      );
-      Object.defineProperty(
-        this,
-        'isPropagationStopped',
-        getPooledWarningPropertyDefinition(
-          'isPropagationStopped',
-          functionThatReturnsFalse,
-        ),
-      );
-      Object.defineProperty(
-        this,
-        'preventDefault',
-        getPooledWarningPropertyDefinition('preventDefault', () => {}),
-      );
-      Object.defineProperty(
-        this,
-        'stopPropagation',
-        getPooledWarningPropertyDefinition('stopPropagation', () => {}),
-      );
-    }
+
   },
 });
 
@@ -277,17 +230,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   }
 
   function warn(action, result) {
-    if (__DEV__) {
-      console.error(
-        "This synthetic event is reused for performance reasons. If you're seeing this, " +
-          "you're %s `%s` on a released/nullified synthetic event. %s. " +
-          'If you must keep the original synthetic event around, use event.persist(). ' +
-          'See https://reactjs.org/link/event-pooling for more information.',
-        action,
-        propName,
-        result,
-      );
-    }
+
   }
   const isFunction = typeof getVal === 'function';
   return {

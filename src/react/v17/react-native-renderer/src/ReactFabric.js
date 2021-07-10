@@ -47,23 +47,7 @@ const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 function findHostInstance_DEPRECATED(
   componentOrHandle: any,
 ): ?ElementRef<HostComponent<mixed>> {
-  if (__DEV__) {
-    const owner = ReactCurrentOwner.current;
-    if (owner !== null && owner.stateNode !== null) {
-      if (!owner.stateNode._warnedAboutRefsInRender) {
-        console.error(
-          '%s is accessing findNodeHandle inside its render(). ' +
-            'render() should be a pure function of props and state. It should ' +
-            'never access something that requires stale data from the previous ' +
-            'render, such as refs. Move this logic to componentDidMount and ' +
-            'componentDidUpdate instead.',
-          getComponentName(owner.type) || 'A component',
-        );
-      }
 
-      owner.stateNode._warnedAboutRefsInRender = true;
-    }
-  }
   if (componentOrHandle == null) {
     return null;
   }
@@ -74,14 +58,9 @@ function findHostInstance_DEPRECATED(
     return componentOrHandle.canonical;
   }
   let hostInstance;
-  if (__DEV__) {
-    hostInstance = findHostInstanceWithWarning(
-      componentOrHandle,
-      'findHostInstance_DEPRECATED',
-    );
-  } else {
+
     hostInstance = findHostInstance(componentOrHandle);
-  }
+
 
   if (hostInstance == null) {
     return hostInstance;
@@ -94,23 +73,6 @@ function findHostInstance_DEPRECATED(
 }
 
 function findNodeHandle(componentOrHandle: any): ?number {
-  if (__DEV__) {
-    const owner = ReactCurrentOwner.current;
-    if (owner !== null && owner.stateNode !== null) {
-      if (!owner.stateNode._warnedAboutRefsInRender) {
-        console.error(
-          '%s is accessing findNodeHandle inside its render(). ' +
-            'render() should be a pure function of props and state. It should ' +
-            'never access something that requires stale data from the previous ' +
-            'render, such as refs. Move this logic to componentDidMount and ' +
-            'componentDidUpdate instead.',
-          getComponentName(owner.type) || 'A component',
-        );
-      }
-
-      owner.stateNode._warnedAboutRefsInRender = true;
-    }
-  }
   if (componentOrHandle == null) {
     return null;
   }
@@ -125,14 +87,9 @@ function findNodeHandle(componentOrHandle: any): ?number {
     return componentOrHandle.canonical._nativeTag;
   }
   let hostInstance;
-  if (__DEV__) {
-    hostInstance = findHostInstanceWithWarning(
-      componentOrHandle,
-      'findNodeHandle',
-    );
-  } else {
+
     hostInstance = findHostInstance(componentOrHandle);
-  }
+
 
   if (hostInstance == null) {
     return hostInstance;
@@ -148,12 +105,7 @@ function findNodeHandle(componentOrHandle: any): ?number {
 
 function dispatchCommand(handle: any, command: string, args: Array<any>) {
   if (handle._nativeTag == null) {
-    if (__DEV__) {
-      console.error(
-        "dispatchCommand was called with a ref that isn't a " +
-          'native component. Use React.forwardRef to get access to the underlying native component',
-      );
-    }
+
 
     return;
   }

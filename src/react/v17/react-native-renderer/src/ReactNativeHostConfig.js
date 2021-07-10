@@ -57,9 +57,7 @@ export type RendererInspectionConfig = $ReadOnly<{
 }>;
 
 const UPDATE_SIGNAL = {};
-if (__DEV__) {
-  Object.freeze(UPDATE_SIGNAL);
-}
+
 
 // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
@@ -107,13 +105,7 @@ export function createInstance(
   const tag = allocateTag();
   const viewConfig = getViewConfigForType(type);
 
-  if (__DEV__) {
-    for (const key in viewConfig.validAttributes) {
-      if (props.hasOwnProperty(key)) {
-        deepFreezeAndThrowOnMutationInDev(props[key]);
-      }
-    }
-  }
+
 
   const updatePayload = create(props, viewConfig.validAttributes);
 

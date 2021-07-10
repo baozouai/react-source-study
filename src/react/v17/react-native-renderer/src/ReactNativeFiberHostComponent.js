@@ -44,9 +44,7 @@ class ReactNativeFiberHostComponent {
     this._nativeTag = tag;
     this._children = [];
     this.viewConfig = viewConfig;
-    if (__DEV__) {
-      this._internalFiberInstanceHandleDEV = internalInstanceHandleDEV;
-    }
+
   }
 
   blur() {
@@ -89,11 +87,7 @@ class ReactNativeFiberHostComponent {
     }
 
     if (relativeNode == null) {
-      if (__DEV__) {
-        console.error(
-          'Warning: ref.measureLayout must be called with a node handle or a ref to a native component.',
-        );
-      }
+
 
       return;
     }
@@ -107,9 +101,7 @@ class ReactNativeFiberHostComponent {
   }
 
   setNativeProps(nativeProps: Object) {
-    if (__DEV__) {
-      warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
-    }
+
 
     const updatePayload = create(nativeProps, this.viewConfig.validAttributes);
 

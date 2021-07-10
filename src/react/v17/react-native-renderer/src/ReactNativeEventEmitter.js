@@ -221,11 +221,6 @@ export function receiveTouches(
     const target = nativeEvent.target;
     if (target !== null && target !== undefined) {
       if (target < 1) {
-        if (__DEV__) {
-          console.error(
-            'A view is reporting that a touch occurred on tag zero.',
-          );
-        }
       } else {
         rootNodeID = target;
       }

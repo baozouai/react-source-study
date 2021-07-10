@@ -191,9 +191,7 @@ function getHighestPriorityLanes(lanes: Lanes | Lane): Lanes {
     return_highestLanePriority = OffscreenLanePriority;
     return OffscreenLane;
   }
-  if (__DEV__) {
-    console.error('Should have found matching lanes. This is a bug in React.');
-  }
+
   // This shouldn't be reachable, but as a fallback, return the entire bitmask.
   return_highestLanePriority = DefaultLanePriority;
   return lanes;

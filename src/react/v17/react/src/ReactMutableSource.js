@@ -20,10 +20,6 @@ export function createMutableSource<Source: $NonMaybeType<mixed>>(
     _workInProgressVersionSecondary: null,
   };
 
-  if (__DEV__) {
-    mutableSource._currentPrimaryRenderer = null;
-    mutableSource._currentSecondaryRenderer = null;
-  }
 
   return mutableSource;
 }

@@ -150,11 +150,7 @@ class ReactFabricHostComponent {
       typeof relativeToNativeNode === 'number' ||
       !(relativeToNativeNode instanceof ReactFabricHostComponent)
     ) {
-      if (__DEV__) {
-        console.error(
-          'Warning: ref.measureLayout must be called with a ref to a native component.',
-        );
-      }
+
 
       return;
     }
@@ -168,11 +164,7 @@ class ReactFabricHostComponent {
   }
 
   setNativeProps(nativeProps: Object) {
-    if (__DEV__) {
-      console.error(
-        'Warning: setNativeProps is not currently supported in Fabric',
-      );
-    }
+
 
     return;
   }
@@ -205,13 +197,6 @@ export function createInstance(
 
   const viewConfig = getViewConfigForType(type);
 
-  if (__DEV__) {
-    for (const key in viewConfig.validAttributes) {
-      if (props.hasOwnProperty(key)) {
-        deepFreezeAndThrowOnMutationInDev(props[key]);
-      }
-    }
-  }
 
   const updatePayload = create(props, viewConfig.validAttributes);
 

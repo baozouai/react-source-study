@@ -59,23 +59,6 @@ function readContext(Context, observedBits) {
 }
 
 function identityHashFn(input) {
-  if (__DEV__) {
-    if (
-      typeof input !== 'string' &&
-      typeof input !== 'number' &&
-      typeof input !== 'boolean' &&
-      input !== undefined &&
-      input !== null
-    ) {
-      console.error(
-        'Invalid key type. Expected a string, number, symbol, or boolean, ' +
-          'but instead received: %s' +
-          '\n\nTo use non-primitive values as keys, you must pass a hash ' +
-          'function as the second argument to createResource().',
-        input,
-      );
-    }
-  }
   return input;
 }
 

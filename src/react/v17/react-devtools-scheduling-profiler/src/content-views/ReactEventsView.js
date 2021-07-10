@@ -121,9 +121,6 @@ export class ReactEventsView extends View {
           : COLORS.REACT_SUSPEND;
         break;
       default:
-        if (__DEV__) {
-          console.warn('Unexpected event type "%s"', type);
-        }
         break;
     }
 

@@ -109,9 +109,7 @@ function createClassErrorUpdate(
   const inst = fiber.stateNode;
   if (inst !== null && typeof inst.componentDidCatch === 'function') {
     update.callback = function callback() {
-      if (__DEV__) {
-        markFailedErrorBoundaryForHotReloading(fiber);
-      }
+
       if (typeof getDerivedStateFromError !== 'function') {
         // To preserve the preexisting retry behavior of error boundaries,
         // we keep track of which ones already failed during this batch.
@@ -128,24 +126,7 @@ function createClassErrorUpdate(
       this.componentDidCatch(error, {
         componentStack: stack !== null ? stack : '',
       });
-      if (__DEV__) {
-        if (typeof getDerivedStateFromError !== 'function') {
-          // If componentDidCatch is the only error boundary method defined,
-          // then it needs to call setState to recover from errors.
-          // If no state update is scheduled then the boundary will swallow the error.
-          if (!includesSomeLane(fiber.lanes, (SyncLane: Lane))) {
-            console.error(
-              '%s: Error boundaries should implement getDerivedStateFromError(). ' +
-                'In that method, return a state update to display an error message or fallback UI.',
-              getComponentName(fiber.type) || 'Unknown',
-            );
-          }
-        }
-      }
-    };
-  } else if (__DEV__) {
-    update.callback = () => {
-      markFailedErrorBoundaryForHotReloading(fiber);
+
     };
   }
   return update;
@@ -194,14 +175,6 @@ function throwException(
     // This is a wakeable.
     const wakeable: Wakeable = (value: any);
 
-    if (__DEV__) {
-      if (enableDebugTracing) {
-        if (sourceFiber.mode & DebugTracingMode) {
-          const name = getComponentName(sourceFiber.type) || 'Unknown';
-          logComponentSuspended(name, wakeable);
-        }
-      }
-    }
 
     if (enableSchedulingProfiler) {
       markComponentSuspended(sourceFiber, wakeable);

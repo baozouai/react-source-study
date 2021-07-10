@@ -34,11 +34,7 @@ function listenerAtPhase(inst, event, propagationPhase: PropagationPhases) {
 }
 
 function accumulateDirectionalDispatches(inst, phase, event) {
-  if (__DEV__) {
-    if (!inst) {
-      console.error('Dispatching inst must not be null');
-    }
-  }
+
   const listener = listenerAtPhase(inst, event, phase);
   if (listener) {
     event._dispatchListeners = accumulateInto(

@@ -161,18 +161,6 @@ function mapIntoArray(
         entries: any,
       } = (children: any);
 
-      if (__DEV__) {
-        // Warn about using Maps as children
-        if (iteratorFn === iterableChildren.entries) {
-          if (!didWarnAboutMaps) {
-            console.warn(
-              'Using Maps as children is not supported. ' +
-                'Use an array of keyed ReactElements instead.',
-            );
-          }
-          didWarnAboutMaps = true;
-        }
-      }
 
       const iterator = iteratorFn.call(iterableChildren);
       let step;

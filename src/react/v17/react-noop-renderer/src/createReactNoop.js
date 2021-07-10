@@ -67,10 +67,7 @@ type HostContext = Object;
 const NO_CONTEXT = {};
 const UPPERCASE_CONTEXT = {};
 const UPDATE_SIGNAL = {};
-if (__DEV__) {
-  Object.freeze(NO_CONTEXT);
-  Object.freeze(UPDATE_SIGNAL);
-}
+
 
 function createReactNoop(reconciler: Function, useMutation: boolean) {
   let instanceCounter = 0;
@@ -892,12 +889,7 @@ function createReactNoop(reconciler: Function, useMutation: boolean) {
       if (typeof component.id === 'number') {
         return component;
       }
-      if (__DEV__) {
-        return NoopRenderer.findHostInstanceWithWarning(
-          component,
-          'findInstance',
-        );
-      }
+
       return NoopRenderer.findHostInstance(component);
     },
 
@@ -1112,16 +1104,6 @@ function createReactNoop(reconciler: Function, useMutation: boolean) {
       IsSomeRendererActing.current = previousIsSomeRendererActing;
       IsThisRendererActing.current = previousIsThisRendererActing;
 
-      if (__DEV__) {
-        if (actingUpdatesScopeDepth > previousActingUpdatesScopeDepth) {
-          // if it's _less than_ previousActingUpdatesScopeDepth, then we can
-          // assume the 'other' one has warned
-          console.error(
-            'You seem to have overlapping act() calls, this is not supported. ' +
-              'Be sure to await previous act() calls before making a new one. ',
-          );
-        }
-      }
     };
 
     // TODO: This would be way simpler if 1) we required a promise to be

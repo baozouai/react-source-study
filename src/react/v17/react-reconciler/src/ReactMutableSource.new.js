@@ -18,10 +18,7 @@ import {isPrimaryRenderer} from './ReactFiberHostConfig';
 const workInProgressSources: Array<MutableSource<any>> = [];
 
 let rendererSigil;
-if (__DEV__) {
-  // Used to detect multiple renderers using the same mutable source.
-  rendererSigil = {};
-}
+
 
 export function markSourceAsDirty(mutableSource: MutableSource<any>): void {
   workInProgressSources.push(mutableSource);
@@ -64,27 +61,7 @@ export function setWorkInProgressVersion(
 export function warnAboutMultipleRenderersDEV(
   mutableSource: MutableSource<any>,
 ): void {
-  if (__DEV__) {
-    if (isPrimaryRenderer) {
-      if (mutableSource._currentPrimaryRenderer == null) {
-        mutableSource._currentPrimaryRenderer = rendererSigil;
-      } else if (mutableSource._currentPrimaryRenderer !== rendererSigil) {
-        console.error(
-          'Detected multiple renderers concurrently rendering the ' +
-            'same mutable source. This is currently unsupported.',
-        );
-      }
-    } else {
-      if (mutableSource._currentSecondaryRenderer == null) {
-        mutableSource._currentSecondaryRenderer = rendererSigil;
-      } else if (mutableSource._currentSecondaryRenderer !== rendererSigil) {
-        console.error(
-          'Detected multiple renderers concurrently rendering the ' +
-            'same mutable source. This is currently unsupported.',
-        );
-      }
-    }
-  }
+
 }
 
 // Eager reads the version of a mutable source and stores it on the root.
