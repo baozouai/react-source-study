@@ -83,6 +83,10 @@ function warnIfStringRefCannotBeAutoConverted(config) {
  * @internal
  */
 const ReactElement = function(type, key, ref, self, source, owner, props) {
+  console.log('ReactElement start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactElement')) {
+    debugger
+  }
   const element = {
     // This tag allows us to uniquely identify this as a React Element
     $$typeof: REACT_ELEMENT_TYPE,
@@ -248,6 +252,10 @@ export function jsxDEV(type, config, maybeKey, source, self) {
  * See https://reactjs.org/docs/react-api.html#createelement
  */
 export function createElement(type, config, children) {
+  console.log('createElement start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) {
+    debugger
+  }
   let propName;
 
   // Reserved names are extracted

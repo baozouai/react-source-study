@@ -304,6 +304,10 @@ function getStateFromUpdate<State>(
   nextProps: any,
   instance: any,
 ): any {
+  console.log('getStateFromUpdate')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getStateFromUpdate')) {
+    debugger
+  }
   switch (update.tag) {
     case ReplaceState: {
       const payload = update.payload;
@@ -355,6 +359,10 @@ export function processUpdateQueue<State>(
   instance: any,
   renderLanes: Lanes,
 ): void {
+  console.log('processUpdateQueue start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processUpdateQueue')) {
+    debugger
+  }
   // This is always non-null on a ClassComponent or HostRoot
   const queue: UpdateQueue<State> = (workInProgress.updateQueue: any);
 
@@ -522,7 +530,7 @@ export function processUpdateQueue<State>(
     workInProgress.memoizedState = newState;
   }
 
-
+  console.log('processUpdateQueue end')
 }
 
 function callCallback(callback, context) {

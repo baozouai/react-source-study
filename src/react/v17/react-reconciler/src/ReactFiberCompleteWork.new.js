@@ -209,8 +209,8 @@ if (supportsMutation) {
     // children to find all the terminal nodes.
     let node = workInProgress.child;
     
-    console.log('ReactFiberCompleteWork: hadNoMutationsEffects')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('hadNoMutationsEffects')) {
+    console.log('appendAllChildren')
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('appendAllChildren')) {
     debugger
     }
     while (node !== null) {
@@ -252,7 +252,7 @@ if (supportsMutation) {
     rootContainerInstance: Container,
   ) {
    
-    console.log('ReactFiberCompleteWork: FiberNode')
+    console.log('FiberNode')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
     debugger
   }
@@ -702,7 +702,7 @@ function bubbleProperties(completedWork: Fiber) {
     completedWork.alternate !== null &&
     completedWork.alternate.child === completedWork.child;
     
-    console.log('ReactFiberCompleteWork: bubbleProperties')
+    console.log('bubbleProperties')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('bubbleProperties')) {
     debugger
   }
@@ -818,7 +818,7 @@ function completeWork(
 ): Fiber | null {
   const newProps = workInProgress.pendingProps;
   
-  console.log('ReactFiberCompleteWork: completeWork')
+  console.log('completeWork')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeWork')) {
   debugger
   }

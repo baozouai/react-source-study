@@ -378,6 +378,10 @@ function updateWorkInProgressHook(): Hook {
   // clone, or a work-in-progress hook from a previous render pass that we can
   // use as a base. When we reach the end of the base list, we must switch to
   // the dispatcher used for mounts.
+  console.log('updateWorkInProgressHook')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateWorkInProgressHook')) {
+    debugger
+  }
   let nextCurrentHook: null | Hook;
   if (currentHook === null) {
     const current = currentlyRenderingFiber.alternate;
@@ -903,6 +907,10 @@ function updateMutableSource<Source, Snapshot>(
 function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
+  console.log('mountState start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) {
+    debugger
+  }
   const hook = mountWorkInProgressHook();
   if (typeof initialState === 'function') {
     // $FlowFixMe: Flow doesn't like mixed types
@@ -928,13 +936,13 @@ function mountState<S>(
 function updateState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  return updateReducer(basicStateReducer, (initialState: any));
+  return updateReducer(basicStateReducer, initialState);
 }
 
 function rerenderState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  return rerenderReducer(basicStateReducer, (initialState: any));
+  return rerenderReducer(basicStateReducer, initialState);
 }
 
 function pushEffect(tag, create, destroy, deps) {
@@ -944,12 +952,12 @@ function pushEffect(tag, create, destroy, deps) {
     destroy,
     deps,
     // Circular
-    next: (null: any),
+    next: null,
   };
   let componentUpdateQueue: null | FunctionComponentUpdateQueue = (currentlyRenderingFiber.updateQueue: any);
   if (componentUpdateQueue === null) {
     componentUpdateQueue = createFunctionComponentUpdateQueue();
-    currentlyRenderingFiber.updateQueue = (componentUpdateQueue: any);
+    currentlyRenderingFiber.updateQueue = componentUpdateQueue;
     componentUpdateQueue.lastEffect = effect.next = effect;
   } else {
     const lastEffect = componentUpdateQueue.lastEffect;
@@ -1379,7 +1387,10 @@ function dispatchAction<S, A>(
   action: A,
 ) {
 
-
+  console.log('dispatchAction start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) {
+    debugger
+  }
   const eventTime = requestEventTime();
   const lane = requestUpdateLane(fiber);
 
@@ -1448,6 +1459,7 @@ function dispatchAction<S, A>(
     }
 
     scheduleUpdateOnFiber(fiber, lane, eventTime);
+    console.log('dispatchAction end')
   }
 
 

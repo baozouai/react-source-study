@@ -236,8 +236,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
     
-    console.log('ReactChildFiber.new: performConcurrentWorkOnRoot')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) {
+    console.log('useFiber')
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useFiber')) {
     debugger
     }
     const clone = createWorkInProgress(fiber, pendingProps);
@@ -252,7 +252,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newIndex: number,
   ): number {
     
-    console.log('ReactChildFiber.new: placeChild')
+    console.log('placeChild')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('placeChild')) {
     debugger
     }
@@ -314,7 +314,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber {
     
-    console.log('ReactChildFiber.new: updateElement')
+    console.log('updateElement')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) {
     debugger
     }
@@ -409,6 +409,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    console.log('createChild start')
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createChild')) {
+    debugger
+    }
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text
@@ -419,6 +423,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         lanes,
       );
       created.return = returnFiber;
+      console.log('createChild end')
       return created;
     }
 
@@ -432,6 +437,7 @@ function ChildReconciler(shouldTrackSideEffects) {
           );
           created.ref = coerceRef(returnFiber, null, newChild);
           created.return = returnFiber;
+          console.log('createChild end')
           return created;
         }
         case REACT_PORTAL_TYPE: {
@@ -441,13 +447,16 @@ function ChildReconciler(shouldTrackSideEffects) {
             lanes,
           );
           created.return = returnFiber;
+          console.log('createChild end')
           return created;
         }
         case REACT_LAZY_TYPE: {
           if (enableLazyElements) {
             const payload = newChild._payload;
             const init = newChild._init;
-            return createChild(returnFiber, init(payload), lanes);
+            const created = createChild(returnFiber, init(payload), lanes);
+            console.log('createChild end')
+            return created
           }
         }
       }
@@ -460,12 +469,13 @@ function ChildReconciler(shouldTrackSideEffects) {
           null,
         );
         created.return = returnFiber;
+        console.log('createChild end')
         return created;
       }
 
       throwOnInvalidObjectType(returnFiber, newChild);
     }
-
+    console.log('createChild end')
     return null;
   }
 
@@ -476,7 +486,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
-    console.log('ReactChildFiber.new: updateSlot')
+    console.log('updateSlot')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSlot')) {
     debugger
     }
@@ -647,7 +657,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // uses the same algorithm.
 
     
-    console.log('ReactChildFiber.new: reconcileChildrenArray')
+    console.log('reconcileChildrenArray')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildrenArray')) {
     debugger
     }
@@ -944,6 +954,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     element: ReactElement,
     lanes: Lanes,
   ): Fiber {
+    console.log('reconcileSingleElement')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileSingleElement')) {
+    debugger
+  }
     const key = element.key;
     let child = currentFirstChild;
     while (child !== null) {
@@ -1074,7 +1088,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
-    console.log('ReactChildFiber.new: reconcileChildFibers')
+    console.log('reconcileChildFibers in ChildReconciler start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) {
     debugger
     }
@@ -1200,6 +1214,8 @@ function ChildReconciler(shouldTrackSideEffects) {
   }
 
   return reconcileChildFibers;
+
+
 }
 
 export const reconcileChildFibers = ChildReconciler(true);
@@ -1210,7 +1226,7 @@ export function cloneChildFibers(
   workInProgress: Fiber,
 ): void {
   
-  console.log('ReactChildFiber.new: cloneChildFibers')
+  console.log('cloneChildFibers')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('cloneChildFibers')) {
     debugger
     }

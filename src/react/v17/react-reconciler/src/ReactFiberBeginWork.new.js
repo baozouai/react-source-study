@@ -227,7 +227,7 @@ export function reconcileChildren(
   renderLanes: Lanes,
 ) {
   
-  console.log('ReactFiberBeginWork: reconcileChildren')
+  console.log('reconcileChildren start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildren')) {
   debugger
   }
@@ -260,6 +260,7 @@ export function reconcileChildren(
       renderLanes,
     );
   }
+  console.log('reconcileChildren end')
 }
 
 function forceUnmountCurrentAndReconcile(
@@ -343,7 +344,7 @@ function updateMemoComponent(
   renderLanes: Lanes,
 ): null | Fiber {
   
-  console.log('ReactFiber.new: updateMemoComponent')
+  console.log('updateMemoComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateMemoComponent')) {
   debugger
   }
@@ -618,8 +619,8 @@ function updateFunctionComponent(
     context,
     renderLanes,
   );
-
-
+    debugger
+    console.log(nextChildren)
   if (current !== null && !didReceiveUpdate) {
     bailoutHooks(current, workInProgress, renderLanes);
     return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
@@ -678,7 +679,7 @@ function updateClassComponent(
   renderLanes: Lanes,
 ) {
   
-  console.log('ReactFiber.new: updateClassComponent')
+  console.log('updateClassComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateClassComponent')) {
   debugger
   }
@@ -750,7 +751,7 @@ function finishClassComponent(
   renderLanes: Lanes,
 ) {
   
-  console.log('ReactFiber.new: finishClassComponent')
+  console.log('finishClassComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('finishClassComponent')) {
   debugger
   }
@@ -838,7 +839,7 @@ function pushHostRootContext(workInProgress) {
 
 function updateHostRoot(current, workInProgress, renderLanes) {
   
-  console.log('ReactFiber.new: updateHostRoot')
+  console.log('updateHostRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostRoot')) {
   debugger
   }
@@ -909,6 +910,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
     reconcileChildren(current, workInProgress, nextChildren, renderLanes);
     resetHydrationState();
   }
+  console.log('updateHostRoot end')
   return workInProgress.child;
 }
 
@@ -1115,7 +1117,7 @@ function mountIndeterminateComponent(
   renderLanes,
 ) {
   
-  console.log('ReactFiber.new: mountIndeterminateComponent')
+  console.log('mountIndeterminateComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountIndeterminateComponent')) {
   debugger
   }
@@ -1639,7 +1641,7 @@ function createWorkInProgressOffscreenFiber(
   offscreenProps: OffscreenProps,
 ) {
   
-  console.log('ReactFiber.new: createWorkInProgressOffscreenFiber')
+  console.log('createWorkInProgressOffscreenFiber')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgressOffscreenFiber')) {
   debugger
   }
@@ -1655,7 +1657,7 @@ function updateSuspensePrimaryChildren(
   renderLanes,
 ) {
   
-  console.log('ReactFiber.new: updateSuspensePrimaryChildren')
+  console.log('updateSuspensePrimaryChildren')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspensePrimaryChildren')) {
   debugger
   }
@@ -1699,7 +1701,7 @@ function updateSuspenseFallbackChildren(
   renderLanes,
 ) {
   
-  console.log('ReactFiber.new: updateSuspenseFallbackChildren')
+  console.log('updateSuspenseFallbackChildren')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspenseFallbackChildren')) {
   debugger
   }
@@ -2412,7 +2414,7 @@ function beginWork(
   renderLanes: Lanes,
 ): Fiber | null {
   
-  console.log('ReactFiber.new: beginWork')
+  console.log('beginWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('beginWork')) {
   debugger
   }

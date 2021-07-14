@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react'
 import State from './components/State'
 import LanesDemo from './components/LanesDemo'
 import AppSibling from './components/AppSibling'
@@ -45,16 +45,24 @@ function App() {
   // return <Diff ref={'diffRef'}/>
   // return <Diff />
   const [state, setState] = useState([1])
+  const ref = useRef(1)
 
-
-
-    return <p onClick={() => setState(state => ([...state, state.length + 1]))}>
+  useEffect(() => {
+    ref.current = ref.current + 1
+  }, [state])
+  useEffect(() => {
+    ref.current = ref.current + 1
+  }, [ref.current])
+    return <>
+    <p onClick={() => setState(state => ([...state, state.length + 1]))}>
       {
           state.map(v => {
               return <div key={v}>{v}</div>
           })
       }
     </p>
+    {ref.current}
+    </>
 
 }
 

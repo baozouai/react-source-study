@@ -48,8 +48,14 @@ export function useContext<T>(
 export function useState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
+  console.log('useState start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useState')) {
+    debugger
+  }
   const dispatcher = resolveDispatcher();
-  return dispatcher.useState(initialState);
+  const dispatcherUseState = dispatcher.useState(initialState);
+  console.log('useState end')
+  return dispatcherUseState
 }
 
 export function useReducer<S, I, A>(

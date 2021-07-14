@@ -350,6 +350,10 @@ function recursivelyCommitLayoutEffects(
   finishedWork: Fiber,
   finishedRoot: FiberRoot,
 ) {
+  console.log('recursivelyCommitLayoutEffects start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('recursivelyCommitLayoutEffects')) {
+    debugger
+  }
   console.log('finishedWork', finishedWork);
   const {flags, tag} = finishedWork;
   switch (tag) {
@@ -505,6 +509,7 @@ function recursivelyCommitLayoutEffects(
       break;
     }
   }
+  console.log('recursivelyCommitLayoutEffects end')
 }
 
 function commitLayoutEffectsForProfiler(

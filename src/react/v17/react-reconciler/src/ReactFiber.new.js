@@ -128,7 +128,7 @@ function FiberNode(
 
   this.mode = mode;
   
-  console.log('ReactFiber.new: FiberNode')
+  console.log('FiberNode')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
   debugger
   }
@@ -190,12 +190,14 @@ const createFiber = function(
   mode: TypeOfMode,
 ): Fiber {
  
-  console.log('ReactFiber.new: createFiber')
+  console.log('createFiber start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiber')) {
     debugger
   }
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
-  return new FiberNode(tag, pendingProps, key, mode);
+  const fiberNode = new FiberNode(tag, pendingProps, key, mode);
+  console.log('createFiber end')
+  return fiberNode
 };
 
 function shouldConstruct(Component: Function) {
@@ -235,7 +237,7 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
   
-  console.log('ReactFiber.new: createWorkInProgress')
+  console.log('createWorkInProgress start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) {
   debugger
   }
@@ -307,7 +309,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     workInProgress.selfBaseDuration = current.selfBaseDuration;
     workInProgress.treeBaseDuration = current.treeBaseDuration;
   }
-
+  console.log('createWorkInProgress end')
   return workInProgress;
 }
 
@@ -385,7 +387,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 
 export function createHostRootFiber(tag: RootTag): Fiber {
   
-  console.log('ReactFiber.new: createHostRootFiber')
+  console.log('createHostRootFiber start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) {
   debugger
   }
@@ -405,7 +407,9 @@ export function createHostRootFiber(tag: RootTag): Fiber {
     mode |= ProfileMode;
   }
 
-  return createFiber(HostRoot, null, null, mode);
+  const newFiber = createFiber(HostRoot, null, null, mode);
+  console.log('createHostRootFiber end')
+  return newFiber
 }
 
 export function createFiberFromTypeAndProps(
@@ -417,7 +421,7 @@ export function createFiberFromTypeAndProps(
   lanes: Lanes,
 ): Fiber {
   
-  console.log('ReactFiber.new: createFiberFromTypeAndProps')
+  console.log('createFiberFromTypeAndProps start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) {
   debugger
   }
@@ -511,6 +515,8 @@ export function createFiberFromTypeAndProps(
   fiber.type = resolvedType;
   fiber.lanes = lanes;
 
+  console.log('createFiberFromTypeAndProps end')
+
   return fiber;
 }
 
@@ -520,7 +526,7 @@ export function createFiberFromElement(
   lanes: Lanes,
 ): Fiber {
   
-  console.log('ReactFiber.new: createFiberFromElement')
+  console.log('createFiberFromElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) {
   debugger
   }
@@ -537,6 +543,7 @@ export function createFiberFromElement(
     mode,
     lanes,
   );
+  console.log('createFiberFromElement end')
   return fiber;
 }
 
