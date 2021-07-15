@@ -59,7 +59,6 @@ import {
 } from './ReactFiberWorkLoop.new';
 import {logForceUpdateScheduled, logStateUpdateScheduled} from './DebugTracing';
 
-import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
 import {
   markForceUpdateScheduled,
   markStateUpdateScheduled,
@@ -71,17 +70,6 @@ const isArray = Array.isArray;
 // React.Component uses a shared frozen object by default.
 // We'll use it to determine whether we need to initialize legacy refs.
 export const emptyRefsObject = new React.Component().refs;
-
-let didWarnAboutStateAssignmentForComponent;
-let didWarnAboutUninitializedState;
-let didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
-let didWarnAboutLegacyLifecyclesAndDerivedState;
-let didWarnAboutUndefinedDerivedState;
-let warnOnUndefinedDerivedState;
-let warnOnInvalidCallback;
-let didWarnAboutDirectlyAssigningPropsToState;
-let didWarnAboutContextTypeAndContextTypes;
-let didWarnAboutInvalidateContextType;
 
 
 

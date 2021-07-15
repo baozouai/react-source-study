@@ -228,14 +228,14 @@ function commitBeforeMutationLifeCycles(
           // We could update instance props and state here,
           // but instead we rely on them being set during last render.
           // TODO: revisit this when we implement resuming.
-
+          // 调用getSnapshotBeforeUpdate
           const snapshot = instance.getSnapshotBeforeUpdate(
             finishedWork.elementType === finishedWork.type
               ? prevProps
               : resolveDefaultProps(finishedWork.type, prevProps),
             prevState,
           );
-
+          // 将返回值存储在内部属性上，方便componentDidUpdate获取
           instance.__reactInternalSnapshotBeforeUpdate = snapshot;
         }
       }
@@ -269,7 +269,11 @@ function commitHookEffectListUnmount(
   finishedWork: Fiber,
   nearestMountedAncestor: Fiber | null,
 ) {
-  const updateQueue: FunctionComponentUpdateQueue | null = (finishedWork.updateQueue: any);
+  console.log('commitHookEffectListUnmount start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListUnmount')) {
+  debugger
+  }
+  const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
   const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;
   if (lastEffect !== null) {
     const firstEffect = lastEffect.next;
@@ -286,10 +290,15 @@ function commitHookEffectListUnmount(
       effect = effect.next;
     } while (effect !== firstEffect);
   }
+  console.log('commitHookEffectListUnmount end')
 }
 
 function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
-  const updateQueue: FunctionComponentUpdateQueue | null = (finishedWork.updateQueue: any);
+  console.log('commitHookEffectListMount start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListMount')) {
+  debugger
+  }
+  const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
   const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;
   if (lastEffect !== null) {
     const firstEffect = lastEffect.next;
@@ -304,6 +313,7 @@ function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
       effect = effect.next;
     } while (effect !== firstEffect);
   }
+  console.log('commitHookEffectListMount end')
 }
 
 function commitProfilerPassiveEffect(
@@ -1368,6 +1378,10 @@ function commitDeletion(
 }
 
 function commitWork(current: Fiber | null, finishedWork: Fiber): void {
+  console.log('commitWork start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitWork')) {
+  debugger
+  }
   if (!supportsMutation) {
     switch (finishedWork.tag) {
       case FunctionComponent:
@@ -1402,6 +1416,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
             finishedWork.return,
           );
         }
+        console.log('commitWork end')
         return;
       }
       case Profiler: {
@@ -1410,10 +1425,12 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       case SuspenseComponent: {
         commitSuspenseComponent(finishedWork);
         attachSuspenseRetryListeners(finishedWork);
+        console.log('commitWork end')
         return;
       }
       case SuspenseListComponent: {
         attachSuspenseRetryListeners(finishedWork);
+        console.log('commitWork end')
         return;
       }
       case HostRoot: {
@@ -1429,11 +1446,13 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       }
       case OffscreenComponent:
       case LegacyHiddenComponent: {
+        console.log('commitWork end')
         return;
       }
     }
 
     commitContainer(finishedWork);
+    console.log('commitWork end')
     return;
   }
 
@@ -1470,9 +1489,11 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           finishedWork.return,
         );
       }
+      console.log('commitWork end')
       return;
     }
     case ClassComponent: {
+      console.log('commitWork end')
       return;
     }
     case HostComponent: {
@@ -1499,6 +1520,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           );
         }
       }
+      console.log('commitWork end')
       return;
     }
     case HostText: {
@@ -1515,6 +1537,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       const oldText: string =
         current !== null ? current.memoizedProps : newText;
       commitTextUpdate(textInstance, oldText, newText);
+      console.log('commitWork end')
       return;
     }
     case HostRoot: {
@@ -1526,27 +1549,33 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           commitHydratedContainer(root.containerInfo);
         }
       }
+      console.log('commitWork end')
       return;
     }
     case Profiler: {
+      console.log('commitWork end')
       return;
     }
     case SuspenseComponent: {
       commitSuspenseComponent(finishedWork);
       attachSuspenseRetryListeners(finishedWork);
+      console.log('commitWork end')
       return;
     }
     case SuspenseListComponent: {
       attachSuspenseRetryListeners(finishedWork);
+      console.log('commitWork end')
       return;
     }
     case IncompleteClassComponent: {
+      console.log('commitWork end')
       return;
     }
     case FundamentalComponent: {
       if (enableFundamentalAPI) {
         const fundamentalInstance = finishedWork.stateNode;
         updateFundamentalComponent(fundamentalInstance);
+        console.log('commitWork end')
         return;
       }
       break;
@@ -1555,6 +1584,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       if (enableScopeAPI) {
         const scopeInstance = finishedWork.stateNode;
         prepareScopeUpdate(scopeInstance, finishedWork);
+        console.log('commitWork end')
         return;
       }
       break;
@@ -1564,6 +1594,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       const newState: OffscreenState | null = finishedWork.memoizedState;
       const isHidden = newState !== null;
       hideOrUnhideAllChildren(finishedWork, isHidden);
+      console.log('commitWork end')
       return;
     }
   }
@@ -1689,6 +1720,10 @@ function commitResetTextContent(current: Fiber): void {
 }
 
 function commitPassiveUnmount(finishedWork: Fiber): void {
+  console.log('commitPassiveUnmount start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmount')) {
+  debugger
+  }
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -1716,12 +1751,17 @@ function commitPassiveUnmount(finishedWork: Fiber): void {
       break;
     }
   }
+  console.log('commitPassiveUnmount end')
 }
 
 function commitPassiveUnmountInsideDeletedTree(
   current: Fiber,
   nearestMountedAncestor: Fiber | null,
 ): void {
+  console.log('commitPassiveUnmountInsideDeletedTree start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmountInsideDeletedTree')) {
+  debugger
+  }
   switch (current.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -1749,12 +1789,17 @@ function commitPassiveUnmountInsideDeletedTree(
       break;
     }
   }
+  console.log('commitPassiveUnmountInsideDeletedTree end')
 }
 
 function commitPassiveMount(
   finishedRoot: FiberRoot,
   finishedWork: Fiber,
 ): void {
+  console.log('commitPassiveMount start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveMount')) {
+  debugger
+  }
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -1781,6 +1826,7 @@ function commitPassiveMount(
       break;
     }
   }
+  console.log('commitPassiveMount end')
 }
 
 function invokeLayoutEffectMountInDEV(fiber: Fiber): void {

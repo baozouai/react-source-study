@@ -1776,6 +1776,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   // Update the first and last pending times on this root. The new first
   // pending time is whatever is left on the root fiber.
   let remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
+  // 将被跳过的优先级放到root上的pendingLanes（待处理的优先级）上
   markRootFinished(root, remainingLanes);
 
   // Clear already finished discrete updates in case that a later call of
@@ -1918,6 +1919,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     }
   } else {
     // No effects.
+    // 没有effectList，直接将wprkInProgress树切换为current树
     root.current = finishedWork;
     // Measure these anyway so the flamegraph explicitly shows that there were
     // no effects.
@@ -1937,7 +1939,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     pendingPassiveEffectsLanes = lanes;
     pendingPassiveEffectsRenderPriority = renderPriorityLevel;
   }
-
+  // 获取尚未处理的优先级，比如之前被跳过的任务的优先级
   // Read this again, since an effect might have updated it
   remainingLanes = root.pendingLanes;
 
@@ -1987,7 +1989,12 @@ function commitRootImpl(root, renderPriorityLevel) {
   }
 
   onCommitRootDevTools(finishedWork.stateNode, renderPriorityLevel);
-
+ /*
+  * 每次commit阶段完成后，再执行一遍ensureRootIsScheduled，确保是否还有任务需要被调度。
+  * 例如，高优先级插队的更新完成后，commit完成后，还会再执行一遍，保证之前跳过的低优先级任务
+  * 重新调度
+  *
+  * */
   // Always call this before exiting `commitRoot`, to ensure that any
   // additional work on this root is scheduled.
   ensureRootIsScheduled(root, now());
@@ -2062,6 +2069,7 @@ function commitBeforeMutationEffectsImpl(fiber: Fiber) {
   }
 
   if ((flags & Snapshot) !== NoFlags) {
+    // 通过commitBeforeMutationEffectOnFiber调用getSnapshotBeforeUpdate
     commitBeforeMutationEffectOnFiber(current, fiber);
   }
 
@@ -2381,7 +2389,13 @@ function flushPassiveUnmountEffectsInsideOfDeletedTree(
 }
 
 function flushPassiveEffectsImpl() {
+  console.log('flushPassiveEffectsImpl start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffectsImpl')) {
+  debugger
+  }
+  // 先校验，如果root上没有 Passive efectTag的节点，则直接return
   if (rootWithPendingPassiveEffects === null) {
+    console.log('flushPassiveEffectsImpl end')
     return false;
   }
 
@@ -2417,7 +2431,7 @@ function flushPassiveEffectsImpl() {
   }
 
   if (enableSchedulerTracing) {
-    popInteractions(((prevInteractions: any): Set<Interaction>));
+    popInteractions(prevInteractions); // prevInteractions as Set<Interaction>
     finishPendingInteractions(root, lanes);
   }
 
@@ -2430,7 +2444,7 @@ function flushPassiveEffectsImpl() {
   // exceeds the limit, we'll fire a warning.
   nestedPassiveUpdateCount =
     rootWithPendingPassiveEffects === null ? 0 : nestedPassiveUpdateCount + 1;
-
+  console.log('flushPassiveEffectsImpl end')
   return true;
 }
 

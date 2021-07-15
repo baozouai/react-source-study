@@ -21,7 +21,7 @@ import {
   REACT_LAZY_TYPE,
 } from 'shared/ReactSymbols';
 
-import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
+
 
 import ReactSharedInternals from 'shared/ReactSharedInternals';
 

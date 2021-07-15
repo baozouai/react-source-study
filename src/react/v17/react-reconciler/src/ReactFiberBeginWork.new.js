@@ -203,7 +203,7 @@ import {
 import {unstable_wrap as Schedule_tracing_wrap} from '../../scheduler/tracing';
 import {setWorkInProgressVersion} from './ReactMutableSource.new';
 
-import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
+
 
 const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
