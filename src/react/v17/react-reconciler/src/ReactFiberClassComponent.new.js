@@ -57,7 +57,7 @@ import {
   requestUpdateLane,
   scheduleUpdateOnFiber,
 } from './ReactFiberWorkLoop.new';
-import {logForceUpdateScheduled, logStateUpdateScheduled} from './DebugTracing';
+
 
 import {
   markForceUpdateScheduled,

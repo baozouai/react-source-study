@@ -15,9 +15,7 @@ import {getToStringValue, toString} from './ToStringValue';
 
 let didWarnValueDefaultValue;
 
-if (__DEV__) {
-  didWarnValueDefaultValue = false;
-}
+
 
 type SelectWithWrapperState = HTMLSelectElement & {
   _wrapperState: {wasMultiple: boolean},
@@ -32,38 +30,6 @@ function getDeclarationErrorAddendum() {
 }
 
 const valuePropNames = ['value', 'defaultValue'];
-
-/**
- * Validation function for `value` and `defaultValue`.
- */
-function checkSelectPropTypes(props) {
-  if (__DEV__) {
-    checkControlledValueProps('select', props);
-
-    for (let i = 0; i < valuePropNames.length; i++) {
-      const propName = valuePropNames[i];
-      if (props[propName] == null) {
-        continue;
-      }
-      const isArray = Array.isArray(props[propName]);
-      if (props.multiple && !isArray) {
-        console.error(
-          'The `%s` prop supplied to <select> must be an array if ' +
-            '`multiple` is true.%s',
-          propName,
-          getDeclarationErrorAddendum(),
-        );
-      } else if (!props.multiple && isArray) {
-        console.error(
-          'The `%s` prop supplied to <select> must be a scalar ' +
-            'value if `multiple` is false.%s',
-          propName,
-          getDeclarationErrorAddendum(),
-        );
-      }
-    }
-  }
-}
 
 function updateOptions(
   node: HTMLSelectElement,
@@ -140,30 +106,13 @@ export function getHostProps(element: Element, props: Object) {
 
 export function initWrapperState(element: Element, props: Object) {
   const node = ((element: any): SelectWithWrapperState);
-  if (__DEV__) {
-    checkSelectPropTypes(props);
-  }
+
 
   node._wrapperState = {
     wasMultiple: !!props.multiple,
   };
 
-  if (__DEV__) {
-    if (
-      props.value !== undefined &&
-      props.defaultValue !== undefined &&
-      !didWarnValueDefaultValue
-    ) {
-      console.error(
-        'Select elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled select ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
-      );
-      didWarnValueDefaultValue = true;
-    }
-  }
+
 }
 
 export function postMountWrapper(element: Element, props: Object) {

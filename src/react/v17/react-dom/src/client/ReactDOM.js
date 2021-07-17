@@ -180,7 +180,7 @@ export {
 
 const foundDevTools = injectIntoDevTools({
   findFiberByHostInstance: getClosestInstanceFromNode,
-  bundleType: __DEV__ ? 1 : 0,
+  bundleType: 0,
   version: ReactVersion,
   rendererPackageName: 'react-dom',
 });

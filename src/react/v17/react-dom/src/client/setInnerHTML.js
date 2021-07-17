@@ -26,22 +26,7 @@ const setInnerHTML = createMicrosoftUnsafeLocalFunction(function(
   html: {valueOf(): {toString(): string, ...}, ...},
 ): void {
   if (node.namespaceURI === Namespaces.svg) {
-    if (__DEV__) {
-      if (enableTrustedTypesIntegration) {
-        // TODO: reconsider the text of this warning and when it should show
-        // before enabling the feature flag.
-        if (typeof trustedTypes !== 'undefined') {
-          console.error(
-            "Using 'dangerouslySetInnerHTML' in an svg element with " +
-              'Trusted Types enabled in an Internet Explorer will cause ' +
-              'the trusted value to be converted to string. Assigning string ' +
-              "to 'innerHTML' will throw an error if Trusted Types are enforced. " +
-              "You can try to wrap your svg element inside a div and use 'dangerouslySetInnerHTML' " +
-              'on the enclosing div instead.',
-          );
-        }
-      }
-    }
+
     if (!('innerHTML' in node)) {
       // IE does not have innerHTML for SVG nodes, so instead we inject the
       // new markup in a temp node and then move the child nodes across into

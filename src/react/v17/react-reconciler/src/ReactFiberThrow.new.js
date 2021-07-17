@@ -31,9 +31,8 @@ import {
   ForceUpdateForLegacySuspense,
 } from './ReactFiberFlags';
 import {shouldCaptureSuspense} from './ReactFiberSuspenseComponent.new';
-import {NoMode, BlockingMode, DebugTracingMode} from './ReactTypeOfMode';
+import {NoMode, BlockingMode,} from './ReactTypeOfMode';
 import {
-  enableDebugTracing,
   enableSchedulingProfiler,
 } from 'shared/ReactFeatureFlags';
 import {createCapturedValue} from './ReactCapturedValue';
@@ -44,7 +43,7 @@ import {
   ForceUpdate,
   enqueueUpdate,
 } from './ReactUpdateQueue.new';
-import {markFailedErrorBoundaryForHotReloading} from './ReactFiberHotReloading.new';
+
 import {
   suspenseStackCursor,
   InvisibleParentSuspenseContext,
@@ -58,13 +57,12 @@ import {
   pingSuspendedRoot,
 } from './ReactFiberWorkLoop.new';
 import {logCapturedError} from './ReactFiberErrorLogger';
-import {logComponentSuspended} from './DebugTracing';
+
 import {markComponentSuspended} from './SchedulingProfiler';
 
 import {
   SyncLane,
   NoTimestamp,
-  includesSomeLane,
   mergeLanes,
   pickArbitraryLane,
 } from './ReactFiberLane';

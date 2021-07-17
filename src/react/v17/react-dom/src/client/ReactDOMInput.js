@@ -73,44 +73,6 @@ export function getHostProps(element: Element, props: Object) {
 }
 
 export function initWrapperState(element: Element, props: Object) {
-  if (__DEV__) {
-    checkControlledValueProps('input', props);
-
-    if (
-      props.checked !== undefined &&
-      props.defaultChecked !== undefined &&
-      !didWarnCheckedDefaultChecked
-    ) {
-      console.error(
-        '%s contains an input of type %s with both checked and defaultChecked props. ' +
-          'Input elements must be either controlled or uncontrolled ' +
-          '(specify either the checked prop, or the defaultChecked prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled input ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
-        getCurrentFiberOwnerNameInDevOrNull() || 'A component',
-        props.type,
-      );
-      didWarnCheckedDefaultChecked = true;
-    }
-    if (
-      props.value !== undefined &&
-      props.defaultValue !== undefined &&
-      !didWarnValueDefaultValue
-    ) {
-      console.error(
-        '%s contains an input of type %s with both value and defaultValue props. ' +
-          'Input elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled input ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
-        getCurrentFiberOwnerNameInDevOrNull() || 'A component',
-        props.type,
-      );
-      didWarnValueDefaultValue = true;
-    }
-  }
 
   const node = ((element: any): InputWithWrapperState);
   const defaultValue = props.defaultValue == null ? '' : props.defaultValue;
@@ -135,38 +97,6 @@ export function updateChecked(element: Element, props: Object) {
 
 export function updateWrapper(element: Element, props: Object) {
   const node = ((element: any): InputWithWrapperState);
-  if (__DEV__) {
-    const controlled = isControlled(props);
-
-    if (
-      !node._wrapperState.controlled &&
-      controlled &&
-      !didWarnUncontrolledToControlled
-    ) {
-      console.error(
-        'A component is changing an uncontrolled input to be controlled. ' +
-          'This is likely caused by the value changing from undefined to ' +
-          'a defined value, which should not happen. ' +
-          'Decide between using a controlled or uncontrolled input ' +
-          'element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components',
-      );
-      didWarnUncontrolledToControlled = true;
-    }
-    if (
-      node._wrapperState.controlled &&
-      !controlled &&
-      !didWarnControlledToUncontrolled
-    ) {
-      console.error(
-        'A component is changing a controlled input to be uncontrolled. ' +
-          'This is likely caused by the value changing from a defined to ' +
-          'undefined, which should not happen. ' +
-          'Decide between using a controlled or uncontrolled input ' +
-          'element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components',
-      );
-      didWarnControlledToUncontrolled = true;
-    }
-  }
 
   updateChecked(element, props);
 
