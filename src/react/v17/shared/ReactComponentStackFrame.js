@@ -212,68 +212,8 @@ export function describeFunctionComponentFrame(
     }
     const name = fn.displayName || fn.name || null;
     let ownerName = null;
-    if (__DEV__ && ownerFn) {
-      ownerName = ownerFn.displayName || ownerFn.name || null;
-    }
+
     return describeComponentFrame(name, source, ownerName);
   }
 }
 
-function shouldConstruct(Component: Function) {
-  const prototype = Component.prototype;
-  return !!(prototype && prototype.isReactComponent);
-}
-
-export function describeUnknownElementTypeFrameInDEV(
-  type: any,
-  source: void | null | Source,
-  ownerFn: void | null | Function,
-): string {
-  if (!__DEV__) {
-    return '';
-  }
-  if (type == null) {
-    return '';
-  }
-  if (typeof type === 'function') {
-    if (enableComponentStackLocations) {
-      return describeNativeComponentFrame(type, shouldConstruct(type));
-    } else {
-      return describeFunctionComponentFrame(type, source, ownerFn);
-    }
-  }
-  if (typeof type === 'string') {
-    return describeBuiltInComponentFrame(type, source, ownerFn);
-  }
-  switch (type) {
-    case REACT_SUSPENSE_TYPE:
-      return describeBuiltInComponentFrame('Suspense', source, ownerFn);
-    case REACT_SUSPENSE_LIST_TYPE:
-      return describeBuiltInComponentFrame('SuspenseList', source, ownerFn);
-  }
-  if (typeof type === 'object') {
-    switch (type.$$typeof) {
-      case REACT_FORWARD_REF_TYPE:
-        return describeFunctionComponentFrame(type.render, source, ownerFn);
-      case REACT_MEMO_TYPE:
-        // Memo may contain any component type so we recursively resolve it.
-        return describeUnknownElementTypeFrameInDEV(type.type, source, ownerFn);
-      case REACT_BLOCK_TYPE:
-        return describeFunctionComponentFrame(type._render, source, ownerFn);
-      case REACT_LAZY_TYPE: {
-        const lazyComponent: LazyComponent<any, any> = (type: any);
-        const payload = lazyComponent._payload;
-        const init = lazyComponent._init;
-        try {
-          // Lazy may contain any component type so we recursively resolve it.
-          return describeUnknownElementTypeFrameInDEV(
-            init(payload),
-            source,
-            ownerFn,
-          );
-        } catch (x) {}
-      }
-    }
-  }
-  return '';
-}

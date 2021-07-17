@@ -12,25 +12,18 @@ import type {Lanes} from './ReactFiberLane';
 import type {UpdateQueue} from './ReactUpdateQueue.new';
 
 import * as React from 'react';
-import {Update, Snapshot, MountLayoutDev} from './ReactFiberFlags';
+import {Update, Snapshot} from './ReactFiberFlags';
 import {
-  debugRenderPhaseSideEffectsForStrictMode,
+
   disableLegacyContext,
-  enableDebugTracing,
   enableSchedulingProfiler,
-  warnAboutDeprecatedLifecycles,
-  enableDoubleInvokingEffects,
 } from 'shared/ReactFeatureFlags';
-import ReactStrictModeWarnings from './ReactStrictModeWarnings.new';
+
 import {isMounted} from './ReactFiberTreeReflection';
 import {get as getInstance, set as setInstance} from 'shared/ReactInstanceMap';
 import shallowEqual from 'shared/shallowEqual';
-import getComponentName from 'shared/getComponentName';
-import invariant from 'shared/invariant';
-import {REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE} from 'shared/ReactSymbols';
 
 import {resolveDefaultProps} from './ReactFiberLazyComponent.new';
-import {DebugTracingMode, StrictMode} from './ReactTypeOfMode';
 
 import {
   enqueueUpdate,
@@ -64,8 +57,6 @@ import {
   markStateUpdateScheduled,
 } from './SchedulingProfiler';
 
-const fakeInternalInstance = {};
-const isArray = Array.isArray;
 
 // React.Component uses a shared frozen object by default.
 // We'll use it to determine whether we need to initialize legacy refs.

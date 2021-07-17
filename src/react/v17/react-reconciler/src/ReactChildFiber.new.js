@@ -50,15 +50,7 @@ import {
   createFiberFromPortal,
 } from './ReactFiber.new';
 import {emptyRefsObject} from './ReactFiberClassComponent.new';
-import {isCompatibleFamilyForHotReloading} from './ReactFiberHotReloading.new';
-import {StrictMode} from './ReactTypeOfMode';
 
-let didWarnAboutMaps;
-let didWarnAboutGenerators;
-let didWarnAboutStringRefs;
-let ownerHasKeyUseWarning;
-let ownerHasFunctionTypeWarning;
-let warnForMissingKey = (child: mixed, returnFiber: Fiber) => {};
 
 
 

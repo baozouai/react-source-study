@@ -34,7 +34,6 @@ import {
   enableFundamentalAPI,
   enableSuspenseCallback,
   enableScopeAPI,
-  enableDoubleInvokingEffects,
 } from 'shared/ReactFeatureFlags';
 import {
   FunctionComponent,
@@ -73,13 +72,9 @@ import {
   PassiveMask,
   Ref,
 } from './ReactFiberFlags';
-import getComponentName from 'shared/getComponentName';
+
 import invariant from 'shared/invariant';
-import {
-  current as currentDebugFiberInDEV,
-  resetCurrentFiber as resetCurrentDebugFiberInDEV,
-  setCurrentFiber as setCurrentDebugFiberInDEV,
-} from './ReactCurrentFiber';
+
 import {onCommitUnmount} from './ReactFiberDevToolsHook.new';
 import {resolveDefaultProps} from './ReactFiberLazyComponent.new';
 import {
@@ -133,12 +128,10 @@ import {
   Layout as HookLayout,
   Passive as HookPassive,
 } from './ReactHookEffectTags';
-import {didWarnAboutReassigningProps} from './ReactFiberBeginWork.new';
+
 
 // Used to avoid traversing the return path to find the nearest Profiler ancestor during commit.
 let nearestProfilerOnStack: Fiber | null = null;
-
-let didWarnAboutUndefinedSnapshotBeforeUpdate: Set<mixed> | null = null;
 
 
 const PossiblyWeakSet = typeof WeakSet === 'function' ? WeakSet : Set;

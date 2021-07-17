@@ -11,8 +11,7 @@ import type {Fiber} from './ReactInternalTypes';
 import type {CapturedValue} from './ReactCapturedValue';
 
 import {showErrorDialog} from './ReactFiberErrorDialog';
-import {ClassComponent} from './ReactWorkTags';
-import getComponentName from 'shared/getComponentName';
+
 
 export function logCapturedError(
   boundary: Fiber,

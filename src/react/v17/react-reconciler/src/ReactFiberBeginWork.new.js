@@ -25,7 +25,7 @@ import type {
   OffscreenState,
 } from './ReactFiberOffscreenComponent';
 
-import checkPropTypes from 'shared/checkPropTypes';
+
 
 import {
   IndeterminateComponent,
@@ -81,17 +81,12 @@ import {
 import invariant from 'shared/invariant';
 import shallowEqual from 'shared/shallowEqual';
 import getComponentName from 'shared/getComponentName';
-import ReactStrictModeWarnings from './ReactStrictModeWarnings.new';
+
 import {REACT_LAZY_TYPE, getIteratorFn} from 'shared/ReactSymbols';
 import {
   getCurrentFiberOwnerNameInDevOrNull,
   setIsRendering,
 } from './ReactCurrentFiber';
-import {
-  resolveFunctionForHotReloading,
-  resolveForwardRefForHotReloading,
-  resolveClassForHotReloading,
-} from './ReactFiberHotReloading.new';
 
 import {
   mountChildFibers,

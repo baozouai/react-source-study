@@ -726,13 +726,15 @@ export function accumulateSinglePhaseListeners(
   inCapturePhase: boolean,
   accumulateTargetOnly: boolean,
 ): Array<DispatchListener> {
+  // 根据事件名来识别是冒泡阶段的事件还是捕获阶段的事件
   const captureName = reactName !== null ? reactName + 'Capture' : null;
   const reactEventName = inCapturePhase ? captureName : reactName;
+  // 声明存放事件监听的数组
   const listeners: Array<DispatchListener> = [];
-
+  // 找到目标元素
   let instance = targetFiber;
   let lastHostComponent = null;
-
+  // 从目标元素开始一直到root，累加所有的fiber对象和事件监听。
   // Accumulate all instances and listeners via the target -> root path.
   while (instance !== null) {
     const {stateNode, tag} = instance;
@@ -741,7 +743,7 @@ export function accumulateSinglePhaseListeners(
       lastHostComponent = stateNode;
 
       // createEventHandle listeners
-      if (enableCreateEventHandleAPI) {
+      if (enableCreateEventHandleAPI) { // enableCreateEventHandleAPI === false
         const eventHandlerListeners = getEventHandlerListeners(
           lastHostComponent,
         );

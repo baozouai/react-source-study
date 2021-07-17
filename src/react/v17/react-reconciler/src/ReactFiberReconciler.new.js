@@ -33,7 +33,7 @@ import {
   HostRoot,
   SuspenseComponent,
 } from './ReactWorkTags';
-import getComponentName from 'shared/getComponentName';
+
 import invariant from 'shared/invariant';
 import {enableSchedulingProfiler} from 'shared/ReactFeatureFlags';
 import ReactSharedInternals from 'shared/ReactSharedInternals';
@@ -45,7 +45,7 @@ import {
   isContextProvider as isLegacyContextProvider,
 } from './ReactFiberContext.new';
 import {createFiberRoot} from './ReactFiberRoot.new';
-import {injectInternals, onScheduleRoot} from './ReactFiberDevToolsHook.new';
+import {injectInternals} from './ReactFiberDevToolsHook.new';
 import {
   requestEventTime,
   requestUpdateLane,
@@ -60,8 +60,6 @@ import {
   discreteUpdates,
   flushDiscreteUpdates,
   flushPassiveEffects,
-  warnIfNotScopedWithMatchingAct,
-  warnIfUnmockedScheduler,
   IsThisRendererActing,
   act,
 } from './ReactFiberWorkLoop.new';
@@ -83,12 +81,6 @@ import {
   getCurrentUpdateLanePriority,
   setCurrentUpdateLanePriority,
 } from './ReactFiberLane';
-import {
-  scheduleRefresh,
-  scheduleRoot,
-  setRefreshHandler,
-  findHostInstancesForRefresh,
-} from './ReactFiberHotReloading.new';
 import {markRenderScheduled} from './SchedulingProfiler';
 
 export {registerMutableSourceForHydration} from './ReactMutableSource.new';
@@ -122,8 +114,6 @@ type DevToolsConfig = {
   rendererConfig?: RendererInspectionConfig,
 };
 
-let didWarnAboutNestedUpdates;
-let didWarnAboutFindNodeInStrictMode;
 
 
 
@@ -403,9 +393,6 @@ function emptyFindFiberByHostInstance(
   return null;
 }
 
-function getCurrentFiberForDevTools() {
-  return ReactCurrentFiberCurrent;
-}
 
 export function injectIntoDevTools(devToolsConfig: DevToolsConfig): boolean {
   const {findFiberByHostInstance} = devToolsConfig;
@@ -429,11 +416,11 @@ export function injectIntoDevTools(devToolsConfig: DevToolsConfig): boolean {
     findFiberByHostInstance:
       findFiberByHostInstance || emptyFindFiberByHostInstance,
     // React Refresh
-    findHostInstancesForRefresh: __DEV__ ? findHostInstancesForRefresh : null,
-    scheduleRefresh: __DEV__ ? scheduleRefresh : null,
-    scheduleRoot: __DEV__ ? scheduleRoot : null,
-    setRefreshHandler: __DEV__ ? setRefreshHandler : null,
+    findHostInstancesForRefresh: null,
+    scheduleRefresh: null,
+    scheduleRoot: null,
+    setRefreshHandler: null,
     // Enables DevTools to append owner stacks to error messages in DEV mode.
-    getCurrentFiber: __DEV__ ? getCurrentFiberForDevTools : null,
+    getCurrentFiber: null,
   });
 }

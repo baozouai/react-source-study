@@ -15,11 +15,10 @@ import {disableLegacyContext} from 'shared/ReactFeatureFlags';
 import {ClassComponent, HostRoot} from './ReactWorkTags';
 import getComponentName from 'shared/getComponentName';
 import invariant from 'shared/invariant';
-import checkPropTypes from 'shared/checkPropTypes';
+
 
 import {createCursor, push, pop} from './ReactFiberStack.new';
 
-let warnedAboutMissingGetChildContext;
 
 
 

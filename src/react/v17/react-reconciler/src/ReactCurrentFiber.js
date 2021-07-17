@@ -9,11 +9,10 @@
 
 import type {Fiber} from './ReactInternalTypes';
 
-import ReactSharedInternals from 'shared/ReactSharedInternals';
-import {getStackByFiberInDevAndProd} from './ReactFiberComponentStack';
-import getComponentName from 'shared/getComponentName';
 
-const ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+import {getStackByFiberInDevAndProd} from './ReactFiberComponentStack';
+
+
 
 export let current: Fiber | null = null;
 export let isRendering: boolean = false;

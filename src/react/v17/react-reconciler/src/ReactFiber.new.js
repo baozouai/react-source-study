@@ -49,7 +49,6 @@ import {
   DehydratedFragment,
   FunctionComponent,
   MemoComponent,
-  SimpleMemoComponent,
   LazyComponent,
   FundamentalComponent,
   ScopeComponent,
@@ -57,14 +56,9 @@ import {
   OffscreenComponent,
   LegacyHiddenComponent,
 } from './ReactWorkTags';
-import getComponentName from 'shared/getComponentName';
+
 
 import {isDevToolsPresent} from './ReactFiberDevToolsHook.new';
-import {
-  resolveClassForHotReloading,
-  resolveFunctionForHotReloading,
-  resolveForwardRefForHotReloading,
-} from './ReactFiberHotReloading.new';
 import {NoLanes} from './ReactFiberLane';
 import {
   NoMode,
@@ -95,9 +89,7 @@ import {
 
 export type {Fiber};
 
-let hasBadMapPolyfill;
 
-let debugCounter = 1;
 
 function FiberNode(
   tag: WorkTag,

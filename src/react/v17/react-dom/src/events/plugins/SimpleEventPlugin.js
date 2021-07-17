@@ -172,6 +172,7 @@ function extractEvents(
     );
     if (listeners.length > 0) {
       // Intentionally create event lazily.
+      // 构造合成事件对象
       const event = new SyntheticEventCtor(
         reactName,
         reactEventType,
@@ -182,6 +183,7 @@ function extractEvents(
       dispatchQueue.push({event, listeners});
     }
   } else {
+    // scroll事件不冒泡
     // Some events don't bubble in the browser.
     // In the past, React has always bubbled them, but this can be surprising.
     // We're going to try aligning closer to the browser behavior by not bubbling
@@ -193,7 +195,7 @@ function extractEvents(
       // Then we can remove this special list.
       // This is a breaking change that can wait until React 18.
       domEventName === 'scroll';
-
+    // 事件对象分发 & 收集事件
     const listeners = accumulateSinglePhaseListeners(
       targetInst,
       reactName,
