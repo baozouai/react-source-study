@@ -117,7 +117,7 @@ export function setCurrentUpdateLanePriority(newLanePriority: LanePriority) {
 // "Registers" used to "return" multiple values
 // Used by getHighestPriorityLanes and getNextLanes:
 let return_highestLanePriority: LanePriority = DefaultLanePriority;
-
+// getHighestPriorityLanes
 function getHighestPriorityLanes(lanes: Lanes | Lane): Lanes {
   // 相关commit https://github.com/facebook/react/pull/19302
   // 该函数的目的是找到对应优先级范围内优先级最高的那一批lanes
@@ -260,7 +260,7 @@ export function lanePriorityToSchedulerPriority(
       );
   }
 }
-
+// 计算renderLanes
 export function getNextLanes(root: FiberRoot, wipLanes: Lanes): Lanes {
   // 该函数从root.pendingLanes中找出优先级最高的lane
 

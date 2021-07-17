@@ -462,7 +462,7 @@ function requestRetryLane(fiber: Fiber) {
   }
   return findRetryLane(currentEventWipLanes);
 }
-
+// React的更新入口
 export function scheduleUpdateOnFiber(
   fiber: Fiber,
   lane: Lane,
@@ -473,14 +473,14 @@ export function scheduleUpdateOnFiber(
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) {
   debugger
   }
+  // 第一步，检查是否有无限更新, 例如在render函数中调用了setState
   checkForNestedUpdates();
-  warnAboutRenderPhaseUpdatesInDEV(fiber);
-
+  // 第二步，向上收集fiber.childLanes
   const root = markUpdateLaneFromFiberToRoot(fiber, lane);
   if (root === null) {
     return null;
   }
-
+  // 第三步，在root上标记更新，将update的lane放到root.pendingLanes
   // Mark that the root has a pending update.
   markRootUpdated(root, lane, eventTime);
 
@@ -512,15 +512,19 @@ export function scheduleUpdateOnFiber(
 
   // TODO: requestUpdateLanePriority also reads the priority. Pass the
   // priority as an argument to that function and this one.
+  // 根据Scheduler的优先级获取到对应的React优先级
   const priorityLevel = getCurrentPriorityLevel();
 
   if (lane === SyncLane) {
+    // 根据Scheduler的优先级获取到对应的React优先级
     if (
       // Check if we're inside unbatchedUpdates
       (executionContext & LegacyUnbatchedContext) !== NoContext &&
       // Check if we're not already rendering
       (executionContext & (RenderContext | CommitContext)) === NoContext
     ) {
+      // 如果是本次更新是同步的(lane === SyncLane)，并且当前还未渲染，意味着主线程空闲，并没有React的
+      // 更新任务在执行，那么调用performSyncWorkOnRoot开始执行同步任务
       // Register pending interactions on the root to avoid losing traced interaction data.
       schedulePendingInteractions(root, lane);
 
@@ -529,6 +533,8 @@ export function scheduleUpdateOnFiber(
       // should be deferred until the end of the batch.
       performSyncWorkOnRoot(root);
     } else {
+      // 如果当前有React更新任务正在进行，而且因为无法打断，所以调用ensureRootIsScheduled,
+      // 目的是去复用已经在更新的任务，让这个已有的任务把这次更新顺便做了
       ensureRootIsScheduled(root, eventTime);
       schedulePendingInteractions(root, lane);
       if (executionContext === NoContext) {
@@ -580,7 +586,9 @@ function markUpdateLaneFromFiberToRoot(
   lane: Lane,
 ): FiberRoot | null {
   // Update the source fiber's lanes
+  // 更新现有fiber上的lanes
   sourceFiber.lanes = mergeLanes(sourceFiber.lanes, lane);
+  // 获取现有fiber的alternate，通过alternate是否为null，来区分是否是更新过程
   let alternate = sourceFiber.alternate;
   if (alternate !== null) {
     alternate.lanes = mergeLanes(alternate.lanes, lane);
@@ -589,6 +597,7 @@ function markUpdateLaneFromFiberToRoot(
   // Walk the parent path to the root and update the child expiration time.
   let node = sourceFiber;
   let parent = sourceFiber.return;
+  // 从产生更新的fiber节点开始，向上收集childLanes
   while (parent !== null) {
     parent.childLanes = mergeLanes(parent.childLanes, lane);
     alternate = parent.alternate;
@@ -2700,37 +2709,12 @@ let beginWork;
 beginWork = originalBeginWork;
 
 
-function warnAboutRenderPhaseUpdatesInDEV(fiber) {
 
-}
 
 // a 'shared' variable that changes when act() opens/closes in tests.
 export const IsThisRendererActing = {current: (false: boolean)};
 
-export function warnIfNotScopedWithMatchingAct(fiber: Fiber): void {
 
-}
-
-export function warnIfNotCurrentlyActingEffectsInDEV(fiber: Fiber): void {
-
-}
-
-function warnIfNotCurrentlyActingUpdatesInDEV(fiber: Fiber): void {
-
-}
-
-export const warnIfNotCurrentlyActingUpdatesInDev = warnIfNotCurrentlyActingUpdatesInDEV;
-
-// In tests, we want to enforce a mocked scheduler.
-
-// TODO Before we release concurrent mode, revisit this and decide whether a mocked
-// scheduler is the actual recommendation. The alternative could be a testing build,
-// a new lib, or whatever; we dunno just yet. This message is for early adopters
-// to get their tests right.
-
-export function warnIfUnmockedScheduler(fiber: Fiber) {
-
-}
 
 function computeThreadID(root: FiberRoot, lane: Lane | Lanes) {
   // Interaction threads are unique per root and expiration time.

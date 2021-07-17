@@ -17,7 +17,7 @@ class Concurrent extends React.Component {
     return <>
       <input type="text" onChange={this.onChange}/>
       <div>
-        {Array.from(new Array(8000)).map( (v,index) =>
+        {Array.from(new Array(80)).map( (v,index) =>
           <div key={index}>{this.state.text}</div>
         )}
       </div>

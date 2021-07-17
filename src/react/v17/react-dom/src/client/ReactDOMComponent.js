@@ -129,8 +129,12 @@ function setInitialDOMProperties(
   domElement: Element,
   rootContainerElement: Element | Document,
   nextProps: Object,
-  isCustomCompnentTag: boolean,
+  isCustomComponentTag: boolean,
 ): void {
+  console.log('setInitialDOMProperties start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('setInitialDOMProperties')) {
+  debugger
+  }
   for (const propKey in nextProps) {
     if (!nextProps.hasOwnProperty(propKey)) {
       // 如果是原型链上的属性，则跳过

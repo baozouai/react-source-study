@@ -182,11 +182,15 @@ export function createUpdate(eventTime: number, lane: Lane): Update<*> {
   const update: Update<*> = {
     eventTime,
     lane,
-
+    // 表示更新是哪种类型（UpdateState，ReplaceState，ForceUpdate，CaptureUpdate）
     tag: UpdateState,
+    //     payload：更新所携带的状态。
+    // 在类组件中，有两种可能，对象（{}），和函数（(prevState, nextProps):newState => {}）
+    // 根组件中，为React.element，即ReactDOM.render的第一个参数
     payload: null,
+    // setState的回调
     callback: null,
-
+    // setState的回调
     next: null,
   };
   return update;
@@ -204,7 +208,7 @@ export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
     return;
   }
 
-  const sharedQueue: SharedQueue<State> = (updateQueue: any).shared;
+  const sharedQueue: SharedQueue<State> = updateQueue.shared;
   const pending = sharedQueue.pending;
   // 拼接环状链表
   if (pending === null) {
@@ -429,6 +433,7 @@ export function processUpdateQueue<State>(
       const updateLane = update.lane;
       const updateEventTime = update.eventTime;
       if (!isSubsetOfLanes(renderLanes, updateLane)) {
+        // updateLane不在在renderLanes中，跳过
         // Priority is insufficient. Skip this update. If this is the first
         // skipped update, the previous update/state is the new base
         // update/state.
@@ -451,6 +456,7 @@ export function processUpdateQueue<State>(
         // Update the remaining priority in the queue.
         newLanes = mergeLanes(newLanes, updateLane);
       } else {
+        // updateLane在renderLanes中，处理这个更新
         // This update does have sufficient priority.
 
         if (newLastBaseUpdate !== null) {

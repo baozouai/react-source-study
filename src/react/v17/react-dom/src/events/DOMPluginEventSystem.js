@@ -263,7 +263,9 @@ export function processDispatchQueue(
 ): void {
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
   for (let i = 0; i < dispatchQueue.length; i++) {
+    // 从dispatchQueue中取出事件对象和事件监听数组
     const {event, listeners} = dispatchQueue[i];
+    // 将事件监听交由processDispatchQueueItemsInOrder去触发，同时传入事件对象供事件监听使用
     processDispatchQueueItemsInOrder(event, listeners, inCapturePhase);
     //  event system doesn't use pooling.
   }

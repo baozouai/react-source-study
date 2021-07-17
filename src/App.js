@@ -36,7 +36,7 @@ function App() {
   // return <SchedulerTask/>
 
   // 高优先级插队
-  // return <TasksWithDifferentPriorities/>
+  return <TasksWithDifferentPriorities/>
 
   // context
   // return <ContextDemo/>

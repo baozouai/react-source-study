@@ -96,18 +96,25 @@ export function applyDerivedStateFromProps(
 const classComponentUpdater = {
   isMounted,
   enqueueSetState(inst, payload, callback) {
+    // 获取当前触发更新的fiber节点。inst是组件实例
     const fiber = getInstance(inst);
+    // eventTime是当前触发更新的时间戳
     const eventTime = requestEventTime();
+    // 获取本次update的优先级
     const lane = requestUpdateLane(fiber);
-
+    // 创建update对象
     const update = createUpdate(eventTime, lane);
+    // payload就是setState的参数，回调函数或者是对象的形式。
+    // 处理更新时参与计算新状态的过程
     update.payload = payload;
     if (callback !== undefined && callback !== null) {
 
       update.callback = callback;
     }
-
+  // payload就是setState的参数，回调函数或者是对象的形式。
+    // 处理更新时参与计算新状态的过程
     enqueueUpdate(fiber, update);
+    // 开始进行调度
     scheduleUpdateOnFiber(fiber, lane, eventTime);
 
 
