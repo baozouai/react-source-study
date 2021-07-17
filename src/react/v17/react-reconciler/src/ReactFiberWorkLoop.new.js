@@ -658,6 +658,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   if (newCallbackPriority === SyncLanePriority) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
+    // 同步渲染模式
     newCallbackNode = scheduleSyncCallback(
       performSyncWorkOnRoot.bind(null, root),
     );
@@ -667,9 +668,12 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
       performSyncWorkOnRoot.bind(null, root),
     );
   } else {
+    // 将本次更新任务的优先级转化为调度优先级
+    // schedulerPriorityLevel为调度优先级
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
       newCallbackPriority,
     );
+    // concurrent模式
     newCallbackNode = scheduleCallback(
       schedulerPriorityLevel,
       performConcurrentWorkOnRoot.bind(null, root),

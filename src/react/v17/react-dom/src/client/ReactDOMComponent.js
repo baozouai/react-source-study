@@ -12,7 +12,7 @@ import {
   possibleRegistrationNames,
 } from '../events/EventRegistry';
 
-import {canUseDOM} from 'shared/ExecutionEnvironment';
+
 
 import {
   getValueForAttribute,
@@ -160,7 +160,7 @@ function setInitialDOMProperties(
   domElement: Element,
   rootContainerElement: Element | Document,
   nextProps: Object,
-  isCustomComponentTag: boolean,
+  isCustomCompnentTag: boolean,
 ): void {
   for (const propKey in nextProps) {
     if (!nextProps.hasOwnProperty(propKey)) {

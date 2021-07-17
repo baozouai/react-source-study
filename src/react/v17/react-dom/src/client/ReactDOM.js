@@ -39,7 +39,7 @@ import {
   getCurrentUpdateLanePriority,
 } from 'react-reconciler/src/ReactFiberReconciler';
 import {createPortal as createPortalImpl} from 'react-reconciler/src/ReactPortal';
-import {canUseDOM} from 'shared/ExecutionEnvironment';
+
 import ReactVersion from 'shared/ReactVersion';
 import invariant from 'shared/invariant';
 import {
