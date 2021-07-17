@@ -9,14 +9,11 @@
 
 import {
   registrationNameDependencies,
-  possibleRegistrationNames,
 } from '../events/EventRegistry';
 
 
 
 import {
-  getValueForAttribute,
-  getValueForProperty,
   setValueForProperty,
 } from './DOMPropertyOperations';
 import {
@@ -50,32 +47,19 @@ import {track} from './inputValueTracking';
 import setInnerHTML from './setInnerHTML';
 import setTextContent from './setTextContent';
 import {
-  createDangerousStringForStyles,
   setValueForStyles,
-  validateShorthandPropertyCollisionInDev,
 } from '../shared/CSSPropertyOperations';
 import {Namespaces, getIntrinsicNamespace} from '../shared/DOMNamespaces';
-import {
-  getPropertyInfo,
-  shouldIgnoreAttribute,
-  shouldRemoveAttribute,
-} from '../shared/DOMProperty';
+
 import assertValidProps from '../shared/assertValidProps';
 import {
   DOCUMENT_NODE,
-  ELEMENT_NODE,
   COMMENT_NODE,
-  DOCUMENT_FRAGMENT_NODE,
 } from '../shared/HTMLNodeType';
 import isCustomComponent from '../shared/isCustomComponent';
-import possibleStandardNames from '../shared/possibleStandardNames';
-import {validateProperties as validateARIAProperties} from '../shared/ReactDOMInvalidARIAHook';
-import {validateProperties as validateInputProperties} from '../shared/ReactDOMNullInputValuePropHook';
-import {validateProperties as validateUnknownProperties} from '../shared/ReactDOMUnknownPropertyHook';
 import {REACT_OPAQUE_ID_TYPE} from 'shared/ReactSymbols';
 
 import {
-  enableTrustedTypesIntegration,
   enableEagerRootListeners,
 } from 'shared/ReactFeatureFlags';
 import {
@@ -84,8 +68,6 @@ import {
   listenToNonDelegatedEvent,
 } from '../events/DOMPluginEventSystem';
 
-let didWarnInvalidHydration = false;
-let didWarnScriptTags = false;
 
 const DANGEROUSLY_SET_INNER_HTML = 'dangerouslySetInnerHTML';
 const SUPPRESS_CONTENT_EDITABLE_WARNING = 'suppressContentEditableWarning';
@@ -96,19 +78,6 @@ const STYLE = 'style';
 const HTML = '__html';
 
 const {html: HTML_NAMESPACE} = Namespaces;
-
-let warnedUnknownTags;
-let suppressHydrationWarning;
-
-let validatePropertiesInDevelopment;
-let warnForTextDifference;
-let warnForPropDifference;
-let warnForExtraAttributes;
-let warnForInvalidEventListener;
-let canDiffStyleForHydrationWarning;
-
-let normalizeMarkupForTextOrAttribute;
-let normalizeHTML;
 
 
 export function ensureListeningTo(
@@ -164,11 +133,12 @@ function setInitialDOMProperties(
 ): void {
   for (const propKey in nextProps) {
     if (!nextProps.hasOwnProperty(propKey)) {
+      // 如果是原型链上的属性，则跳过
       continue;
     }
     const nextProp = nextProps[propKey];
     if (propKey === STYLE) {
-
+      // 设置style
       // Relies on `updateStylesByID` not mutating `styleUpdates`.
       setValueForStyles(domElement, nextProp);
     } else if (propKey === DANGEROUSLY_SET_INNER_HTML) {
@@ -200,9 +170,10 @@ function setInitialDOMProperties(
       // adding a special case here, but then it wouldn't be emitted
       // on server rendering (but we *do* want to emit it in SSR).
     } else if (registrationNameDependencies.hasOwnProperty(propKey)) {
+      // 设置监听事件
       if (nextProp != null) {
 
-        if (!enableEagerRootListeners) {
+        if (!enableEagerRootListeners) { // enableEagerRootListeners === true
           ensureListeningTo(rootContainerElement, propKey, domElement);
         } else if (propKey === 'onScroll') {
           listenToNonDelegatedEvent('scroll', domElement);
