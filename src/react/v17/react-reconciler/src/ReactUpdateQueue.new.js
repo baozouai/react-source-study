@@ -88,13 +88,20 @@ import type {Fiber} from './ReactInternalTypes';
 import type {Lanes, Lane} from './ReactFiberLane';
 
 import {NoLane, NoLanes, isSubsetOfLanes, mergeLanes} from './ReactFiberLane';
-
+import {
+  enterDisallowedContextReadInDEV,
+  exitDisallowedContextReadInDEV,
+} from './ReactFiberNewContext.new';
 import {Callback, ShouldCapture, DidCapture} from './ReactFiberFlags';
 
+import {debugRenderPhaseSideEffectsForStrictMode} from 'shared/ReactFeatureFlags';
 
+import {StrictMode} from './ReactTypeOfMode';
 import {markSkippedUpdateLanes} from './ReactFiberWorkLoop.new';
+
 import invariant from 'shared/invariant';
 
+import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
 
 export type Update<State> = {
   // TODO: Temporary field. Will remove this by storing a map of
@@ -130,15 +137,21 @@ export const CaptureUpdate = 3;
 // It should only be read right after calling `processUpdateQueue`, via
 // `checkHasForceUpdateAfterProcessing`.
 let hasForceUpdate = false;
-export let resetCurrentlyProcessingQueue;
 
+let didWarnUpdateInsideUpdate;
+let currentlyProcessingQueue;
+export let resetCurrentlyProcessingQueue;
+if (__DEV__) {
+  didWarnUpdateInsideUpdate = false;
+  currentlyProcessingQueue = null;
+  resetCurrentlyProcessingQueue = () => {
+    currentlyProcessingQueue = null;
+  };
+}
 
 export function initializeUpdateQueue<State>(fiber: Fiber): void {
-  
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('initializeUpdateQueue')) {
-    console.log('ReactUpdateQueue: initializeUpdateQueue')
+  console.log('ReactUpdateQueue: initializeUpdateQueue')
   debugger
-  }
   const queue: UpdateQueue<State> = {
     // 前一次更新计算得出的状态，它是第一个被跳过的update之前的那些update计算得出的state。
     // 会以它为基础计算本次的state
@@ -193,11 +206,8 @@ export function createUpdate(eventTime: number, lane: Lane): Update<*> {
 }
 
 export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
-  
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('enqueueUpdate')) {
-    console.log('ReactUpdateQueue: enqueueUpdate')
+  console.log('ReactUpdateQueue: enqueueUpdate')
   debugger
-  }
   const updateQueue = fiber.updateQueue;
   if (updateQueue === null) {
     // Only occurs if the fiber has been unmounted.
@@ -304,18 +314,29 @@ function getStateFromUpdate<State>(
   nextProps: any,
   instance: any,
 ): any {
-  console.log('getStateFromUpdate')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getStateFromUpdate')) {
-    debugger
-  }
   switch (update.tag) {
     case ReplaceState: {
       const payload = update.payload;
       if (typeof payload === 'function') {
         // Updater function
-
+        if (__DEV__) {
+          enterDisallowedContextReadInDEV();
+        }
         const nextState = payload.call(instance, prevState, nextProps);
-
+        if (__DEV__) {
+          if (
+            debugRenderPhaseSideEffectsForStrictMode &&
+            workInProgress.mode & StrictMode
+          ) {
+            disableLogs();
+            try {
+              payload.call(instance, prevState, nextProps);
+            } finally {
+              reenableLogs();
+            }
+          }
+          exitDisallowedContextReadInDEV();
+        }
         return nextState;
       }
       // State object
@@ -331,9 +352,24 @@ function getStateFromUpdate<State>(
       let partialState;
       if (typeof payload === 'function') {
         // Updater function
-
+        if (__DEV__) {
+          enterDisallowedContextReadInDEV();
+        }
         partialState = payload.call(instance, prevState, nextProps);
-
+        if (__DEV__) {
+          if (
+            debugRenderPhaseSideEffectsForStrictMode &&
+            workInProgress.mode & StrictMode
+          ) {
+            disableLogs();
+            try {
+              payload.call(instance, prevState, nextProps);
+            } finally {
+              reenableLogs();
+            }
+          }
+          exitDisallowedContextReadInDEV();
+        }
       } else {
         // Partial state object
         partialState = payload;
@@ -359,16 +395,14 @@ export function processUpdateQueue<State>(
   instance: any,
   renderLanes: Lanes,
 ): void {
-  console.log('processUpdateQueue start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processUpdateQueue')) {
-    debugger
-  }
   // This is always non-null on a ClassComponent or HostRoot
   const queue: UpdateQueue<State> = (workInProgress.updateQueue: any);
 
   hasForceUpdate = false;
 
-
+  if (__DEV__) {
+    currentlyProcessingQueue = queue.shared;
+  }
 
   let firstBaseUpdate = queue.firstBaseUpdate;
   let lastBaseUpdate = queue.lastBaseUpdate;
@@ -530,7 +564,9 @@ export function processUpdateQueue<State>(
     workInProgress.memoizedState = newState;
   }
 
-  console.log('processUpdateQueue end')
+  if (__DEV__) {
+    currentlyProcessingQueue = null;
+  }
 }
 
 function callCallback(callback, context) {

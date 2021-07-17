@@ -15,6 +15,9 @@ const valueStack: Array<any> = [];
 
 let fiberStack: Array<Fiber | null>;
 
+if (__DEV__) {
+  fiberStack = [];
+}
 
 let index = -1;
 
@@ -30,16 +33,25 @@ function isEmpty(): boolean {
 
 function pop<T>(cursor: StackCursor<T>, fiber: Fiber): void {
   if (index < 0) {
-
+    if (__DEV__) {
+      console.error('Unexpected pop.');
+    }
     return;
   }
 
-
+  if (__DEV__) {
+    if (fiber !== fiberStack[index]) {
+      console.error('Unexpected Fiber popped.');
+    }
+  }
 
   cursor.current = valueStack[index];
 
   valueStack[index] = null;
 
+  if (__DEV__) {
+    fiberStack[index] = null;
+  }
 
   index--;
 }
@@ -49,17 +61,29 @@ function push<T>(cursor: StackCursor<T>, value: T, fiber: Fiber): void {
 
   valueStack[index] = cursor.current;
 
-
+  if (__DEV__) {
+    fiberStack[index] = fiber;
+  }
 
   cursor.current = value;
 }
 
 function checkThatStackIsEmpty() {
-
+  if (__DEV__) {
+    if (index !== -1) {
+      console.error(
+        'Expected an empty stack. Something was not reset properly.',
+      );
+    }
+  }
 }
 
 function resetStackAfterFatalErrorInDev() {
-
+  if (__DEV__) {
+    index = -1;
+    valueStack.length = 0;
+    fiberStack.length = 0;
+  }
 }
 
 export {

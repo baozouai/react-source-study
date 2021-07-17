@@ -36,7 +36,13 @@ export function injectInternals(internals: Object): boolean {
     return true;
   }
   if (!hook.supportsFiber) {
-
+    if (__DEV__) {
+      console.error(
+        'The installed version of React DevTools is too old and will not work ' +
+          'with the current version of React. Please update React DevTools. ' +
+          'https://reactjs.org/link/react-devtools',
+      );
+    }
     // DevTools exists, even though it doesn't support Fiber.
     return true;
   }
@@ -46,14 +52,30 @@ export function injectInternals(internals: Object): boolean {
     injectedHook = hook;
   } catch (err) {
     // Catch all errors because it is unsafe to throw during initialization.
-
+    if (__DEV__) {
+      console.error('React instrumentation encountered an error: %s.', err);
+    }
   }
   // DevTools exists
   return true;
 }
 
 export function onScheduleRoot(root: FiberRoot, children: ReactNodeList) {
-
+  if (__DEV__) {
+    if (
+      injectedHook &&
+      typeof injectedHook.onScheduleFiberRoot === 'function'
+    ) {
+      try {
+        injectedHook.onScheduleFiberRoot(rendererID, root, children);
+      } catch (err) {
+        if (__DEV__ && !hasLoggedError) {
+          hasLoggedError = true;
+          console.error('React instrumentation encountered an error: %s', err);
+        }
+      }
+    }
+  }
 }
 
 export function onCommitRoot(
@@ -74,7 +96,12 @@ export function onCommitRoot(
         injectedHook.onCommitFiberRoot(rendererID, root, undefined, didError);
       }
     } catch (err) {
-
+      if (__DEV__) {
+        if (!hasLoggedError) {
+          hasLoggedError = true;
+          console.error('React instrumentation encountered an error: %s', err);
+        }
+      }
     }
   }
 }
@@ -84,7 +111,12 @@ export function onCommitUnmount(fiber: Fiber) {
     try {
       injectedHook.onCommitFiberUnmount(rendererID, fiber);
     } catch (err) {
-
+      if (__DEV__) {
+        if (!hasLoggedError) {
+          hasLoggedError = true;
+          console.error('React instrumentation encountered an error: %s', err);
+        }
+      }
     }
   }
 }

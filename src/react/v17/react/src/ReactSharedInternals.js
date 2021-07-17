@@ -21,5 +21,8 @@ const ReactSharedInternals = {
   assign,
 };
 
+if (__DEV__) {
+  ReactSharedInternals.ReactDebugCurrentFrame = ReactDebugCurrentFrame;
+}
 
 export default ReactSharedInternals;

@@ -63,7 +63,25 @@ export function getHostProps(element: Element, props: Object) {
 
 export function initWrapperState(element: Element, props: Object) {
   const node = ((element: any): TextAreaWithWrapperState);
-
+  if (__DEV__) {
+    checkControlledValueProps('textarea', props);
+    if (
+      props.value !== undefined &&
+      props.defaultValue !== undefined &&
+      !didWarnValDefaultVal
+    ) {
+      console.error(
+        '%s contains a textarea with both value and defaultValue props. ' +
+          'Textarea elements must be either controlled or uncontrolled ' +
+          '(specify either the value prop, or the defaultValue prop, but not ' +
+          'both). Decide between using a controlled or uncontrolled textarea ' +
+          'and remove one of these props. More info: ' +
+          'https://reactjs.org/link/controlled-components',
+        getCurrentFiberOwnerNameInDevOrNull() || 'A component',
+      );
+      didWarnValDefaultVal = true;
+    }
+  }
 
   let initialValue = props.value;
 
@@ -71,7 +89,12 @@ export function initWrapperState(element: Element, props: Object) {
   if (initialValue == null) {
     let {children, defaultValue} = props;
     if (children != null) {
-
+      if (__DEV__) {
+        console.error(
+          'Use the `defaultValue` or `value` props instead of setting ' +
+            'children on <textarea>.',
+        );
+      }
       if (!disableTextareaChildren) {
         invariant(
           defaultValue == null,

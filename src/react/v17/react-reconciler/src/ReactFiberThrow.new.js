@@ -31,8 +31,9 @@ import {
   ForceUpdateForLegacySuspense,
 } from './ReactFiberFlags';
 import {shouldCaptureSuspense} from './ReactFiberSuspenseComponent.new';
-import {NoMode, BlockingMode,} from './ReactTypeOfMode';
+import {NoMode, BlockingMode, DebugTracingMode} from './ReactTypeOfMode';
 import {
+  enableDebugTracing,
   enableSchedulingProfiler,
 } from 'shared/ReactFeatureFlags';
 import {createCapturedValue} from './ReactCapturedValue';
@@ -43,7 +44,7 @@ import {
   ForceUpdate,
   enqueueUpdate,
 } from './ReactUpdateQueue.new';
-
+import {markFailedErrorBoundaryForHotReloading} from './ReactFiberHotReloading.new';
 import {
   suspenseStackCursor,
   InvisibleParentSuspenseContext,
@@ -57,12 +58,13 @@ import {
   pingSuspendedRoot,
 } from './ReactFiberWorkLoop.new';
 import {logCapturedError} from './ReactFiberErrorLogger';
-
+import {logComponentSuspended} from './DebugTracing';
 import {markComponentSuspended} from './SchedulingProfiler';
 
 import {
   SyncLane,
   NoTimestamp,
+  includesSomeLane,
   mergeLanes,
   pickArbitraryLane,
 } from './ReactFiberLane';
@@ -107,7 +109,9 @@ function createClassErrorUpdate(
   const inst = fiber.stateNode;
   if (inst !== null && typeof inst.componentDidCatch === 'function') {
     update.callback = function callback() {
-
+      if (__DEV__) {
+        markFailedErrorBoundaryForHotReloading(fiber);
+      }
       if (typeof getDerivedStateFromError !== 'function') {
         // To preserve the preexisting retry behavior of error boundaries,
         // we keep track of which ones already failed during this batch.
@@ -124,7 +128,24 @@ function createClassErrorUpdate(
       this.componentDidCatch(error, {
         componentStack: stack !== null ? stack : '',
       });
-
+      if (__DEV__) {
+        if (typeof getDerivedStateFromError !== 'function') {
+          // If componentDidCatch is the only error boundary method defined,
+          // then it needs to call setState to recover from errors.
+          // If no state update is scheduled then the boundary will swallow the error.
+          if (!includesSomeLane(fiber.lanes, (SyncLane: Lane))) {
+            console.error(
+              '%s: Error boundaries should implement getDerivedStateFromError(). ' +
+                'In that method, return a state update to display an error message or fallback UI.',
+              getComponentName(fiber.type) || 'Unknown',
+            );
+          }
+        }
+      }
+    };
+  } else if (__DEV__) {
+    update.callback = () => {
+      markFailedErrorBoundaryForHotReloading(fiber);
     };
   }
   return update;
@@ -173,6 +194,14 @@ function throwException(
     // This is a wakeable.
     const wakeable: Wakeable = (value: any);
 
+    if (__DEV__) {
+      if (enableDebugTracing) {
+        if (sourceFiber.mode & DebugTracingMode) {
+          const name = getComponentName(sourceFiber.type) || 'Unknown';
+          logComponentSuspended(name, wakeable);
+        }
+      }
+    }
 
     if (enableSchedulingProfiler) {
       markComponentSuspended(sourceFiber, wakeable);

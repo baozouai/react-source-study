@@ -204,7 +204,13 @@ export function getEventPriorityForListenerSystem(
   if (priority !== undefined) {
     return priority;
   }
-
+  if (__DEV__) {
+    console.warn(
+      'The event "%s" provided to createEventHandle() does not have a known priority type.' +
+        ' This is likely a bug in React.',
+      type,
+    );
+  }
   return ContinuousEvent;
 }
 

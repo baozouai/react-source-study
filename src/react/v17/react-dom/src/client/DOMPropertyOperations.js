@@ -35,7 +35,63 @@ export function getValueForProperty(
   expected: mixed,
   propertyInfo: PropertyInfo,
 ): mixed {
+  if (__DEV__) {
+    if (propertyInfo.mustUseProperty) {
+      const {propertyName} = propertyInfo;
+      return (node: any)[propertyName];
+    } else {
+      if (!disableJavaScriptURLs && propertyInfo.sanitizeURL) {
+        // If we haven't fully disabled javascript: URLs, and if
+        // the hydration is successful of a javascript: URL, we
+        // still want to warn on the client.
+        sanitizeURL('' + (expected: any));
+      }
 
+      const attributeName = propertyInfo.attributeName;
+
+      let stringValue = null;
+
+      if (propertyInfo.type === OVERLOADED_BOOLEAN) {
+        if (node.hasAttribute(attributeName)) {
+          const value = node.getAttribute(attributeName);
+          if (value === '') {
+            return true;
+          }
+          if (shouldRemoveAttribute(name, expected, propertyInfo, false)) {
+            return value;
+          }
+          if (value === '' + (expected: any)) {
+            return expected;
+          }
+          return value;
+        }
+      } else if (node.hasAttribute(attributeName)) {
+        if (shouldRemoveAttribute(name, expected, propertyInfo, false)) {
+          // We had an attribute but shouldn't have had one, so read it
+          // for the error message.
+          return node.getAttribute(attributeName);
+        }
+        if (propertyInfo.type === BOOLEAN) {
+          // If this was a boolean, it doesn't matter what the value is
+          // the fact that we have it is the same as the expected.
+          return expected;
+        }
+        // Even if this property uses a namespace we use getAttribute
+        // because we assume its namespaced name is the same as our config.
+        // To use getAttributeNS we need the local name which we don't have
+        // in our config atm.
+        stringValue = node.getAttribute(attributeName);
+      }
+
+      if (shouldRemoveAttribute(name, expected, propertyInfo, false)) {
+        return stringValue === null ? expected : stringValue;
+      } else if (stringValue === '' + (expected: any)) {
+        return expected;
+      } else {
+        return stringValue;
+      }
+    }
+  }
 }
 
 /**
@@ -48,7 +104,26 @@ export function getValueForAttribute(
   name: string,
   expected: mixed,
 ): mixed {
+  if (__DEV__) {
+    if (!isAttributeNameSafe(name)) {
+      return;
+    }
 
+    // If the object is an opaque reference ID, it's expected that
+    // the next prop is different than the server value, so just return
+    // expected
+    if (isOpaqueHydratingObject(expected)) {
+      return expected;
+    }
+    if (!node.hasAttribute(name)) {
+      return expected === undefined ? undefined : null;
+    }
+    const value = node.getAttribute(name);
+    if (value === '' + (expected: any)) {
+      return expected;
+    }
+    return value;
+  }
 }
 
 /**

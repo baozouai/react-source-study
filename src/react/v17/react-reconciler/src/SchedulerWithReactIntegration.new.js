@@ -137,9 +137,7 @@ export function scheduleCallback(
   callback: SchedulerCallback,
   options: SchedulerCallbackOptions | void | null,
 ) {
-  // 将react的优先级翻译成Scheduler的优先级
   const priorityLevel = reactPriorityToSchedulerPriority(reactPriorityLevel);
-  // 调用Scheduler的scheduleCallback，传入优先级进行调度
   return Scheduler_scheduleCallback(priorityLevel, callback, options);
 }
 
@@ -148,7 +146,6 @@ export function scheduleSyncCallback(callback: SchedulerCallback) {
   // the next tick, or earlier if something calls `flushSyncCallbackQueue`.
   if (syncQueue === null) {
     syncQueue = [callback];
-    // 以最高优先级去调度刷新syncQueue的函数
     // Flush the queue in the next tick, at the earliest.
     immediateQueueCallbackNode = Scheduler_scheduleCallback(
       Scheduler_ImmediatePriority,

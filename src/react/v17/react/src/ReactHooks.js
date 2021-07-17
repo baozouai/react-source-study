@@ -41,21 +41,47 @@ export function useContext<T>(
   unstable_observedBits: number | boolean | void,
 ): T {
   const dispatcher = resolveDispatcher();
+  if (__DEV__) {
+    if (unstable_observedBits !== undefined) {
+      console.error(
+        'useContext() second argument is reserved for future ' +
+          'use in React. Passing it is not supported. ' +
+          'You passed: %s.%s',
+        unstable_observedBits,
+        typeof unstable_observedBits === 'number' && Array.isArray(arguments[2])
+          ? '\n\nDid you call array.map(useContext)? ' +
+              'Calling Hooks inside a loop is not supported. ' +
+              'Learn more at https://reactjs.org/link/rules-of-hooks'
+          : '',
+      );
+    }
 
+    // TODO: add a more generic warning for invalid values.
+    if ((Context: any)._context !== undefined) {
+      const realContext = (Context: any)._context;
+      // Don't deduplicate because this legitimately causes bugs
+      // and nobody should be using this in existing code.
+      if (realContext.Consumer === Context) {
+        console.error(
+          'Calling useContext(Context.Consumer) is not supported, may cause bugs, and will be ' +
+            'removed in a future major release. Did you mean to call useContext(Context) instead?',
+        );
+      } else if (realContext.Provider === Context) {
+        console.error(
+          'Calling useContext(Context.Provider) is not supported. ' +
+            'Did you mean to call useContext(Context) instead?',
+        );
+      }
+    }
+  }
   return dispatcher.useContext(Context, unstable_observedBits);
 }
 
 export function useState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  console.log('useState start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useState')) {
-    debugger
-  }
   const dispatcher = resolveDispatcher();
-  const dispatcherUseState = dispatcher.useState(initialState);
-  console.log('useState end')
-  return dispatcherUseState
+  return dispatcher.useState(initialState);
 }
 
 export function useReducer<S, I, A>(
@@ -117,7 +143,10 @@ export function useDebugValue<T>(
   value: T,
   formatterFn: ?(value: T) => mixed,
 ): void {
-
+  if (__DEV__) {
+    const dispatcher = resolveDispatcher();
+    return dispatcher.useDebugValue(value, formatterFn);
+  }
 }
 
 export const emptyObject = {};

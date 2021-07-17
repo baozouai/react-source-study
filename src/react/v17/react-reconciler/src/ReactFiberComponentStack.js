@@ -28,8 +28,12 @@ import {
 } from 'shared/ReactComponentStackFrame';
 
 function describeFiber(fiber: Fiber): string {
-  const owner: null | Function = null;
-  const source = null;
+  const owner: null | Function = __DEV__
+    ? fiber._debugOwner
+      ? fiber._debugOwner.type
+      : null
+    : null;
+  const source = __DEV__ ? fiber._debugSource : null;
   switch (fiber.tag) {
     case HostComponent:
       return describeBuiltInComponentFrame(fiber.type, source, owner);

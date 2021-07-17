@@ -91,7 +91,24 @@ export function isFiberMounted(fiber: Fiber): boolean {
 }
 
 export function isMounted(component: React$Component<any, any>): boolean {
-
+  if (__DEV__) {
+    const owner = (ReactCurrentOwner.current: any);
+    if (owner !== null && owner.tag === ClassComponent) {
+      const ownerFiber: Fiber = owner;
+      const instance = ownerFiber.stateNode;
+      if (!instance._warnedAboutRefsInRender) {
+        console.error(
+          '%s is accessing isMounted inside its render() function. ' +
+            'render() should be a pure function of props and state. It should ' +
+            'never access something that requires stale data from the previous ' +
+            'render, such as refs. Move this logic to componentDidMount and ' +
+            'componentDidUpdate instead.',
+          getComponentName(ownerFiber.type) || 'A component',
+        );
+      }
+      instance._warnedAboutRefsInRender = true;
+    }
+  }
 
   const fiber: ?Fiber = getInstance(component);
   if (!fiber) {

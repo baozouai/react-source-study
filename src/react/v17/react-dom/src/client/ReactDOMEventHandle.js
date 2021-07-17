@@ -84,6 +84,12 @@ function registerEventOnNearestTargetContainer(
     // our event handle target container.
     let targetContainer = getNearestRootOrPortalContainer(targetFiber);
     if (targetContainer === null) {
+      if (__DEV__) {
+        console.error(
+          'ReactDOM.createEventHandle: setListener called on an target ' +
+            'that did not have a corresponding root. This is likely a bug in React.',
+        );
+      }
       return;
     }
     if (targetContainer.nodeType === COMMENT_NODE) {
@@ -110,6 +116,12 @@ function registerReactDOMEvent(
       // Check if the DOM element is managed by React.
       const targetFiber = getClosestInstanceFromNode(targetElement);
       if (targetFiber === null) {
+        if (__DEV__) {
+          console.error(
+            'ReactDOM.createEventHandle: setListener called on an element ' +
+              'target that is not managed by React. Ensure React rendered the DOM element.',
+          );
+        }
         return;
       }
       registerEventOnNearestTargetContainer(

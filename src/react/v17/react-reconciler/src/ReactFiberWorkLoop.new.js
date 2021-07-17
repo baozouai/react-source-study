@@ -14,19 +14,24 @@ import type {ReactPriorityLevel} from './ReactInternalTypes';
 import type {Interaction} from '../../scheduler/src/Tracing';
 import type {SuspenseState} from './ReactFiberSuspenseComponent.new';
 import type {StackCursor} from './ReactFiberStack.new';
-
+import type {FunctionComponentUpdateQueue} from './ReactFiberHooks.new';
 import type {Flags} from './ReactFiberFlags';
 
 import {
+  warnAboutDeprecatedLifecycles,
   enableSuspenseServerRenderer,
+  replayFailedUnitOfWorkWithInvokeGuardedCallback,
   enableProfilerTimer,
   enableProfilerCommitHooks,
   enableSchedulerTracing,
+  warnAboutUnmockedScheduler,
   deferRenderPhaseUpdateToNextBatch,
   decoupleUpdatePriorityFromScheduler,
+  enableDebugTracing,
   enableSchedulingProfiler,
   enableScopeAPI,
   skipUnmountedBoundaries,
+  enableDoubleInvokingEffects,
 } from 'shared/ReactFeatureFlags';
 import ReactSharedInternals from 'shared/ReactSharedInternals';
 import invariant from 'shared/invariant';
@@ -46,6 +51,20 @@ import {
   flushSyncCallbackQueue,
   scheduleSyncCallback,
 } from './SchedulerWithReactIntegration.new';
+import {
+  NoFlags as NoHookEffect,
+  Passive as HookPassive,
+} from './ReactHookEffectTags';
+import {
+  logCommitStarted,
+  logCommitStopped,
+  logLayoutEffectsStarted,
+  logLayoutEffectsStopped,
+  logPassiveEffectsStarted,
+  logPassiveEffectsStopped,
+  logRenderStarted,
+  logRenderStopped,
+} from './DebugTracing';
 import {
   markCommitStarted,
   markCommitStopped,
@@ -111,6 +130,8 @@ import {
   MutationMask,
   LayoutMask,
   PassiveMask,
+  MountPassiveDev,
+  MountLayoutDev,
 } from './ReactFiberFlags';
 import {
   NoLanePriority,
@@ -172,6 +193,10 @@ import {
   commitAttachRef,
   commitResetTextContent,
   isSuspenseBoundaryBeingHidden,
+  invokeLayoutEffectMountInDEV,
+  invokePassiveEffectMountInDEV,
+  invokeLayoutEffectUnmountInDEV,
+  invokePassiveEffectUnmountInDEV,
   recursivelyCommitLayoutEffects,
 } from './ReactFiberCommitWork.new';
 import {enqueueUpdate} from './ReactUpdateQueue.new';
@@ -179,6 +204,7 @@ import {resetContextDependencies} from './ReactFiberNewContext.new';
 import {
   resetHooksAfterThrow,
   ContextOnlyDispatcher,
+  getIsUpdatingOpaqueValueInRenderPhaseInDEV,
 } from './ReactFiberHooks.new';
 import {createCapturedValue} from './ReactCapturedValue';
 import {
@@ -193,7 +219,22 @@ import {
   stopProfilerTimerIfRunningAndRecordDelta,
 } from './ReactProfilerTimer.new';
 
+// DEV stuff
+import getComponentName from 'shared/getComponentName';
+import ReactStrictModeWarnings from './ReactStrictModeWarnings.new';
+import {
+  isRendering as ReactCurrentDebugFiberIsRenderingInDEV,
+  current as ReactCurrentFiberCurrent,
+  resetCurrentFiber as resetCurrentDebugFiberInDEV,
+  setCurrentFiber as setCurrentDebugFiberInDEV,
+} from './ReactCurrentFiber';
+import {
+  invokeGuardedCallback,
+  hasCaughtError,
+  clearCaughtError,
+} from 'shared/ReactErrorUtils';
 import {onCommitRoot as onCommitRootDevTools} from './ReactFiberDevToolsHook.new';
+import {onCommitRoot as onCommitRootTestSelector} from './ReactTestSelectors';
 
 // Used by `act`
 import enqueueTask from 'shared/enqueueTask';
@@ -468,11 +509,8 @@ export function scheduleUpdateOnFiber(
   lane: Lane,
   eventTime: number,
 ) {
-  
-  console.log('scheduleUpdateOnFiber')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) {
+  console.log('ReactFiberWorkLoop: scheduleUpdateOnFiber')
   debugger
-  }
   checkForNestedUpdates();
   warnAboutRenderPhaseUpdatesInDEV(fiber);
 
@@ -612,11 +650,8 @@ function markUpdateLaneFromFiberToRoot(
 // root has work on. This function is called on every update, and right before
 // exiting a task.
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
-  
-  console.log('ensureRootIsScheduled')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) {
+  console.log('ReactFiberWorkLoop: ensureRootIsScheduled')
   debugger
-  }
   const existingCallbackNode = root.callbackNode;
 
   // Check if any lanes are being starved by other work. If so, mark them as
@@ -658,7 +693,6 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   if (newCallbackPriority === SyncLanePriority) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
-    // 同步渲染模式
     newCallbackNode = scheduleSyncCallback(
       performSyncWorkOnRoot.bind(null, root),
     );
@@ -668,12 +702,9 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
       performSyncWorkOnRoot.bind(null, root),
     );
   } else {
-    // 将本次更新任务的优先级转化为调度优先级
-    // schedulerPriorityLevel为调度优先级
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
       newCallbackPriority,
     );
-    // concurrent模式
     newCallbackNode = scheduleCallback(
       schedulerPriorityLevel,
       performConcurrentWorkOnRoot.bind(null, root),
@@ -687,11 +718,8 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 // This is the entry point for every concurrent task, i.e. anything that
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
-  
-  console.log('performConcurrentWorkOnRoot')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) {
+  console.log('ReactFiberWorkLoop: performConcurrentWorkOnRoot')
   debugger
-  }
   // Since we know we're in a React event, we can clear the current
   // event time. The next update will compute a new event time.
   currentEventTime = NoTimestamp;
@@ -814,7 +842,9 @@ function finishConcurrentRender(root, exitStatus, lanes) {
       // should immediately commit it or wait a bit.
 
       if (
-        includesOnlyRetries(lanes)
+        includesOnlyRetries(lanes) &&
+        // do not delay if we're inside an act() scope
+        !shouldForceFlushFallbacksInDEV()
       ) {
         // This render only included retries, no updates. Throttle committing
         // retries so that we don't show too many loading states too quickly.
@@ -862,7 +892,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
         break;
       }
 
-
+      if (!shouldForceFlushFallbacksInDEV()) {
         // This is not a transition, but we did trigger an avoided state.
         // Schedule a placeholder to display after a short delay, using the Just
         // Noticeable Difference.
@@ -870,22 +900,22 @@ function finishConcurrentRender(root, exitStatus, lanes) {
         // the only reason we track the event time, then probably not.
         // Consider removing.
 
-      const mostRecentEventTime = getMostRecentEventTime(root, lanes);
-      const eventTimeMs = mostRecentEventTime;
-      const timeElapsedMs = now() - eventTimeMs;
-      const msUntilTimeout = jnd(timeElapsedMs) - timeElapsedMs;
+        const mostRecentEventTime = getMostRecentEventTime(root, lanes);
+        const eventTimeMs = mostRecentEventTime;
+        const timeElapsedMs = now() - eventTimeMs;
+        const msUntilTimeout = jnd(timeElapsedMs) - timeElapsedMs;
 
-      // Don't bother with a very short suspense time.
-      if (msUntilTimeout > 10) {
-        // Instead of committing the fallback immediately, wait for more data
-        // to arrive.
-        root.timeoutHandle = scheduleTimeout(
-          commitRoot.bind(null, root),
-          msUntilTimeout,
-        );
-        break;
+        // Don't bother with a very short suspense time.
+        if (msUntilTimeout > 10) {
+          // Instead of committing the fallback immediately, wait for more data
+          // to arrive.
+          root.timeoutHandle = scheduleTimeout(
+            commitRoot.bind(null, root),
+            msUntilTimeout,
+          );
+          break;
+        }
       }
-
 
       // Commit the placeholder.
       commitRoot(root);
@@ -919,11 +949,7 @@ function performSyncWorkOnRoot(root) {
     (executionContext & (RenderContext | CommitContext)) === NoContext,
     'Should not already be working.',
   );
-  
-  console.log('ReactFiberWorkLoop.new: performSyncWorkOnRoot')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performSyncWorkOnRoot')) {
-  debugger
-  }
+
   flushPassiveEffects();
 
   let lanes;
@@ -1240,11 +1266,8 @@ export function popRenderLanes(fiber: Fiber) {
 }
 
 function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
-  // workInProgressRoot第一次在这里初始化
-  console.log('prepareFreshStack')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('prepareFreshStack')) {
+  console.log('ReactFiberWorkLoop: prepareFreshStack')
   debugger
-  }
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
 
@@ -1276,7 +1299,6 @@ function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   if (enableSchedulerTracing) {
     spawnedWorkDuringRender = null;
   }
-  console.log('prepareFreshStack end')
 }
 
 function handleError(root, thrownValue): void {
@@ -1286,6 +1308,7 @@ function handleError(root, thrownValue): void {
       // Reset module-level state that was set during the render phase.
       resetContextDependencies();
       resetHooksAfterThrow();
+      resetCurrentDebugFiberInDEV();
       // TODO: I found and added this missing line while investigating a
       // separate issue. Write a regression test using string refs.
       ReactCurrentOwner.current = null;
@@ -1431,11 +1454,8 @@ export function renderHasNotSuspendedYet(): boolean {
 }
 
 function renderRootSync(root: FiberRoot, lanes: Lanes) {
-  
-  console.log('renderRootSync')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootSync')) {
+  console.log('ReactFiberWorkLoop: renderRootSync')
   debugger
-  }
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1492,27 +1512,19 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
 // The work loop is an extremely hot path. Tell Closure not to inline it.
 /** @noinline */
 function workLoopSync() {
-  
-  console.log('workLoopSync')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) {
+  console.log('ReactFiberWorkLoop: workLoopSync')
   debugger
-  }
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
-    console.log('workLoopSync in while')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) {
-    debugger
-    }
+    console.log('ReactFiberWorkLoop: workLoopSync')
+  debugger
     performUnitOfWork(workInProgress);
   }
 }
 
 function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
-  
-  console.log('renderRootConcurrent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootConcurrent')) {
-    debugger
-  }
+  console.log('ReactFiberWorkLoop: renderRootConcurrent')
+  debugger
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1571,27 +1583,20 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 
 /** @noinline */
 function workLoopConcurrent() {
-  console.log('workLoopConcurrent start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopConcurrent')) {
-    debugger
-  }
   // Perform work until Scheduler asks us to yield
   while (workInProgress !== null && !shouldYield()) {
     performUnitOfWork(workInProgress);
   }
-  console.log('workLoopConcurrent end')
 }
 
 function performUnitOfWork(unitOfWork: Fiber): void {
-  
-  console.log('performUnitOfWork start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performUnitOfWork')) {
+  console.log('ReactFiberWorkLoop: performUnitOfWork')
   debugger
-  }
   // The current, flushed, state of this fiber is the alternate. Ideally
   // nothing should rely on this, but relying on it here means that we don't
   // need an additional field on the work in progress.
   const current = unitOfWork.alternate;
+  setCurrentDebugFiberInDEV(unitOfWork);
 
   let next;
   if (enableProfilerTimer && (unitOfWork.mode & ProfileMode) !== NoMode) {
@@ -1602,6 +1607,7 @@ function performUnitOfWork(unitOfWork: Fiber): void {
     next = beginWork(current, unitOfWork, subtreeRenderLanes);
   }
 
+  resetCurrentDebugFiberInDEV();
   unitOfWork.memoizedProps = unitOfWork.pendingProps;
   if (next === null) {
     // If this doesn't spawn new work, complete the current work.
@@ -1611,18 +1617,14 @@ function performUnitOfWork(unitOfWork: Fiber): void {
   }
 
   ReactCurrentOwner.current = null;
-  console.log('performUnitOfWork end')
 }
 
 function completeUnitOfWork(unitOfWork: Fiber): void {
   // Attempt to complete the current unit of work, then move to the next
   // sibling. If there are no more siblings, return to the parent fiber.
   let completedWork = unitOfWork;
-  
-  console.log('completeUnitOfWork start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeUnitOfWork')) {
+  console.log('ReactFiberWorkLoop: completeUnitOfWork')
   debugger
-  }
   do {
     // The current, flushed, state of this fiber is the alternate. Ideally
     // nothing should rely on this, but relying on it here means that we don't
@@ -1632,6 +1634,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
 
     // Check if the work completed or if something threw.
     if ((completedWork.flags & Incomplete) === NoFlags) {
+      setCurrentDebugFiberInDEV(completedWork);
       let next;
       if (
         !enableProfilerTimer ||
@@ -1644,6 +1647,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         // Update render duration assuming we didn't error.
         stopProfilerTimerIfRunningAndRecordDelta(completedWork, false);
       }
+      resetCurrentDebugFiberInDEV();
 
       if (next !== null) {
         // Completing this fiber spawned new work. Work on that next.
@@ -1709,20 +1713,14 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   if (workInProgressRootExitStatus === RootIncomplete) {
     workInProgressRootExitStatus = RootCompleted;
   }
-  console.log('completeUnitOfWork end')
 }
 
 function commitRoot(root) {
-  console.log('commitRoot start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRoot')) {
-    debugger
-  }
   const renderPriorityLevel = getCurrentPriorityLevel();
   runWithPriority(
     ImmediateSchedulerPriority,
     commitRootImpl.bind(null, root, renderPriorityLevel),
   );
-  console.log('commitRoot end')
   return null;
 }
 
@@ -1730,10 +1728,6 @@ function commitRootImpl(root, renderPriorityLevel) {
   // 由于useEffect是异步调度的，有可能上一次更新调度的useEffect还未被真正执行，
   // 所以在本次更新开始前，需要先将之前的useEffect都执行掉，以保证本次更新调度的
   // useEffect都是本次更新产生的
-  console.log('commitRootImpl start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRootImpl')) {
-    debugger
-  }
   do {
     // `flushPassiveEffects` will call `flushSyncUpdateQueue` at the end, which
     // means `flushPassiveEffects` will sometimes result in additional
@@ -1780,7 +1774,6 @@ function commitRootImpl(root, renderPriorityLevel) {
   // Update the first and last pending times on this root. The new first
   // pending time is whatever is left on the root fiber.
   let remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
-  // 将被跳过的优先级放到root上的pendingLanes（待处理的优先级）上
   markRootFinished(root, remainingLanes);
 
   // Clear already finished discrete updates in case that a later call of
@@ -1923,7 +1916,6 @@ function commitRootImpl(root, renderPriorityLevel) {
     }
   } else {
     // No effects.
-    // 没有effectList，直接将wprkInProgress树切换为current树
     root.current = finishedWork;
     // Measure these anyway so the flamegraph explicitly shows that there were
     // no effects.
@@ -1943,7 +1935,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     pendingPassiveEffectsLanes = lanes;
     pendingPassiveEffectsRenderPriority = renderPriorityLevel;
   }
-  // 获取尚未处理的优先级，比如之前被跳过的任务的优先级
+
   // Read this again, since an effect might have updated it
   remainingLanes = root.pendingLanes;
 
@@ -1993,12 +1985,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   }
 
   onCommitRootDevTools(finishedWork.stateNode, renderPriorityLevel);
- /*
-  * 每次commit阶段完成后，再执行一遍ensureRootIsScheduled，确保是否还有任务需要被调度。
-  * 例如，高优先级插队的更新完成后，commit完成后，还会再执行一遍，保证之前跳过的低优先级任务
-  * 重新调度
-  *
-  * */
+
   // Always call this before exiting `commitRoot`, to ensure that any
   // additional work on this root is scheduled.
   ensureRootIsScheduled(root, now());
@@ -2017,15 +2004,11 @@ function commitRootImpl(root, renderPriorityLevel) {
   if (enableSchedulingProfiler) {
     markCommitStopped();
   }
-  console.log('commitRootImpl end')
+
   return null;
 }
 
 function commitBeforeMutationEffects(firstChild: Fiber) {
-  console.log('commitBeforeMutationEffects start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffects')) {
-    debugger
-  }
   let fiber = firstChild;
   while (fiber !== null) {
     if (fiber.deletions !== null) {
@@ -2048,14 +2031,9 @@ function commitBeforeMutationEffects(firstChild: Fiber) {
 
     fiber = fiber.sibling;
   }
-  console.log('commitBeforeMutationEffects end')
 }
 
 function commitBeforeMutationEffectsImpl(fiber: Fiber) {
-  console.log('commitBeforeMutationEffectsImpl start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffectsImpl')) {
-    debugger
-  }
   const current = fiber.alternate;
   const flags = fiber.flags;
 
@@ -2073,8 +2051,9 @@ function commitBeforeMutationEffectsImpl(fiber: Fiber) {
   }
 
   if ((flags & Snapshot) !== NoFlags) {
-    // 通过commitBeforeMutationEffectOnFiber调用getSnapshotBeforeUpdate
+    setCurrentDebugFiberInDEV(fiber);
     commitBeforeMutationEffectOnFiber(current, fiber);
+    resetCurrentDebugFiberInDEV();
   }
 
   if ((flags & Passive) !== NoFlags) {
@@ -2089,7 +2068,6 @@ function commitBeforeMutationEffectsImpl(fiber: Fiber) {
       });
     }
   }
-  console.log('commitBeforeMutationEffectsImpl end')
 }
 
 function commitBeforeMutationEffectsDeletions(deletions: Array<Fiber>) {
@@ -2113,10 +2091,6 @@ function commitMutationEffects(
   root: FiberRoot,
   renderPriorityLevel: ReactPriorityLevel,
 ) {
-  console.log('commitMutationEffects start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffects')) {
-    debugger
-  }
   let fiber = firstChild;
   while (fiber !== null) {
     const deletions = fiber.deletions;
@@ -2145,7 +2119,6 @@ function commitMutationEffects(
 
     fiber = fiber.sibling;
   }
-  console.log('commitMutationEffects end')
 }
 
 function commitMutationEffectsImpl(
@@ -2252,10 +2225,6 @@ export function schedulePassiveEffectCallback() {
 }
 
 export function flushPassiveEffects(): boolean {
-  console.log('flushPassiveEffects start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffects')) {
-  debugger
-  }
   // Returns whether passive effects were flushed.
   if (pendingPassiveEffectsRenderPriority !== NoSchedulerPriority) {
     const priorityLevel =
@@ -2269,19 +2238,14 @@ export function flushPassiveEffects(): boolean {
         setCurrentUpdateLanePriority(
           schedulerPriorityToLanePriority(priorityLevel),
         );
-        const priority = runWithPriority(priorityLevel, flushPassiveEffectsImpl);
-        console.log('flushPassiveEffects end')
-        return priority
+        return runWithPriority(priorityLevel, flushPassiveEffectsImpl);
       } finally {
         setCurrentUpdateLanePriority(previousLanePriority);
       }
     } else {
-      const priority = runWithPriority(priorityLevel, flushPassiveEffectsImpl);
-      console.log('flushPassiveEffects end')
-      return priority
+      return runWithPriority(priorityLevel, flushPassiveEffectsImpl);
     }
   }
-  console.log('flushPassiveEffects end')
   return false;
 }
 
@@ -2358,7 +2322,9 @@ function flushPassiveUnmountEffects(firstChild: Fiber): void {
     // 为fiber本身执行useEffect
     const primaryFlags = fiber.flags & Passive;
     if (primaryFlags !== NoFlags) {
+      setCurrentDebugFiberInDEV(fiber);
       commitPassiveUnmountOnFiber(fiber);
+      resetCurrentDebugFiberInDEV();
     }
 
     fiber = fiber.sibling;
@@ -2385,21 +2351,17 @@ function flushPassiveUnmountEffectsInsideOfDeletedTree(
   }
 
   if ((fiberToDelete.flags & PassiveStatic) !== NoFlags) {
+    setCurrentDebugFiberInDEV(fiberToDelete);
     commitPassiveUnmountInsideDeletedTreeOnFiber(
       fiberToDelete,
       nearestMountedAncestor,
     );
+    resetCurrentDebugFiberInDEV();
   }
 }
 
 function flushPassiveEffectsImpl() {
-  console.log('flushPassiveEffectsImpl start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffectsImpl')) {
-  debugger
-  }
-  // 先校验，如果root上没有 Passive efectTag的节点，则直接return
   if (rootWithPendingPassiveEffects === null) {
-    console.log('flushPassiveEffectsImpl end')
     return false;
   }
 
@@ -2435,7 +2397,7 @@ function flushPassiveEffectsImpl() {
   }
 
   if (enableSchedulerTracing) {
-    popInteractions(prevInteractions); // prevInteractions as Set<Interaction>
+    popInteractions(((prevInteractions: any): Set<Interaction>));
     finishPendingInteractions(root, lanes);
   }
 
@@ -2448,7 +2410,7 @@ function flushPassiveEffectsImpl() {
   // exceeds the limit, we'll fire a warning.
   nestedPassiveUpdateCount =
     rootWithPendingPassiveEffects === null ? 0 : nestedPassiveUpdateCount + 1;
-  console.log('flushPassiveEffectsImpl end')
+
   return true;
 }
 
@@ -2902,6 +2864,10 @@ function finishPendingInteractions(root, committedLanes) {
 let isFlushingAct = false;
 let isInsideThisAct = false;
 
+function shouldForceFlushFallbacksInDEV() {
+  // Never force flush in production. This function should get stripped out.
+  return __DEV__ && actingUpdatesScopeDepth > 0;
+}
 
 const flushMockScheduler = Scheduler.unstable_flushAllWithoutAsserting;
 const isSchedulerMocked = typeof flushMockScheduler === 'function';

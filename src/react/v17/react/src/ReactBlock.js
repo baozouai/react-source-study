@@ -53,6 +53,49 @@ export function block<Args: Iterable<any>, Props, Data>(
   render: BlockRenderFunction<Props, Data>,
   load?: BlockLoadFunction<Args, Data>,
 ): (...args: Args) => Block<Props> {
+  if (__DEV__) {
+    if (load !== undefined && typeof load !== 'function') {
+      console.error(
+        'Blocks require a load function, if provided, but was given %s.',
+        load === null ? 'null' : typeof load,
+      );
+    }
+    if (render != null && render.$$typeof === REACT_MEMO_TYPE) {
+      console.error(
+        'Blocks require a render function but received a `memo` ' +
+          'component. Use `memo` on an inner component instead.',
+      );
+    } else if (render != null && render.$$typeof === REACT_FORWARD_REF_TYPE) {
+      console.error(
+        'Blocks require a render function but received a `forwardRef` ' +
+          'component. Use `forwardRef` on an inner component instead.',
+      );
+    } else if (typeof render !== 'function') {
+      console.error(
+        'Blocks require a render function but was given %s.',
+        render === null ? 'null' : typeof render,
+      );
+    } else if (render.length !== 0 && render.length !== 2) {
+      // Warn if it's not accepting two args.
+      // Do not warn for 0 arguments because it could be due to usage of the 'arguments' object.
+      console.error(
+        'Block render functions accept exactly two parameters: props and data. %s',
+        render.length === 1
+          ? 'Did you forget to use the data parameter?'
+          : 'Any additional parameter will be undefined.',
+      );
+    }
+
+    if (
+      render != null &&
+      (render.defaultProps != null || render.propTypes != null)
+    ) {
+      console.error(
+        'Block render functions do not support propTypes or defaultProps. ' +
+          'Did you accidentally pass a React component?',
+      );
+    }
+  }
 
   if (load === undefined) {
     return function(): Block<Props> {

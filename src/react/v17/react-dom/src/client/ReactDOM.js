@@ -39,7 +39,7 @@ import {
   getCurrentUpdateLanePriority,
 } from 'react-reconciler/src/ReactFiberReconciler';
 import {createPortal as createPortalImpl} from 'react-reconciler/src/ReactPortal';
-
+import {canUseDOM} from 'shared/ExecutionEnvironment';
 import ReactVersion from 'shared/ReactVersion';
 import invariant from 'shared/invariant';
 import {
@@ -80,7 +80,24 @@ setAttemptHydrationAtPriority(runWithPriority);
 let didWarnAboutUnstableCreatePortal = false;
 let didWarnAboutUnstableRenderSubtreeIntoContainer = false;
 
-
+if (__DEV__) {
+  if (
+    typeof Map !== 'function' ||
+    // $FlowIssue Flow incorrectly thinks Map has no prototype
+    Map.prototype == null ||
+    typeof Map.prototype.forEach !== 'function' ||
+    typeof Set !== 'function' ||
+    // $FlowIssue Flow incorrectly thinks Set has no prototype
+    Set.prototype == null ||
+    typeof Set.prototype.clear !== 'function' ||
+    typeof Set.prototype.forEach !== 'function'
+  ) {
+    console.error(
+      'React depends on Map and Set built-in types. Make sure that you load a ' +
+        'polyfill in older browsers. https://reactjs.org/link/react-polyfills',
+    );
+  }
+}
 
 setRestoreImplementation(restoreControlledState);
 setBatchingImplementation(
@@ -116,7 +133,19 @@ function renderSubtreeIntoContainer(
   containerNode: Container,
   callback: ?Function,
 ) {
-
+  if (__DEV__) {
+    if (
+      warnUnstableRenderSubtreeIntoContainer &&
+      !didWarnAboutUnstableRenderSubtreeIntoContainer
+    ) {
+      didWarnAboutUnstableRenderSubtreeIntoContainer = true;
+      console.warn(
+        'ReactDOM.unstable_renderSubtreeIntoContainer() is deprecated ' +
+          'and will be removed in a future major release. Consider using ' +
+          'React Portals instead.',
+      );
+    }
+  }
   return unstable_renderSubtreeIntoContainer(
     parentComponent,
     element,
@@ -130,7 +159,17 @@ function unstable_createPortal(
   container: Container,
   key: ?string = null,
 ) {
-
+  if (__DEV__) {
+    if (!didWarnAboutUnstableCreatePortal) {
+      didWarnAboutUnstableCreatePortal = true;
+      console.warn(
+        'The ReactDOM.unstable_createPortal() alias has been deprecated, ' +
+          'and will be removed in React 18+. Update your code to use ' +
+          'ReactDOM.createPortal() instead. It has the exact same API, ' +
+          'but without the "unstable_" prefix.',
+      );
+    }
+  }
   return createPortal(children, container, key);
 }
 
@@ -180,10 +219,36 @@ export {
 
 const foundDevTools = injectIntoDevTools({
   findFiberByHostInstance: getClosestInstanceFromNode,
-  bundleType: 0,
+  bundleType: __DEV__ ? 1 : 0,
   version: ReactVersion,
   rendererPackageName: 'react-dom',
 });
 
+if (__DEV__) {
+  if (!foundDevTools && canUseDOM && window.top === window.self) {
+    // If we're in Chrome or Firefox, provide a download link if not installed.
+    if (
+      (navigator.userAgent.indexOf('Chrome') > -1 &&
+        navigator.userAgent.indexOf('Edge') === -1) ||
+      navigator.userAgent.indexOf('Firefox') > -1
+    ) {
+      const protocol = window.location.protocol;
+      // Don't warn in exotic cases like chrome-extension://.
+      if (/^(https?|file):$/.test(protocol)) {
+        // eslint-disable-next-line react-internal/no-production-logging
+        console.info(
+          '%cDownload the React DevTools ' +
+            'for a better development experience: ' +
+            'https://reactjs.org/link/react-devtools' +
+            (protocol === 'file:'
+              ? '\nYou might need to use a local HTTP server (instead of file://): ' +
+                'https://reactjs.org/link/react-devtools-faq'
+              : ''),
+          'font-weight:bold',
+        );
+      }
+    }
+  }
+}
 
 export const unstable_isNewReconciler = enableNewReconciler;

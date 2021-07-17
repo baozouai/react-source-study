@@ -22,6 +22,7 @@ import {disableJavaScriptURLs} from 'shared/ReactFeatureFlags';
 /* eslint-disable max-len */
 const isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
 
+let didWarn = false;
 
 function sanitizeURL(url: string) {
   if (disableJavaScriptURLs) {
@@ -29,6 +30,16 @@ function sanitizeURL(url: string) {
       !isJavaScriptProtocol.test(url),
       'React has blocked a javascript: URL as a security precaution.',
     );
+  } else if (__DEV__) {
+    if (!didWarn && isJavaScriptProtocol.test(url)) {
+      didWarn = true;
+      console.error(
+        'A future version of React will block javascript: URLs as a security precaution. ' +
+          'Use event handlers instead if you can. If you need to generate unsafe HTML try ' +
+          'using dangerouslySetInnerHTML instead. React was passed %s.',
+        JSON.stringify(url),
+      );
+    }
   }
 }
 

@@ -52,14 +52,12 @@ if (
       }
     }
   };
-  // 非浏览器环境
   requestHostCallback = function(cb) {
     if (_callback !== null) {
       // Protect against re-entrancy.
       setTimeout(requestHostCallback, 0, cb);
     } else {
       _callback = cb;
-      // 调度_flushCallback去执行_callback，taskQueue被清空
       setTimeout(_flushCallback, 0);
     }
   };
@@ -183,14 +181,10 @@ if (
       yieldInterval = 5;
     }
   };
-  // performWorkUntilDeadline内部会执行掉scheduledHostCallback，最后taskQueue被清空
-  // 这个过程中会涉及任务的中断和恢复、任务完成状态的判断
+
   const performWorkUntilDeadline = () => {
-    
     console.log('ScheduleHostConfig.default.js: performWorkUntilDeadline')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performWorkUntilDeadline')) {
     debugger
-    }
     if (scheduledHostCallback !== null) {
       const currentTime = getCurrentTime();
       // Yield after `yieldInterval` ms, regardless of where we are in the vsync
@@ -231,11 +225,8 @@ if (
   channel.port1.onmessage = performWorkUntilDeadline;
 
   requestHostCallback = function(callback) {
-    
-    console.log('requestHostCallback')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('requestHostCallback')) {
+    console.log('SchedulerHostConfig.default.js: requestHostCallback')
     debugger
-    }
     scheduledHostCallback = callback;
     if (!isMessageLoopRunning) {
       isMessageLoopRunning = true;

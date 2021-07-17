@@ -127,11 +127,8 @@ function FiberNode(
   this.dependencies = null;
 
   this.mode = mode;
-  
-  console.log('FiberNode')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
+  console.log('ReactFiber.new: FiberNode')
   debugger
-  }
   // Effects
   this.flags = NoFlags;
   this.subtreeFlags = NoFlags;
@@ -189,15 +186,10 @@ const createFiber = function(
   key: null | string,
   mode: TypeOfMode,
 ): Fiber {
- 
-  console.log('createFiber start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiber')) {
-    debugger
-  }
+  console.log('ReactFiber.new: createFiber')
+  debugger
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
-  const fiberNode = new FiberNode(tag, pendingProps, key, mode);
-  console.log('createFiber end')
-  return fiberNode
+  return new FiberNode(tag, pendingProps, key, mode);
 };
 
 function shouldConstruct(Component: Function) {
@@ -236,11 +228,8 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
 // This is used to create an alternate fiber to do work on.
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
-  
-  console.log('createWorkInProgress start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) {
+  console.log('ReactFiber.new: createWorkInProgress')
   debugger
-  }
   if (workInProgress === null) {
     // We use a double buffering pooling technique because we know that we'll
     // only ever need at most two versions of a tree. We pool the "other" unused
@@ -309,7 +298,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     workInProgress.selfBaseDuration = current.selfBaseDuration;
     workInProgress.treeBaseDuration = current.treeBaseDuration;
   }
-  console.log('createWorkInProgress end')
+
   return workInProgress;
 }
 
@@ -386,11 +375,8 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 }
 
 export function createHostRootFiber(tag: RootTag): Fiber {
-  
-  console.log('createHostRootFiber start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) {
+  console.log('ReactFiber.new: createHostRootFiber')
   debugger
-  }
   let mode;
   if (tag === ConcurrentRoot) {
     mode = ConcurrentMode | BlockingMode | StrictMode;
@@ -407,9 +393,7 @@ export function createHostRootFiber(tag: RootTag): Fiber {
     mode |= ProfileMode;
   }
 
-  const newFiber = createFiber(HostRoot, null, null, mode);
-  console.log('createHostRootFiber end')
-  return newFiber
+  return createFiber(HostRoot, null, null, mode);
 }
 
 export function createFiberFromTypeAndProps(
@@ -420,11 +404,8 @@ export function createFiberFromTypeAndProps(
   mode: TypeOfMode,
   lanes: Lanes,
 ): Fiber {
-  
-  console.log('createFiberFromTypeAndProps start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) {
+  console.log('ReactFiber.new: createFiberFromTypeAndProps')
   debugger
-  }
   let fiberTag = IndeterminateComponent;
   // The resolved type is set if we know what the final type will be. I.e. it's not lazy.
   let resolvedType = type;
@@ -515,8 +496,6 @@ export function createFiberFromTypeAndProps(
   fiber.type = resolvedType;
   fiber.lanes = lanes;
 
-  console.log('createFiberFromTypeAndProps end')
-
   return fiber;
 }
 
@@ -525,11 +504,8 @@ export function createFiberFromElement(
   mode: TypeOfMode,
   lanes: Lanes,
 ): Fiber {
-  
-  console.log('createFiberFromElement start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) {
+  console.log('ReactFiber.new: createFiberFromElement')
   debugger
-  }
   let owner = null;
 
   const type = element.type;
@@ -543,7 +519,6 @@ export function createFiberFromElement(
     mode,
     lanes,
   );
-  console.log('createFiberFromElement end')
   return fiber;
 }
 
