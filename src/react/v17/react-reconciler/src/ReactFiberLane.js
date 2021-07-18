@@ -516,9 +516,9 @@ export function markStarvedLanesAsExpired(
     //   index = 4
 
     //       1 = 0b0000000000000000000000000000001
-    //  1 << 4 = 0b0000000000000000000000000001000
+    //  1 << 4 = 0b0000000000000000000000000010000
 
-    //    lane = 0b0000000000000000000000000001000
+    //    lane = 0b0000000000000000000000000010000
 
     const expirationTime = expirationTimes[index];
     if (expirationTime === NoTimestamp) {

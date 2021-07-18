@@ -620,14 +620,18 @@ function markUpdateLaneFromFiberToRoot(
 // of the existing task is the same as the priority of the next level that the
 // root has work on. This function is called on every update, and right before
 // exiting a task.
+// 任务调度协调
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
   console.log('ensureRootIsScheduled')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) {
   debugger
   }
+  // 获取旧任务
   const existingCallbackNode = root.callbackNode;
 
+  // 记录任务的过期时间，检查是否有过期任务，有则立即将它放到root.expiredLanes，
+  // 便于接下来将这个任务以同步模式立即调度
   // Check if any lanes are being starved by other work. If so, mark them as
   // expired so we know to work on those next.
   markStarvedLanesAsExpired(root, currentTime);
