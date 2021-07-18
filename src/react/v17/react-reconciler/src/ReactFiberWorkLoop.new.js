@@ -635,7 +635,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   // Check if any lanes are being starved by other work. If so, mark them as
   // expired so we know to work on those next.
   markStarvedLanesAsExpired(root, currentTime);
-
+  // 获取renderLanes
   // Determine the next lanes to work on, and their priority.
   const nextLanes = getNextLanes(
     root,
@@ -645,6 +645,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   const newCallbackPriority = returnNextLanesPriority();
 
   if (nextLanes === NoLanes) {
+    // 如果渲染优先级为空，则不需要调度
     // Special case: There's nothing to work on.
     if (existingCallbackNode !== null) {
       cancelCallback(existingCallbackNode);
@@ -653,34 +654,41 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
     }
     return;
   }
-
+  // 如果存在旧任务，那么看一下能否复用
   // Check if there's an existing task. We may be able to reuse it.
   if (existingCallbackNode !== null) {
+    // 获取旧任务的优先级
     const existingCallbackPriority = root.callbackPriority;
+    // 如果新旧任务的优先级相同，则无需调度
     if (existingCallbackPriority === newCallbackPriority) {
       // The priority hasn't changed. We can reuse the existing task. Exit.
       return;
     }
+    // 代码执行到这里说明新任务的优先级高于旧任务的优先级
+    // 取消掉旧任务，实现高优先级任务插队
     // The priority changed. Cancel the existing callback. We'll schedule a new
     // one below.
     cancelCallback(existingCallbackNode);
   }
-
+  // 调度一个新任务
   // Schedule a new callback.
   let newCallbackNode;
   if (newCallbackPriority === SyncLanePriority) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
+    // 若新任务的优先级（newCallbackPriority）为同步优先级（SyncLanePriority），则同步调度，传统的同步渲染和过期任务会走这里
     // 同步渲染模式
     newCallbackNode = scheduleSyncCallback(
       performSyncWorkOnRoot.bind(null, root),
     );
   } else if (newCallbackPriority === SyncBatchedLanePriority) {
+    // 同步模式到concurrent模式的过渡模式：blocking模式会走这里
     newCallbackNode = scheduleCallback(
       ImmediateSchedulerPriority,
       performSyncWorkOnRoot.bind(null, root),
     );
   } else {
+    // 否则就是concurrent模式
     // 将本次更新任务的优先级转化为调度优先级
     // schedulerPriorityLevel为调度优先级
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
@@ -692,7 +700,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
       performConcurrentWorkOnRoot.bind(null, root),
     );
   }
-
+  // 更新root上的任务优先级和任务，以便下次发起调度时候可以获取到
   root.callbackPriority = newCallbackPriority;
   root.callbackNode = newCallbackNode;
 }
