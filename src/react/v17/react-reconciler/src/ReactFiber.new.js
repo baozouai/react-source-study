@@ -121,9 +121,7 @@ function FiberNode(
   this.mode = mode;
   
   console.log('FiberNode')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) debugger
   // Effects
   this.flags = NoFlags;
   this.subtreeFlags = NoFlags;
@@ -228,9 +226,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
   
   console.log('createWorkInProgress start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) debugger
   if (workInProgress === null) {
     // We use a double buffering pooling technique because we know that we'll
     // only ever need at most two versions of a tree. We pool the "other" unused
@@ -378,9 +374,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 export function createHostRootFiber(tag: RootTag): Fiber {
   
   console.log('createHostRootFiber start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) debugger
   let mode;
   if (tag === ConcurrentRoot) {
     mode = ConcurrentMode | BlockingMode | StrictMode;
@@ -412,9 +406,7 @@ export function createFiberFromTypeAndProps(
 ): Fiber {
   
   console.log('createFiberFromTypeAndProps start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) debugger
   let fiberTag = IndeterminateComponent;
   // The resolved type is set if we know what the final type will be. I.e. it's not lazy.
   let resolvedType = type;
@@ -517,9 +509,7 @@ export function createFiberFromElement(
 ): Fiber {
   
   console.log('createFiberFromElement start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) debugger
   let owner = null;
 
   const type = element.type;

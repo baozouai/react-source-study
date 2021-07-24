@@ -820,9 +820,7 @@ function completeWork(
   const newProps = workInProgress.pendingProps;
   
   console.log('completeWork')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeWork')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeWork')) debugger
   switch (workInProgress.tag) {
     case IndeterminateComponent:
     case LazyComponent:

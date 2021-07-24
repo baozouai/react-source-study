@@ -56,9 +56,7 @@ export function precacheFiberNode(
 export function markContainerAsRoot(hostRoot: Fiber, node: Container): void {
   
   console.log('ReactDomComponentTree: markContainerAsRoot')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('markContainerAsRoot')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('markContainerAsRoot')) debugger
   node[internalContainerInstanceKey] = hostRoot;
 }
 

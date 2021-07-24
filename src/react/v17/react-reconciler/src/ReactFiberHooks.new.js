@@ -218,9 +218,7 @@ export function renderWithHooks<Props, SecondArg>(
 ): any {
   
   console.log('ReactFiberHooks.new: renderWithHooks')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) debugger
   renderLanes = nextRenderLanes;
   currentlyRenderingFiber = workInProgress;
 

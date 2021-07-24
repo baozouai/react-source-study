@@ -263,9 +263,7 @@ function commitHookEffectListUnmount(
   nearestMountedAncestor: Fiber | null,
 ) {
   console.log('commitHookEffectListUnmount start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListUnmount')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListUnmount')) debugger
   const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
   const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;
   if (lastEffect !== null) {
@@ -288,9 +286,7 @@ function commitHookEffectListUnmount(
 
 function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
   console.log('commitHookEffectListMount start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListMount')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListMount')) debugger
   const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
   const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;
   if (lastEffect !== null) {
@@ -1370,9 +1366,7 @@ function commitDeletion(
 
 function commitWork(current: Fiber | null, finishedWork: Fiber): void {
   console.log('commitWork start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitWork')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitWork')) debugger
   if (!supportsMutation) {
     switch (finishedWork.tag) {
       case FunctionComponent:
@@ -1712,9 +1706,7 @@ function commitResetTextContent(current: Fiber): void {
 
 function commitPassiveUnmount(finishedWork: Fiber): void {
   console.log('commitPassiveUnmount start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmount')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmount')) debugger
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -1750,9 +1742,7 @@ function commitPassiveUnmountInsideDeletedTree(
   nearestMountedAncestor: Fiber | null,
 ): void {
   console.log('commitPassiveUnmountInsideDeletedTree start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmountInsideDeletedTree')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmountInsideDeletedTree')) debugger
   switch (current.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -1788,9 +1778,7 @@ function commitPassiveMount(
   finishedWork: Fiber,
 ): void {
   console.log('commitPassiveMount start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveMount')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveMount')) debugger
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:

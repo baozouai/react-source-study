@@ -470,9 +470,7 @@ export function scheduleUpdateOnFiber(
 ) {
   
   console.log('scheduleUpdateOnFiber')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) debugger
   // 第一步，检查是否有无限更新, 例如在render函数中调用了setState
   checkForNestedUpdates();
   // 第二步，向上收集fiber.childLanes
@@ -624,9 +622,7 @@ function markUpdateLaneFromFiberToRoot(
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
   console.log('ensureRootIsScheduled')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) debugger
   // 获取旧任务
   const existingCallbackNode = root.callbackNode;
 
@@ -710,9 +706,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 function performConcurrentWorkOnRoot(root) {
   
   console.log('performConcurrentWorkOnRoot')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) debugger
   // Since we know we're in a React event, we can clear the current
   // event time. The next update will compute a new event time.
   currentEventTime = NoTimestamp;
@@ -945,9 +939,7 @@ function performSyncWorkOnRoot(root) {
   );
   
   console.log('ReactFiberWorkLoop.new: performSyncWorkOnRoot')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performSyncWorkOnRoot')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performSyncWorkOnRoot')) debugger
   flushPassiveEffects();
 
   let lanes;
@@ -1266,9 +1258,7 @@ export function popRenderLanes(fiber: Fiber) {
 function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   // workInProgressRoot第一次在这里初始化
   console.log('prepareFreshStack')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('prepareFreshStack')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('prepareFreshStack')) debugger
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
 
@@ -1457,9 +1447,7 @@ export function renderHasNotSuspendedYet(): boolean {
 function renderRootSync(root: FiberRoot, lanes: Lanes) {
   
   console.log('renderRootSync')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootSync')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootSync')) debugger
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1518,9 +1506,7 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
 function workLoopSync() {
   
   console.log('workLoopSync')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) debugger
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
     console.log('workLoopSync in while')
@@ -1616,9 +1602,7 @@ function workLoopConcurrent() {
 function performUnitOfWork(unitOfWork: Fiber): void {
   
   console.log('performUnitOfWork start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performUnitOfWork')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performUnitOfWork')) debugger
   // The current, flushed, state of this fiber is the alternate. Ideally
   // nothing should rely on this, but relying on it here means that we don't
   // need an additional field on the work in progress.
@@ -1652,9 +1636,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   let completedWork = unitOfWork;
   
   console.log('completeUnitOfWork start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeUnitOfWork')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeUnitOfWork')) debugger
   do {
     // 向上一直循环到root的过程
     // The current, flushed, state of this fiber is the alternate. Ideally
@@ -2280,9 +2262,7 @@ export function schedulePassiveEffectCallback() {
 
 export function flushPassiveEffects(): boolean {
   console.log('flushPassiveEffects start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffects')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffects')) debugger
   // Returns whether passive effects were flushed.
   if (pendingPassiveEffectsRenderPriority !== NoSchedulerPriority) {
     const priorityLevel =
@@ -2421,9 +2401,7 @@ function flushPassiveUnmountEffectsInsideOfDeletedTree(
 
 function flushPassiveEffectsImpl() {
   console.log('flushPassiveEffectsImpl start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffectsImpl')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffectsImpl')) debugger
   // 先校验，如果root上没有 Passive efectTag的节点，则直接return
   if (rootWithPendingPassiveEffects === null) {
     console.log('flushPassiveEffectsImpl end')
