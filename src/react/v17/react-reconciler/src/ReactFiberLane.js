@@ -476,7 +476,7 @@ function computeExpirationTime(lane: Lane, currentTime: number) {
     return NoTimestamp;
   }
 }
-
+// 计算和存取以及判断是否过期的逻辑，每次有任务要被调度的时候都会调用一次
 export function markStarvedLanesAsExpired(
   root: FiberRoot,
   currentTime: number,
@@ -495,14 +495,16 @@ export function markStarvedLanesAsExpired(
   // of this function.
   const pendingLanes = root.pendingLanes;
   const suspendedLanes = root.suspendedLanes;
+  // suspense的任务被恢复的lanes
   const pingedLanes = root.pingedLanes;
+  // 获取root上已有的过期时间
   const expirationTimes = root.expirationTimes;
 
   // Iterate through the pending lanes and check if we've reached their
   // expiration time. If so, we'll assume the update is being starved and mark
   // it as expired to force it to finish.
   // 遍历待处理的lanes，检查是否到了过期时间，如果过期，
-  // 将这个更新视为饥饿状态并把它们标记成过期，强制更新
+  // 将这个更新视为饥饿状态并把它们标记成过期（把它的lane放到expiredLanes），强制更新
 
   let lanes = pendingLanes;
   while (lanes > 0) {

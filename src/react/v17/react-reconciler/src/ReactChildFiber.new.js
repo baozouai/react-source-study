@@ -1206,8 +1206,6 @@ function ChildReconciler(shouldTrackSideEffects) {
   }
 
   return reconcileChildFibers;
-
-
 }
 
 export const reconcileChildFibers = ChildReconciler(true);

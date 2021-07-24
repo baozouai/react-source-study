@@ -751,7 +751,8 @@ function performConcurrentWorkOnRoot(root) {
     // Defensive coding. This is never expected to happen.
     return null;
   }
-
+  // 去执行更新任务的工作循环，一旦超出时间片，则会退出renderRootConcurrent
+  // 去执行下面的逻辑
   let exitStatus = renderRootConcurrent(root, lanes);
 
   if (
@@ -803,13 +804,15 @@ function performConcurrentWorkOnRoot(root) {
     root.finishedLanes = lanes;
     finishConcurrentRender(root, exitStatus, lanes);
   }
-
+  // 调用ensureRootIsScheduled去检查有无过期任务，是否需要调度过期任务
   ensureRootIsScheduled(root, now());
+  // 更新任务未完成，return自己，方便Scheduler判断任务完成状态
   if (root.callbackNode === originalCallbackNode) {
     // The task node scheduled for this root is the same one that's
     // currently executed. Need to return a continuation.
     return performConcurrentWorkOnRoot.bind(null, root);
   }
+  // 否则retutn null，表示任务已经完成，通知Scheduler停止调度
   return null;
 }
 
@@ -1554,12 +1557,18 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 
   do {
     try {
+      // workLoopConcurrent中判断超出时间片了，
+      // 那workLoopConcurrent就会从调用栈弹出，
+      // 走到下面的break，终止循环
+
       workLoopConcurrent();
       break;
     } catch (thrownValue) {
       handleError(root, thrownValue);
     }
   } while (true);
+  // 走到这里就说明是被时间片打断任务了，或者fiber树直接构建完了
+  // 依据情况return不同的status
   resetContextDependencies();
   if (enableSchedulerTracing) {
     popInteractions(((prevInteractions: any): Set<Interaction>));
@@ -1570,12 +1579,16 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 
   // Check if the tree has completed.
   if (workInProgress !== null) {
+    // workInProgress 不为null，说明是被时间片打断的
+    // return RootIncomplete说明还没完成任务
     // Still work remaining.
     if (enableSchedulingProfiler) {
       markRenderYielded();
     }
     return RootIncomplete;
   } else {
+    // 否则说明任务完成了
+    // return最终的status
     // Completed the tree.
     if (enableSchedulingProfiler) {
       markRenderStopped();
@@ -1596,6 +1609,7 @@ function workLoopConcurrent() {
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopConcurrent')) {
     debugger
   }
+  // 调用shouldYield判断如果超出时间片限制，那么结束循环
   // Perform work until Scheduler asks us to yield
   while (workInProgress !== null && !shouldYield()) {
     performUnitOfWork(workInProgress);
@@ -1636,6 +1650,7 @@ function performUnitOfWork(unitOfWork: Fiber): void {
 }
 
 function completeUnitOfWork(unitOfWork: Fiber): void {
+  // 已经结束beginWork阶段的fiber节点被称为completedWork
   // Attempt to complete the current unit of work, then move to the next
   // sibling. If there are no more siblings, return to the parent fiber.
   let completedWork = unitOfWork;
@@ -1645,14 +1660,15 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   debugger
   }
   do {
+    // 向上一直循环到root的过程
     // The current, flushed, state of this fiber is the alternate. Ideally
     // nothing should rely on this, but relying on it here means that we don't
     // need an additional field on the work in progress.
     const current = completedWork.alternate;
     const returnFiber = completedWork.return;
-
     // Check if the work completed or if something threw.
     if ((completedWork.flags & Incomplete) === NoFlags) {
+      // 正常完成了工作
       let next;
       if (
         !enableProfilerTimer ||
@@ -1800,6 +1816,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   // Update the first and last pending times on this root. The new first
   // pending time is whatever is left on the root fiber.
+  // 将收集到的childLanes，连同root自己的lanes，一并赋值给remainingLanes
   let remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
   // 将被跳过的优先级放到root上的pendingLanes（待处理的优先级）上
   markRootFinished(root, remainingLanes);
@@ -2015,7 +2032,8 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   onCommitRootDevTools(finishedWork.stateNode, renderPriorityLevel);
  /*
-  * 每次commit阶段完成后，再执行一遍ensureRootIsScheduled，确保是否还有任务需要被调度。
+  * 每次commit阶段完成后，再执行一遍ensureRootIsScheduled，
+  * 保证root上任何的pendingLanes都能被处理,即确保是否还有任务需要被调度。
   * 例如，高优先级插队的更新完成后，commit完成后，还会再执行一遍，保证之前跳过的低优先级任务
   * 重新调度
   *

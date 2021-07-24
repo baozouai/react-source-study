@@ -743,6 +743,7 @@ function bubbleProperties(completedWork: Fiber) {
       completedWork.actualDuration = actualDuration;
       completedWork.treeBaseDuration = treeBaseDuration;
     } else {
+      // 循环子节点和兄弟节点，收集lanes
       let child = completedWork.child;
       while (child !== null) {
         newChildLanes = mergeLanes(
@@ -805,7 +806,7 @@ function bubbleProperties(completedWork: Fiber) {
 
     completedWork.subtreeFlags |= subtreeFlags;
   }
-
+  // 将收集到的lanes放到该fiber节点的childLanes中
   completedWork.childLanes = newChildLanes;
 
   return didBailout;

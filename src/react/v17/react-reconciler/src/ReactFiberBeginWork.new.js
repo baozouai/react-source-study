@@ -2431,6 +2431,7 @@ function beginWork(
       // This may be unset if the props are determined to be equal later (memo).
       didReceiveUpdate = true;
     } else if (!includesSomeLane(renderLanes, updateLanes)) {
+      // includesSomeLane(renderLanes, updateLanes)：渲染优先级(renderLanes)是否包括更新优先级(updateLanes)
       // 更新时，如果节点的优先级不够会直接复用已有节点，即走跳出（bailout）的逻辑，而不是去走下面的更新逻辑
       // 此时无需更新
       didReceiveUpdate = false;

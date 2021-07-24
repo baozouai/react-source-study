@@ -432,6 +432,8 @@ export function processUpdateQueue<State>(
     do {
       const updateLane = update.lane;
       const updateEventTime = update.eventTime;
+      // isSubsetOfLanes函数的意义是，判断当前更新的优先级（updateLane）
+      // 是否在渲染优先级（renderLanes）中，如果不在，那么就说明优先级不足
       if (!isSubsetOfLanes(renderLanes, updateLane)) {
         // updateLane不在在renderLanes中，跳过
         // Priority is insufficient. Skip this update. If this is the first
@@ -453,10 +455,20 @@ export function processUpdateQueue<State>(
         } else {
           newLastBaseUpdate = newLastBaseUpdate.next = clone;
         }
+        /*
+        *
+        * newLanes会在最后被赋值到workInProgress.lanes上，而它又最终
+        * 会被收集到root.pendingLanes。
+        *
+        * 再次更新时会从root上的pendingLanes中找出应该在本次中更新的优先
+        * 级（renderLanes），renderLanes含有本次跳过的优先级，再次进入，
+        * processUpdateQueue wip的优先级符合要求，被更新掉，低优先级任务
+        * 因此被重做
+        * */
         // Update the remaining priority in the queue.
         newLanes = mergeLanes(newLanes, updateLane);
       } else {
-        // updateLane在renderLanes中，处理这个更新
+        // updateLane在renderLanes中，处理这个更新，即优先级足够，去计算state
         // This update does have sufficient priority.
 
         if (newLastBaseUpdate !== null) {
@@ -532,6 +544,8 @@ export function processUpdateQueue<State>(
     // shouldComponentUpdate is tricky; but we'll have to account for
     // that regardless.
     markSkippedUpdateLanes(newLanes);
+    // 将newLanes赋值给workInProgress.lanes，
+    // 就是将被跳过的update的lane放到fiber.lanes
     workInProgress.lanes = newLanes;
     workInProgress.memoizedState = newState;
   }
