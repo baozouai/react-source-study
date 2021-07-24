@@ -274,6 +274,10 @@ if (supportsMutation) {
     // TODO: Experiencing an error where oldProps is null. Suggests a host
     // component is hitting the resume path. Figure out why. Possibly
     // related to `hidden`.
+    // update的props，但是被处理成数量为成对的数组
+    // 偶数索引(0、2...)为对应update的prop key
+    // 奇数索引(1、3...)为对应update的prop value
+    // 实际是在prepareUpdate中调用了diffProperties生成的
     const updatePayload = prepareUpdate(
       instance,
       type,
@@ -283,7 +287,7 @@ if (supportsMutation) {
       currentHostContext,
     );
     // TODO: Type this specific to this type of component.
-    workInProgress.updateQueue = (updatePayload: any);
+    workInProgress.updateQueue = updatePayload;
     // If the update payload indicates that there is a change or if there
     // is a new ref we mark this as an update. All the work is done in commitWork.
     if (updatePayload) {
@@ -873,10 +877,12 @@ function completeWork(
       return null;
     }
     case HostComponent: {
+      // HostComponent：原生dom
       popHostContext(workInProgress);
       const rootContainerInstance = getRootHostContainer();
       const type = workInProgress.type;
       if (current !== null && workInProgress.stateNode != null) {
+        // 上面条件满足即意味着是update阶段
         updateHostComponent(
           current,
           workInProgress,
@@ -889,6 +895,7 @@ function completeWork(
           markRef(workInProgress);
         }
       } else {
+        // 否则是mount阶段
         if (!newProps) {
           invariant(
             workInProgress.stateNode !== null,
@@ -921,6 +928,7 @@ function completeWork(
             markUpdate(workInProgress);
           }
         } else {
+          // mount阶段创建fiber对应的dom
           const instance = createInstance(
             type,
             newProps,
@@ -928,7 +936,7 @@ function completeWork(
             currentHostContext,
             workInProgress,
           );
-
+          // 将子孙节点插入上面生成的 instance父节点
           appendAllChildren(instance, workInProgress, false, false);
 
           workInProgress.stateNode = instance;
@@ -936,6 +944,14 @@ function completeWork(
           // Certain renderers require commit-time effects for initial mount.
           // (eg DOM renderer supports auto-focus for certain elements).
           // Make sure such renderers get scheduled for later work.
+          /**
+           * 1.finalizeInitialChildren中调用了setInitialProperties
+           * setInitialProperties中调用了setInitialDOMProperties
+           * 来为instance dom加上初始的props
+           * 2.并最终返回了shouldAutoFocusHostComponent(type, props):
+           * 如果 type为['button','input','select','textarea']其中一个
+           * 返回!!props.autoFocus来判断，如果type不是上面四个类型之一,返回false
+           */
           if (
             finalizeInitialChildren(
               instance,
