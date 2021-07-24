@@ -253,9 +253,7 @@ if (supportsMutation) {
   ) {
    
     console.log('FiberNode')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) debugger
     // If we have an alternate, that means this is an update and we need to
     // schedule a side-effect to do the updates.
     const oldProps = current.memoizedProps;
@@ -707,9 +705,7 @@ function bubbleProperties(completedWork: Fiber) {
     completedWork.alternate.child === completedWork.child;
     
     console.log('bubbleProperties')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('bubbleProperties')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('bubbleProperties')) debugger
   let newChildLanes = NoLanes;
   let subtreeFlags = NoFlags;
 

@@ -80,9 +80,7 @@ ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function
   children: ReactNodeList,
 ): void {
   console.log('Scheduler: render')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) debugger
   const root = this._internalRoot;
 
   updateContainer(children, root, null, null);

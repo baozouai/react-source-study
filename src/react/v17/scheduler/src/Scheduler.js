@@ -174,9 +174,7 @@ function flushWork(hasTimeRemaining, initialTime) {
 
 function workLoop(hasTimeRemaining, initialTime) {
   console.log('Scheduler: workLoop')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) debugger
   let currentTime = initialTime;
   // 开始执行前检查一下timerQueue中的过期任务，
   // 放到taskQueue中

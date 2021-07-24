@@ -132,9 +132,7 @@ function setInitialDOMProperties(
   isCustomComponentTag: boolean,
 ): void {
   console.log('setInitialDOMProperties start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('setInitialDOMProperties')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('setInitialDOMProperties')) debugger
   for (const propKey in nextProps) {
     if (!nextProps.hasOwnProperty(propKey)) {
       // 如果是原型链上的属性，则跳过
@@ -220,9 +218,7 @@ export function createElement(
   let isCustomComponentTag;
 
   console.log('ReactDomComponent: createElement')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
   
   // We create tags in the namespace of their parent container, except HTML
   // tags get no namespace.
@@ -435,9 +431,7 @@ export function diffProperties(
 ): null | Array<mixed> {
   console.log('ReactDomComponent: diffProperties')
   
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) debugger
   let updatePayload: null | Array<any> = null;
 
   let lastProps: Object;

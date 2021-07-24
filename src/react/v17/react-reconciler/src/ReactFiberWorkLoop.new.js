@@ -1534,9 +1534,7 @@ function workLoopSync() {
 function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
   
   console.log('renderRootConcurrent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootConcurrent')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootConcurrent')) debugger
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1606,9 +1604,7 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 /** @noinline */
 function workLoopConcurrent() {
   console.log('workLoopConcurrent start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopConcurrent')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopConcurrent')) debugger
   // 调用shouldYield判断如果超出时间片限制，那么结束循环
   // Perform work until Scheduler asks us to yield
   while (workInProgress !== null && !shouldYield()) {
@@ -1751,9 +1747,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
 
 function commitRoot(root) {
   console.log('commitRoot start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRoot')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRoot')) debugger
   const renderPriorityLevel = getCurrentPriorityLevel();
   runWithPriority(
     ImmediateSchedulerPriority,
@@ -1768,9 +1762,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   // 所以在本次更新开始前，需要先将之前的useEffect都执行掉，以保证本次更新调度的
   // useEffect都是本次更新产生的
   console.log('commitRootImpl start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRootImpl')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRootImpl')) debugger
   do {
     // `flushPassiveEffects` will call `flushSyncUpdateQueue` at the end, which
     // means `flushPassiveEffects` will sometimes result in additional
@@ -1778,6 +1770,8 @@ function commitRootImpl(root, renderPriorityLevel) {
     // no more pending effects.
     // TODO: Might be better if `flushPassiveEffects` did not automatically
     // flush synchronous work at the end, to avoid factoring hazards like this.
+     // 触发useEffect回调与其他同步任务。
+    //  由于这些任务可能触发新的渲染，所以这里要一直遍历执行直到没有任务
     flushPassiveEffects();
   } while (rootWithPendingPassiveEffects !== null);
 
@@ -2062,9 +2056,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
 function commitBeforeMutationEffects(firstChild: Fiber) {
   console.log('commitBeforeMutationEffects start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffects')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffects')) debugger
   let fiber = firstChild;
   while (fiber !== null) {
     if (fiber.deletions !== null) {
@@ -2092,9 +2084,7 @@ function commitBeforeMutationEffects(firstChild: Fiber) {
 
 function commitBeforeMutationEffectsImpl(fiber: Fiber) {
   console.log('commitBeforeMutationEffectsImpl start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffectsImpl')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffectsImpl')) debugger
   const current = fiber.alternate;
   const flags = fiber.flags;
 
@@ -2153,9 +2143,7 @@ function commitMutationEffects(
   renderPriorityLevel: ReactPriorityLevel,
 ) {
   console.log('commitMutationEffects start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffects')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffects')) debugger
   let fiber = firstChild;
   while (fiber !== null) {
     const deletions = fiber.deletions;

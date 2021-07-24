@@ -130,9 +130,7 @@ function dispatchDiscreteEvent(
 ) {
   
   console.log('ReactDomEventListener: dispatchDiscreteEvent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchDiscreteEvent')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchDiscreteEvent')) debugger
   // enableLegacyFBSupport === false
   if (
     !enableLegacyFBSupport ||

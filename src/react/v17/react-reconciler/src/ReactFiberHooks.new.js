@@ -379,9 +379,7 @@ function updateWorkInProgressHook(): Hook {
   // use as a base. When we reach the end of the base list, we must switch to
   // the dispatcher used for mounts.
   console.log('updateWorkInProgressHook')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateWorkInProgressHook')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateWorkInProgressHook')) debugger
   let nextCurrentHook: null | Hook;
   if (currentHook === null) {
     const current = currentlyRenderingFiber.alternate;
@@ -908,9 +906,7 @@ function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
   console.log('mountState start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) debugger
   const hook = mountWorkInProgressHook();
   if (typeof initialState === 'function') {
     // $FlowFixMe: Flow doesn't like mixed types
@@ -1388,9 +1384,7 @@ function dispatchAction<S, A>(
 ) {
 
   console.log('dispatchAction start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) debugger
   const eventTime = requestEventTime();
   const lane = requestUpdateLane(fiber);
 

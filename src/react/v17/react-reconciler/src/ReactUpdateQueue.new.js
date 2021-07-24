@@ -309,9 +309,7 @@ function getStateFromUpdate<State>(
   instance: any,
 ): any {
   console.log('getStateFromUpdate')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getStateFromUpdate')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getStateFromUpdate')) debugger
   switch (update.tag) {
     case ReplaceState: {
       const payload = update.payload;
@@ -364,9 +362,7 @@ export function processUpdateQueue<State>(
   renderLanes: Lanes,
 ): void {
   console.log('processUpdateQueue start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processUpdateQueue')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processUpdateQueue')) debugger
   // This is always non-null on a ClassComponent or HostRoot
   const queue: UpdateQueue<State> = (workInProgress.updateQueue: any);
 

@@ -173,9 +173,7 @@ export function createContainer(
 ): OpaqueRoot {
   
   console.log('ReactFiberReconciler: createContainer')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createContainer')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createContainer')) debugger
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
 

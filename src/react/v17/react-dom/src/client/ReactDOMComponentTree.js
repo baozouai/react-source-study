@@ -49,9 +49,7 @@ export function precacheFiberNode(
 ): void {
 
   console.log('ReactDomComponentTree: createElement')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
   (node: any)[internalInstanceKey] = hostInst;
 }
 
@@ -205,9 +203,7 @@ export function updateFiberProps(
 ): void {
  
   console.log('ReactDomComponentTree: updateFiberProps')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateFiberProps')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateFiberProps')) debugger
   (node: any)[internalPropsKey] = props;
 }
 

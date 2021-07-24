@@ -947,9 +947,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber {
     console.log('reconcileSingleElement')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileSingleElement')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileSingleElement')) debugger
     const key = element.key;
     let child = currentFirstChild;
     while (child !== null) {

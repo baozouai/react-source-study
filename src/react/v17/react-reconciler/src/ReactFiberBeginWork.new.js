@@ -223,9 +223,7 @@ export function reconcileChildren(
 ) {
   
   console.log('reconcileChildren start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildren')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildren')) debugger
   if (current === null) {
     // If this is a fresh new component that hasn't been rendered yet, we
     // won't update its child set by applying minimal side-effects. Instead,
@@ -340,9 +338,7 @@ function updateMemoComponent(
 ): null | Fiber {
   
   console.log('updateMemoComponent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateMemoComponent')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateMemoComponent')) debugger
   if (current === null) {
     const type = Component.type;
     if (
@@ -675,9 +671,7 @@ function updateClassComponent(
 ) {
   
   console.log('updateClassComponent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateClassComponent')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateClassComponent')) debugger
   // Push context providers early to prevent context stack mismatches.
   // During mounting we don't know the child context yet as the instance doesn't exist.
   // We will invalidate the child context in finishClassComponent() right after rendering.
@@ -747,9 +741,7 @@ function finishClassComponent(
 ) {
   
   console.log('finishClassComponent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('finishClassComponent')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('finishClassComponent')) debugger
   // Refs should update even if shouldComponentUpdate returns false
   markRef(current, workInProgress);
 
@@ -835,9 +827,7 @@ function pushHostRootContext(workInProgress) {
 function updateHostRoot(current, workInProgress, renderLanes) {
   
   console.log('updateHostRoot start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostRoot')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostRoot')) debugger
   pushHostRootContext(workInProgress);
   const updateQueue = workInProgress.updateQueue;
   invariant(
@@ -1113,9 +1103,7 @@ function mountIndeterminateComponent(
 ) {
   
   console.log('mountIndeterminateComponent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountIndeterminateComponent')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountIndeterminateComponent')) debugger
   if (_current !== null) {
     // An indeterminate component only mounts if it suspended inside a non-
     // concurrent tree, in an inconsistent state. We want to treat it like
@@ -1637,9 +1625,7 @@ function createWorkInProgressOffscreenFiber(
 ) {
   
   console.log('createWorkInProgressOffscreenFiber')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgressOffscreenFiber')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgressOffscreenFiber')) debugger
   // The props argument to `createWorkInProgress` is `any` typed, so we use this
   // wrapper function to constrain it.
   return createWorkInProgress(current, offscreenProps);
@@ -1653,9 +1639,7 @@ function updateSuspensePrimaryChildren(
 ) {
   
   console.log('updateSuspensePrimaryChildren')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspensePrimaryChildren')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspensePrimaryChildren')) debugger
   const currentPrimaryChildFragment: Fiber = (current.child: any);
   const currentFallbackChildFragment: Fiber | null =
     currentPrimaryChildFragment.sibling;
@@ -1697,9 +1681,7 @@ function updateSuspenseFallbackChildren(
 ) {
   
   console.log('updateSuspenseFallbackChildren')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspenseFallbackChildren')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSuspenseFallbackChildren')) debugger
   const mode = workInProgress.mode;
   const currentPrimaryChildFragment: Fiber = (current.child: any);
   const currentFallbackChildFragment: Fiber | null =
@@ -2410,9 +2392,7 @@ function beginWork(
 ): Fiber | null {
   
   console.log('beginWork start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('beginWork')) {
-  debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('beginWork')) debugger
   // 获取workInProgress.lanes，可通过判断它是否为空去判断该节点是否需要更新
   const updateLanes = workInProgress.lanes;
 

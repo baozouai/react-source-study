@@ -183,9 +183,7 @@ const createFiber = function(
 ): Fiber {
  
   console.log('createFiber start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiber')) {
-    debugger
-  }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiber')) debugger
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
   const fiberNode = new FiberNode(tag, pendingProps, key, mode);
   console.log('createFiber end')
