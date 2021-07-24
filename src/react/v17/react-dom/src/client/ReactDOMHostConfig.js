@@ -209,7 +209,7 @@ export function prepareForCommit(containerInfo: Container): Object | null {
   eventsEnabled = ReactBrowserEventEmitterIsEnabled();
   selectionInformation = getSelectionInformation();
   let activeInstance = null;
-  if (enableCreateEventHandleAPI) {
+  if (enableCreateEventHandleAPI) { // enableCreateEventHandleAPI === false
     const focusedElem = selectionInformation.focusedElem;
     if (focusedElem !== null) {
       activeInstance = getClosestInstanceFromNode(focusedElem);
@@ -583,7 +583,9 @@ export function unhideTextInstance(
 }
 
 export function clearContainer(container: Container): void {
-  if (container.nodeType === ELEMENT_NODE) {
+  console.log('clearContainer start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('clearContainer')) debugger
+  if (container.nodeType === ELEMENT_NODE) { // ELEMENT_NODE === 1
     ((container: any): Element).textContent = '';
   } else if (container.nodeType === DOCUMENT_NODE) {
     const body = ((container: any): Document).body;

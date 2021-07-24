@@ -1761,7 +1761,8 @@ function commitRootImpl(root, renderPriorityLevel) {
     (executionContext & (RenderContext | CommitContext)) === NoContext,
     'Should not already be working.',
   );
-
+  // root指 fiberRootNode
+  // root.finishedWork指当前应用的rootFiber
   const finishedWork = root.finishedWork;
   const lanes = root.finishedLanes;
 
@@ -1788,6 +1789,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   // commitRoot never returns a continuation; it always finishes synchronously.
   // So we can clear these now to allow a new callback to be scheduled.
+  // 重置Scheduler绑定的回调函数
   root.callbackNode = null;
 
   // Update the first and last pending times on this root. The new first
@@ -1800,17 +1802,21 @@ function commitRootImpl(root, renderPriorityLevel) {
   // Clear already finished discrete updates in case that a later call of
   // `flushDiscreteUpdates` starts a useless render pass which may cancels
   // a scheduled timeout.
+  // 清除已经完成的离散更新，如click更新
   if (rootsWithPendingDiscreteUpdates !== null) {
     if (
       !hasDiscreteLanes(remainingLanes) &&
       rootsWithPendingDiscreteUpdates.has(root)
     ) {
+      // 如果不是离散更新且之前rootsWithPendingDiscreteUpdates里有root
+      // 则去掉root
       rootsWithPendingDiscreteUpdates.delete(root);
     }
   }
 
   if (root === workInProgressRoot) {
     // We can reset these now that they are finished.
+    // 已经完成，则重置
     workInProgressRoot = null;
     workInProgress = null;
     workInProgressRootRenderLanes = NoLanes;
@@ -1825,10 +1831,12 @@ function commitRootImpl(root, renderPriorityLevel) {
   // to check for the existence of `firstEffect` to satsify Flow. I think the
   // only other reason this optimization exists is because it affects profiling.
   // Reconsider whether this is necessary.
+  // 子树是否有副作用
   const subtreeHasEffects =
     (finishedWork.subtreeFlags &
       (BeforeMutationMask | MutationMask | LayoutMask | PassiveMask)) !==
     NoFlags;
+  // root是否有副作用
   const rootHasEffect =
     (finishedWork.flags &
       (BeforeMutationMask | MutationMask | LayoutMask | PassiveMask)) !==
@@ -1836,22 +1844,28 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   if (subtreeHasEffects || rootHasEffect) {
     let previousLanePriority;
-    if (decoupleUpdatePriorityFromScheduler) {
+    if (decoupleUpdatePriorityFromScheduler) { // decoupleUpdatePriorityFromScheduler === false
       previousLanePriority = getCurrentUpdateLanePriority();
       setCurrentUpdateLanePriority(SyncLanePriority);
     }
 
     const prevExecutionContext = executionContext;
     executionContext |= CommitContext;
+    // 获取上次__interactionsRef.current（Set集合）
     const prevInteractions = pushInteractions(root);
 
     // Reset this to null before calling lifecycles
+    // 调用生命周期前重置
     ReactCurrentOwner.current = null;
-
+    // commit分为几个阶段
     // The commit phase is broken into several sub-phases. We do a separate pass
     // of the effect list for each phase: all mutation effects come before all
     // layout effects, and so on.
-
+    /**
+     * 第一阶段为：before mutation，（执行DOM操作前）
+     * 会获取根节点上的state
+     * 会调用getSnapshotBeforeUpdate
+     */
     // The first phase a "before mutation" phase. We use this phase to read the
     // state of the host tree right before we mutate it. This is where
     // getSnapshotBeforeUpdate is called.
@@ -1864,11 +1878,14 @@ function commitRootImpl(root, renderPriorityLevel) {
     focusedInstanceHandle = null;
 
     if (enableProfilerTimer) {
+      // 记录当前commit的时间
       // Mark the current commit time to be shared by all Profilers in this
       // batch. This enables them to be grouped later.
       recordCommitTime();
     }
-
+    /**
+     * 第二阶段：mutation阶段（执行DOM操作）
+     */
     // The next phase is the mutation phase, where we mutate the host tree.
     commitMutationEffects(finishedWork, root, renderPriorityLevel);
 
@@ -2046,6 +2063,7 @@ function commitBeforeMutationEffects(firstChild: Fiber) {
     }
 
     if (fiber.child !== null) {
+      // BeforeMutationMask: 0b000000001100001010
       const primarySubtreeFlags = fiber.subtreeFlags & BeforeMutationMask;
       if (primarySubtreeFlags !== NoFlags) {
         commitBeforeMutationEffects(fiber.child);
@@ -2082,12 +2100,12 @@ function commitBeforeMutationEffectsImpl(fiber: Fiber) {
       beforeActiveInstanceBlur();
     }
   }
-
+  // Snapshot = 0b000000000,100000000;
   if ((flags & Snapshot) !== NoFlags) {
     // 通过commitBeforeMutationEffectOnFiber调用getSnapshotBeforeUpdate
     commitBeforeMutationEffectOnFiber(current, fiber);
   }
-
+  // Passive = 0b000000001,000000000;
   if ((flags & Passive) !== NoFlags) {
     // If there are passive effects, schedule a callback to flush at
     // the earliest opportunity.

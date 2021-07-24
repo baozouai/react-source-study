@@ -205,11 +205,14 @@ function commitBeforeMutationLifeCycles(
   current: Fiber | null,
   finishedWork: Fiber,
 ): void {
+  console.log('commitBeforeMutationLifeCycles start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationLifeCycles')) debugger
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
     case SimpleMemoComponent:
     case Block: {
+      console.log('commitBeforeMutationLifeCycles end')
       return;
     }
     case ClassComponent: {
@@ -232,21 +235,27 @@ function commitBeforeMutationLifeCycles(
           instance.__reactInternalSnapshotBeforeUpdate = snapshot;
         }
       }
+      console.log('commitBeforeMutationLifeCycles end')
+
       return;
     }
     case HostRoot: {
-      if (supportsMutation) {
+      if (supportsMutation) { // supportsMutation === true
         if (finishedWork.flags & Snapshot) {
           const root = finishedWork.stateNode;
           clearContainer(root.containerInfo);
         }
       }
+      console.log('commitBeforeMutationLifeCycles end')
+
       return;
     }
     case HostComponent:
     case HostText:
     case HostPortal:
     case IncompleteClassComponent:
+      console.log('commitBeforeMutationLifeCycles end')
+
       // Nothing to do for these component types
       return;
   }

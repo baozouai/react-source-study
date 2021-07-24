@@ -36,7 +36,7 @@ function App() {
   // return <SchedulerTask/>
 
   // 高优先级插队
-  return <TasksWithDifferentPriorities/>
+  // return <TasksWithDifferentPriorities/>
 
   // context
   // return <ContextDemo/>
@@ -45,14 +45,14 @@ function App() {
   // return <Diff ref={'diffRef'}/>
   // return <Diff />
   const [state, setState] = useState([1])
-  const ref = useRef(1)
+  // const ref = useRef(1)
 
-  useEffect(() => {
-    ref.current = ref.current + 1
-  }, [state])
-  useEffect(() => {
-    ref.current = ref.current + 1
-  }, [ref.current])
+  // useEffect(() => {
+  //   ref.current = ref.current + 1
+  // }, [state])
+  // useEffect(() => {
+  //   ref.current = ref.current + 1
+  // }, [ref.current])
     return <>
     <p onClick={() => setState(state => ([...state, state.length + 1]))}>
       {
@@ -61,7 +61,7 @@ function App() {
           })
       }
     </p>
-    {ref.current}
+    {/* {ref.current} */}
     </>
 
 }
