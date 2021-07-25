@@ -60,8 +60,11 @@ export function onCommitRoot(
   root: FiberRoot,
   priorityLevel: ReactPriorityLevel,
 ) {
+  console.log('onCommitRoot start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('onCommitRoot')) debugger
   if (injectedHook && typeof injectedHook.onCommitFiberRoot === 'function') {
     try {
+      // DidCapture === 0b0000000000,0100,0000;
       const didError = (root.current.flags & DidCapture) === DidCapture;
       if (enableProfilerTimer) {
         injectedHook.onCommitFiberRoot(
@@ -77,6 +80,7 @@ export function onCommitRoot(
 
     }
   }
+  console.log('commitBeforeMutationEffectsImpl end')
 }
 
 export function onCommitUnmount(fiber: Fiber) {

@@ -1892,14 +1892,18 @@ function commitRootImpl(root, renderPriorityLevel) {
     if (shouldFireAfterActiveInstanceBlur) {
       afterActiveInstanceBlur();
     }
+    // commit后重置一些状态
     resetAfterCommit(root.containerInfo);
 
     // The work-in-progress tree is now the current tree. This must come after
     // the mutation phase, so that the previous tree is still current during
     // componentWillUnmount, but before the layout phase, so that the finished
     // work is current during componentDidMount/Update.
+    // 到这步workInProgress tree变为current tree
+    // 1.这一步必须在mutation阶段后，为了在组件componentWillUnmount是current树依然存在
+    // 2.这一步又必须在layout节点之前，因为componentDidMount/Update要获取的是当前finishedWork的状态
     root.current = finishedWork;
-
+    // 第三阶段：layout阶段，也是最后阶段
     // The next phase is the layout phase, where we call effects that read
     // the host tree after it's been mutated. The idiomatic use case for this is
     // layout, but class component lifecycles also fire here for legacy reasons.
@@ -1925,6 +1929,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     // commit阶段刚开始：这个时候主要是执行本次更新之前还未被触发的useEffect，相当于清理工作。因为要保证本次调度的useEffect都是本次更新产生的
     // commit阶段之内的beforeMutation阶段：这个时候为含有useEffect的组件调度useEffect
     // commit阶段之内的layout阶段：为卸载的组件调度useEffect，执行effect的destroy函数，清理effect
+    // PassiveMask === 0b000000,0010,0000,1000;
     if (
       (finishedWork.subtreeFlags & PassiveMask) !== NoFlags ||
       (finishedWork.flags & PassiveMask) !== NoFlags
@@ -2002,6 +2007,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   if (enableSchedulerTracing) {
     if (!rootDidHavePassiveEffects) {
+      // 如果没有副作用
       // If there are no passive effects, then we can complete the pending interactions.
       // Otherwise, we'll wait until after the passive effects are flushed.
       // Wait to do this until after remaining work has been scheduled,
@@ -2011,6 +2017,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   }
 
   if (remainingLanes === SyncLane) {
+    // 计算根节点同步re-render的次数，太多意味着是个死循环
     // Count the number of times the root synchronously re-renders without
     // finishing. If there are too many, it indicates an infinite update loop.
     if (root === rootWithNestedUpdates) {
@@ -2180,12 +2187,14 @@ function commitMutationEffectsImpl(
   root: FiberRoot,
   renderPriorityLevel,
 ) {
+  console.log('commitMutationEffectsImpl start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffectsImpl')) debugger
   const flags = fiber.flags;
-  if (flags & ContentReset) {
+  if (flags & ContentReset) { // ContentReset =  0b0000000000,0001,0000;
     commitResetTextContent(fiber);
   }
 
-  if (flags & Ref) {
+  if (flags & Ref) { // Ref = 0b0000000000,1000,0000;
     const current = fiber.alternate;
     if (current !== null) {
       commitDetachRef(current);
@@ -2203,6 +2212,10 @@ function commitMutationEffectsImpl(
   // bitmap value, we remove the secondary effects from the effect tag and
   // switch on that value.
   const primaryFlags = flags & (Placement | Update | Hydrating);
+  // Placement = 0b00000000000000,0010;
+  // Update =  0b00000000000000,0100;
+  // PlacementAndUpdate = 0b00000000000000,0110;
+  // Hydrating = 0b000000,0100,0000,0000;
   switch (primaryFlags) {
     case Placement: {
       commitPlacement(fiber);
@@ -2243,6 +2256,7 @@ function commitMutationEffectsImpl(
       break;
     }
   }
+  console.log('commitMutationEffectsImpl end')
 }
 
 function commitMutationEffectsDeletions(

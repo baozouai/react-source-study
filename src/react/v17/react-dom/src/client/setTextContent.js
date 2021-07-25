@@ -27,6 +27,7 @@ const setTextContent = function(node: Element, text: string): void {
       firstChild === node.lastChild &&
       firstChild.nodeType === TEXT_NODE
     ) {
+      // 设置nodeValue比直接设置textContent快，因为设置textContent会先移除原有节点，在创建新的
       firstChild.nodeValue = text;
       return;
     }

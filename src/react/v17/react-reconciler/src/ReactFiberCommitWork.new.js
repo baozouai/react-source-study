@@ -292,10 +292,16 @@ function commitHookEffectListUnmount(
   }
   console.log('commitHookEffectListUnmount end')
 }
-
+/**
+ * @description: 处理useEffect
+ * @param {*} flags
+ * @param {*} finishedWork
+ * @return {*}
+ */
 function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
   console.log('commitHookEffectListMount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListMount')) debugger
+
   const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
   const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;
   if (lastEffect !== null) {
@@ -418,6 +424,7 @@ function recursivelyCommitLayoutEffects(
     default: {
       let child = finishedWork.child;
       while (child !== null) {
+        // LayoutMask === 0b0000000000,1010,0100;
         const primarySubtreeFlags = finishedWork.subtreeFlags & LayoutMask;
         if (primarySubtreeFlags !== NoFlags) {
 
@@ -430,7 +437,8 @@ function recursivelyCommitLayoutEffects(
         }
         child = child.sibling;
       }
-
+      // Update === 0b00000000000000,0100;
+      // Callback === 0b0000000000,0010,0000;
       const primaryFlags = flags & (Update | Callback);
       if (primaryFlags !== NoFlags) {
         switch (tag) {
@@ -438,6 +446,7 @@ function recursivelyCommitLayoutEffects(
           case ForwardRef:
           case SimpleMemoComponent:
           case Block: {
+            // enableProfilerCommitHooks === false
             if (
               enableProfilerTimer &&
               enableProfilerCommitHooks &&
@@ -453,6 +462,9 @@ function recursivelyCommitLayoutEffects(
                 recordLayoutEffectDuration(finishedWork);
               }
             } else {
+              // HasEffect === 0b001;
+              // Layout === 0b010;
+              // HookLayout | HookHasEffect === 0b011
               commitHookEffectListMount(
                 HookLayout | HookHasEffect,
                 finishedWork,
@@ -991,7 +1003,7 @@ function commitContainer(finishedWork: Fiber) {
       'likely caused by a bug in React. Please file an issue.',
   );
 }
-
+// 获取最近的host parent
 function getHostParentFiber(fiber: Fiber): Fiber {
   let parent = fiber.return;
   while (parent !== null) {
@@ -1008,6 +1020,9 @@ function getHostParentFiber(fiber: Fiber): Fiber {
 }
 
 function isHostParent(fiber: Fiber): boolean {
+  //  HostRoot = 3; 
+  //  HostPortal = 4; 
+  //  HostComponent = 5;
   return (
     fiber.tag === HostComponent ||
     fiber.tag === HostRoot ||
@@ -1062,11 +1077,14 @@ function getHostSibling(fiber: Fiber): ?Instance {
 }
 
 function commitPlacement(finishedWork: Fiber): void {
-  if (!supportsMutation) {
+  console.log('commitPlacement start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPlacement')) debugger
+  if (!supportsMutation) { // supportsMutation === true
     return;
   }
 
   // Recursively insert all host nodes into the parent.
+  // 获取最近的host parent
   const parentFiber = getHostParentFiber(finishedWork);
 
   // Note: these two variables *must* always be updated together.
@@ -1075,10 +1093,12 @@ function commitPlacement(finishedWork: Fiber): void {
   const parentStateNode = parentFiber.stateNode;
   switch (parentFiber.tag) {
     case HostComponent:
+      // 如果是dom类型，dom元素在stateNode
       parent = parentStateNode;
       isContainer = false;
       break;
     case HostRoot:
+      // 如果是根节点，dom元素在stateNode.containerInfo
       parent = parentStateNode.containerInfo;
       isContainer = true;
       break;
@@ -1099,6 +1119,8 @@ function commitPlacement(finishedWork: Fiber): void {
           'in React. Please file an issue.',
       );
   }
+  // ContentReset = 0b00000000000001,0000;
+  // 如果是重置text
   if (parentFiber.flags & ContentReset) {
     // Reset the text content of the parent before doing any insertions
     resetTextContent(parent);
@@ -1114,6 +1136,7 @@ function commitPlacement(finishedWork: Fiber): void {
   } else {
     insertOrAppendPlacementNode(finishedWork, before, parent);
   }
+  console.log('commitPlacement end')
 }
 
 function insertOrAppendPlacementNodeIntoContainer(
@@ -1121,8 +1144,12 @@ function insertOrAppendPlacementNodeIntoContainer(
   before: ?Instance,
   parent: Container,
 ): void {
+  console.log('insertOrAppendPlacementNodeIntoContainer start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('insertOrAppendPlacementNodeIntoContainer')) debugger
   const {tag} = node;
+  // 是否是dom
   const isHost = tag === HostComponent || tag === HostText;
+  // enableFundamentalAPI === false
   if (isHost || (enableFundamentalAPI && tag === FundamentalComponent)) {
     const stateNode = isHost ? node.stateNode : node.stateNode.instance;
     if (before) {
@@ -1145,6 +1172,7 @@ function insertOrAppendPlacementNodeIntoContainer(
       }
     }
   }
+  console.log('insertOrAppendPlacementNodeIntoContainer end')
 }
 
 function insertOrAppendPlacementNode(

@@ -403,7 +403,10 @@ export function appendChildToContainer(
   container: Container,
   child: Instance | TextInstance,
 ): void {
+  console.log('appendChildToContainer start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('appendChildToContainer')) debugger
   let parentNode;
+  // COMMENT_NODE === 8;
   if (container.nodeType === COMMENT_NODE) {
     parentNode = (container.parentNode: any);
     parentNode.insertBefore(child, container);
@@ -427,6 +430,7 @@ export function appendChildToContainer(
     // TODO: This cast may not be sound for SVG, MathML or custom elements.
     trapClickOnNonInteractiveElement(((parentNode: any): HTMLElement));
   }
+  console.log('appendChildToContainer end')
 }
 
 export function insertBefore(

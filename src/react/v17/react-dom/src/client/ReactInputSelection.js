@@ -113,6 +113,8 @@ export function getSelectionInformation() {
  * nodes and place them back in, resulting in focus being lost.
  */
 export function restoreSelection(priorSelectionInformation) {
+  console.log('restoreSelection start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('restoreSelection')) debugger
   const curFocusedElem = getActiveElementDeep();
   const priorFocusedElem = priorSelectionInformation.focusedElem;
   const priorSelectionRange = priorSelectionInformation.selectionRange;
@@ -147,6 +149,7 @@ export function restoreSelection(priorSelectionInformation) {
       info.element.scrollTop = info.top;
     }
   }
+  console.log('restoreSelection end')
 }
 
 /**
