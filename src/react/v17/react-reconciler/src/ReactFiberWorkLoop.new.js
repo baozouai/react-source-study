@@ -1841,14 +1841,14 @@ function commitRootImpl(root, renderPriorityLevel) {
     (finishedWork.flags &
       (BeforeMutationMask | MutationMask | LayoutMask | PassiveMask)) !==
     NoFlags;
-
+  // 子树或根节点有副作用
   if (subtreeHasEffects || rootHasEffect) {
     let previousLanePriority;
     if (decoupleUpdatePriorityFromScheduler) { // decoupleUpdatePriorityFromScheduler === false
       previousLanePriority = getCurrentUpdateLanePriority();
       setCurrentUpdateLanePriority(SyncLanePriority);
     }
-
+    // 将当前上下文标记为CommitContext，作为commit阶段的标志
     const prevExecutionContext = executionContext;
     executionContext |= CommitContext;
     // 获取上次__interactionsRef.current（Set集合）
