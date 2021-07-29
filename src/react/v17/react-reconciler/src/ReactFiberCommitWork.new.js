@@ -766,9 +766,10 @@ function commitAttachRef(finishedWork: Fiber) {
       instanceToUse = instance;
     }
     if (typeof ref === 'function') {
+        // 如果ref是函数形式，调用回调函数
       ref(instanceToUse);
     } else {
-
+        // 如果ref是ref实例形式，赋值ref.current
       ref.current = instanceToUse;
     }
   }
@@ -1034,6 +1035,8 @@ function isHostParent(fiber: Fiber): boolean {
 }
 
 function getHostSibling(fiber: Fiber): ?Instance {
+  console.log('getHostSibling start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getHostSibling')) debugger
   // We're going to search forward into the tree until we find a sibling host
   // node. Unfortunately, if multiple insertions are done in a row we have to
   // search past them. This leads to exponential search for the next sibling.
@@ -1132,6 +1135,7 @@ function commitPlacement(finishedWork: Fiber): void {
     parentFiber.flags &= ~ContentReset;
   }
   // 2.获取Fiber节点的DOM兄弟节点
+  debugger
   const before = getHostSibling(finishedWork);
   // We only have the top Fiber that was inserted but we need to recurse down its
   // children to find all the terminal nodes.
@@ -1186,13 +1190,18 @@ function insertOrAppendPlacementNode(
   before: ?Instance,
   parent: Instance,
 ): void {
+  console.log('insertOrAppendPlacementNode start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('insertOrAppendPlacementNode')) debugger
   const {tag} = node;
   const isHost = tag === HostComponent || tag === HostText;
   if (isHost || (enableFundamentalAPI && tag === FundamentalComponent)) {
+    // 如果是原生dom，直接插入
     const stateNode = isHost ? node.stateNode : node.stateNode.instance;
     if (before) {
+      // 有before，意味着stateNode要插入到before之前
       insertBefore(parent, stateNode, before);
     } else {
+      // 否则直接appendChild插入到parent中
       appendChild(parent, stateNode);
     }
   } else if (tag === HostPortal) {
@@ -1200,16 +1209,21 @@ function insertOrAppendPlacementNode(
     // down its children. Instead, we'll get insertions from each child in
     // the portal directly.
   } else {
+    // 不是原生dom节点
     const child = node.child;
     if (child !== null) {
+      // 从child切入，找到第一个dom
       insertOrAppendPlacementNode(child, before, parent);
       let sibling = child.sibling;
+      // 兄弟节点也插入
       while (sibling !== null) {
         insertOrAppendPlacementNode(sibling, before, parent);
+        // 继续检查兄弟节点
         sibling = sibling.sibling;
       }
     }
   }
+  console.log('insertOrAppendPlacementNode end')
 }
 
 function unmountHostComponents(

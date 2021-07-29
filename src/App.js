@@ -45,6 +45,7 @@ function App() {
   // return <Diff ref={'diffRef'}/>
   // return <Diff />
   const [state, setState] = useState([1])
+  const [isToggle, setisToggle] = useState(false)
   // const ref = useRef(1)
 
   // useEffect(() => {
@@ -54,12 +55,15 @@ function App() {
   //   ref.current = ref.current + 1
   // }, [ref.current])
     return <>
-    <p onClick={() => setState(state => ([...state, state.length + 1]))}>
-      {
+    {/* <p onClick={() => setState(state => ([...state, state.length + 1]))}> */}
+    <p onClick={() => setisToggle(true)}>
+      {/* {
           state.map(v => {
               return <div key={v}>{v}</div>
           })
-      }
+      } */}
+      {isToggle && <div>0</div>}
+      <div>1</div>
     </p>
     {/* {ref.current} */}
     </>

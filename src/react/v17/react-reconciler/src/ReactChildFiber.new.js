@@ -993,23 +993,27 @@ function ChildReconciler(shouldTrackSideEffects) {
             if (
               child.elementType === element.type
             ) {
+              // type相同则表示可以复用
               // 先删除剩下的oldFiber节点
               deleteRemainingChildren(returnFiber, child.sibling);
               // 基于oldFiber节点和新节点的props新建新的fiber节点
               const existing = useFiber(child, element.props);
               existing.ref = coerceRef(returnFiber, child, element);
               existing.return = returnFiber;
+              // 返回复用的fiber
               return existing;
             }
             break;
           }
         }
+        // 代码到这里，上面的switch都没有匹配到，即key相同但是type不同
+         // 则将该fiber及其兄弟fiber标记为删除
         // Didn't match.
         deleteRemainingChildren(returnFiber, child);
         break;
       } else {
         // 没匹配到说明新的fiber节点无法从oldFiber节点新建
-        // 删除掉所有oldFiber节点
+        // 删除掉所有child节点
         deleteChild(returnFiber, child);
       }
       child = child.sibling;
@@ -1090,6 +1094,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // Handle top level unkeyed fragments as if they were arrays.
     // This leads to an ambiguity between <>{[...]}</> and <>...</>.
     // We treat the ambiguous cases above the same.
+    // Unkeyed:没有key prop，UnkeyedTopLevelFragment：<>{[...]}</> and <>...</>
     const isUnkeyedTopLevelFragment =
       typeof newChild === 'object' &&
       newChild !== null &&
@@ -1198,7 +1203,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         }
       }
     }
-
+     // 以上都没有命中，删除节点
     // Remaining cases are all treated as empty.
     return deleteRemainingChildren(returnFiber, currentFirstChild);
   }
