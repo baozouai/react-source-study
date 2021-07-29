@@ -371,7 +371,7 @@ function recursivelyCommitLayoutEffects(
   switch (tag) {
     case Profiler: {
       let prevProfilerOnStack = null;
-      if (enableProfilerTimer && enableProfilerCommitHooks) {
+      if (enableProfilerTimer && enableProfilerCommitHooks) { // enableProfilerCommitHooks = false
         prevProfilerOnStack = nearestProfilerOnStack;
         nearestProfilerOnStack = finishedWork;
       }
@@ -514,7 +514,7 @@ function recursivelyCommitLayoutEffects(
         }
       }
 
-      if (enableScopeAPI) {
+      if (enableScopeAPI) { // enableScopeAPI = false
         // TODO: This is a temporary solution that allowed us to transition away from React Flare on www.
         if (flags & Ref && tag !== ScopeComponent) {
           commitAttachRef(finishedWork);
@@ -745,20 +745,23 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
     }
   }
 }
-
+// 赋值ref
 function commitAttachRef(finishedWork: Fiber) {
   const ref = finishedWork.ref;
   if (ref !== null) {
     const instance = finishedWork.stateNode;
     let instanceToUse;
     switch (finishedWork.tag) {
+      // 对应dom来说
       case HostComponent:
+        // 直接返回instnace，即原生dom
         instanceToUse = getPublicInstance(instance);
         break;
       default:
         instanceToUse = instance;
     }
     // Moved outside to ensure DCE works with this flag
+    // enableScopeAPI === false
     if (enableScopeAPI && finishedWork.tag === ScopeComponent) {
       instanceToUse = instance;
     }

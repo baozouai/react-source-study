@@ -1908,7 +1908,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     // the host tree after it's been mutated. The idiomatic use case for this is
     // layout, but class component lifecycles also fire here for legacy reasons.
 
-    if (enableSchedulingProfiler) {
+    if (enableSchedulingProfiler) { // enableSchedulingProfiler = __PROFILE__ && __EXPERIMENTAL__
       markLayoutEffectsStarted(lanes);
     }
 
@@ -1948,7 +1948,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     // opportunity to paint.
     requestPaint();
 
-    if (enableSchedulerTracing) {
+    if (enableSchedulerTracing) { // enableSchedulerTracing = __PROFILE__
       popInteractions(((prevInteractions: any): Set<Interaction>));
     }
     executionContext = prevExecutionContext;
