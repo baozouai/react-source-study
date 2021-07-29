@@ -265,7 +265,7 @@ function commitBeforeMutationLifeCycles(
       'likely caused by a bug in React. Please file an issue.',
   );
 }
-
+// 该方法会遍历effectList，执行所有useLayoutEffect hook的销毁函数
 function commitHookEffectListUnmount(
   flags: HookFlags,
   finishedWork: Fiber,
@@ -1084,12 +1084,13 @@ function commitPlacement(finishedWork: Fiber): void {
   }
 
   // Recursively insert all host nodes into the parent.
-  // 获取最近的host parent
+  // 1.获取最近的host parent
   const parentFiber = getHostParentFiber(finishedWork);
 
   // Note: these two variables *must* always be updated together.
   let parent;
   let isContainer;
+  // 真正的dom
   const parentStateNode = parentFiber.stateNode;
   switch (parentFiber.tag) {
     case HostComponent:
@@ -1127,10 +1128,12 @@ function commitPlacement(finishedWork: Fiber): void {
     // Clear ContentReset from the effect tag
     parentFiber.flags &= ~ContentReset;
   }
-
+  // 2.获取Fiber节点的DOM兄弟节点
   const before = getHostSibling(finishedWork);
   // We only have the top Fiber that was inserted but we need to recurse down its
   // children to find all the terminal nodes.
+  // 3.根据DOM兄弟节点(before)是否存在决定调用parentNode.insertBefore或parentNode.appendChild执行DOM插入操作
+  // isContainer为true代表parentStateNode是rootFiber
   if (isContainer) {
     insertOrAppendPlacementNodeIntoContainer(finishedWork, before, parent);
   } else {
@@ -1404,7 +1407,7 @@ function commitDeletion(
 function commitWork(current: Fiber | null, finishedWork: Fiber): void {
   console.log('commitWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitWork')) debugger
-  if (!supportsMutation) {
+  if (!supportsMutation) { // supportsMutation === true
     switch (finishedWork.tag) {
       case FunctionComponent:
       case ForwardRef:
@@ -1491,7 +1494,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       // by a create function in another component during the same commit.
       if (
         enableProfilerTimer &&
-        enableProfilerCommitHooks &&
+        enableProfilerCommitHooks && // enableProfilerCommitHooks === false
         finishedWork.mode & ProfileMode
       ) {
         try {

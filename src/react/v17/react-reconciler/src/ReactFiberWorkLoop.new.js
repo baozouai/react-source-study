@@ -2155,6 +2155,7 @@ function commitMutationEffects(
   while (fiber !== null) {
     const deletions = fiber.deletions;
     if (deletions !== null) {
+      // 该Fiber节点对应的DOM节点需要从页面中删除
       commitMutationEffectsDeletions(
         deletions,
         fiber,
