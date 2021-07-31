@@ -610,7 +610,6 @@ function updateFunctionComponent(
     context,
     renderLanes,
   );
-    debugger
     console.log(nextChildren)
   if (current !== null && !didReceiveUpdate) {
     bailoutHooks(current, workInProgress, renderLanes);

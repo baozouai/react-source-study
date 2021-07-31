@@ -292,8 +292,8 @@ export function prepareUpdate(
   rootContainerInstance: Container,
   hostContext: HostContext,
 ): null | Array<mixed> {
-  console.log('ReactChildHostConfig: prepareUpdate')
-    debugger
+  console.log('ReactChildHostConfig start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactChildHostConfig')) debugger
   return diffProperties(
     domElement,
     type,

@@ -187,7 +187,7 @@ const createFiber = function(
   console.log('createFiber end')
   return fiberNode
 };
-
+// 判断是不是class组件
 function shouldConstruct(Component: Function) {
   const prototype = Component.prototype;
   return !!(prototype && prototype.isReactComponent);
@@ -220,7 +220,10 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
   }
   return IndeterminateComponent;
 }
-
+/**
+ *  如果current Fiber有alternate，则更新pendingProps，否则新建workInProgress,并相互指向
+ * 最后return workInProgress，注意这里如果是新建的workInProgress，没有设置其return
+ */
 // This is used to create an alternate fiber to do work on.
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
@@ -233,6 +236,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     // node that we're free to reuse. This is lazily created to avoid allocating
     // extra objects for things that are never updated. It also allow us to
     // reclaim the extra memory if needed.
+    // 更新current上的pendingProps
     workInProgress = createFiber(
       current.tag,
       pendingProps,
@@ -242,10 +246,11 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     workInProgress.elementType = current.elementType;
     workInProgress.type = current.type;
     workInProgress.stateNode = current.stateNode;
-
+    // 相互指向
     workInProgress.alternate = current;
     current.alternate = workInProgress;
   } else {
+    // 如果current已经有workInProgress
     workInProgress.pendingProps = pendingProps;
     // Needed because Blocks store data on type.
     workInProgress.type = current.type;
@@ -407,6 +412,7 @@ export function createFiberFromTypeAndProps(
   
   console.log('createFiberFromTypeAndProps start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) debugger
+
   let fiberTag = IndeterminateComponent;
   // The resolved type is set if we know what the final type will be. I.e. it's not lazy.
   let resolvedType = type;

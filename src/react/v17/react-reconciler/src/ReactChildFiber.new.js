@@ -202,7 +202,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
     return null;
   }
-
+  // 将所有还未处理的oldFiber存入以key为key(key为null则用index作为key)，oldFiber为value的Map中
   function mapRemainingChildren(
     returnFiber: Fiber,
     currentFirstChild: Fiber,
@@ -223,15 +223,13 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
     return existingChildren;
   }
-
+  // 依据current fiber创建一个workInProgress Fiber，并重置该workInProgress Fiber的sibling和index
   function useFiber(fiber: Fiber, pendingProps: mixed): Fiber {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
     
     console.log('useFiber')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useFiber')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useFiber')) debugger
     const clone = createWorkInProgress(fiber, pendingProps);
     clone.index = 0;
     clone.sibling = null;
@@ -245,9 +243,8 @@ function ChildReconciler(shouldTrackSideEffects) {
   ): number {
     
     console.log('placeChild')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('placeChild')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('placeChild')) debugger
+
     newFiber.index = newIndex;
     if (!shouldTrackSideEffects) {
       // Noop.
@@ -257,14 +254,19 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (current !== null) {
       const oldIndex = current.index;
       if (oldIndex < lastPlacedIndex) {
+        // 该可复用节点之前插入的位置索引小于这次更新需要插入的位置索引，代表该节点需要向右移动
+        // 则打上Placement的flag
         // This is a move.
         newFiber.flags = Placement;
         return lastPlacedIndex;
       } else {
+        // oldIndex >= lastPlacedIndex 代表该可复用节点不需要移动
+        // 则lastPlacedIndex = placeChild(xxx) = oldIndex
         // This item can stay in place.
         return oldIndex;
       }
     } else {
+      // current为null，则是新节点，打上Placement的flag
       // This is an insertion.
       newFiber.flags = Placement;
       return lastPlacedIndex;
@@ -307,18 +309,18 @@ function ChildReconciler(shouldTrackSideEffects) {
   ): Fiber {
     
     console.log('updateElement')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) debugger
     if (current !== null) {
       if (
         current.elementType === element.type
       ) {
+        // 如果type相同，则更新props后return
         // Move based on index
         const existing = useFiber(current, element.props);
         existing.ref = coerceRef(returnFiber, current, element);
         existing.return = returnFiber;
         return existing;
+        // enableBlocksAPI === true
       } else if (enableBlocksAPI && current.tag === Block) {
         // The new Block might not be initialized yet. We need to initialize
         // it in case initializing it turns out it would match.
@@ -340,6 +342,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         }
       }
     }
+    // 到了这里说明type不同，则依据element创建fiber
     // Insert
     const created = createFiberFromElement(element, returnFiber.mode, lanes);
     created.ref = coerceRef(returnFiber, current, element);
@@ -402,9 +405,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     console.log('createChild start')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createChild')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createChild')) debugger
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text
@@ -468,6 +469,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       throwOnInvalidObjectType(returnFiber, newChild);
     }
     console.log('createChild end')
+    // 对应null、undefined、false,都返回null
     return null;
   }
 
@@ -479,9 +481,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   ): Fiber | null {
     
     console.log('updateSlot')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSlot')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSlot')) debugger
     // Update the fiber if the keys match, otherwise return null.
 
     const key = oldFiber !== null ? oldFiber.key : null;
@@ -491,6 +491,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       // we can continue to replace it without aborting even if it is not a text
       // node.
       if (key !== null) {
+        // 如果newChild是string或number，故肯定没有key，但oldFiber有key，那直接return null
         return null;
       }
       return updateTextNode(returnFiber, oldFiber, '' + newChild, lanes);
@@ -511,6 +512,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             }
             return updateElement(returnFiber, oldFiber, newChild, lanes);
           } else {
+            // key不同直接return null
             return null;
           }
         }
@@ -611,17 +613,6 @@ function ChildReconciler(shouldTrackSideEffects) {
     return null;
   }
 
-  /**
-   * Warns if there is a duplicate or missing key
-   */
-  function warnOnInvalidKey(
-    child: mixed,
-    knownKeys: Set<string> | null,
-    returnFiber: Fiber,
-  ): Set<string> | null {
-
-    return knownKeys;
-  }
   // 多节点diff
   function reconcileChildrenArray(
     returnFiber: Fiber,
@@ -648,18 +639,18 @@ function ChildReconciler(shouldTrackSideEffects) {
     // If you change this code, also update reconcileChildrenIterator() which
     // uses the same algorithm.
 
-    
-    console.log('reconcileChildrenArray')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildrenArray')) {
-    debugger
-    }
+    console.log('reconcileChildrenArray start')
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildrenArray')) debugger
+
     let resultingFirstChild: Fiber | null = null;
     let previousNewFiber: Fiber | null = null;
 
     let oldFiber = currentFirstChild;
+    // 最后一个可复用的节点在oldFiber中的位置索引
     let lastPlacedIndex = 0;
     let newIdx = 0;
     let nextOldFiber = null;
+    // mount的时候这里的oldFiber肯定是null，这里的循环不会进入
     for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
       if (oldFiber.index > newIdx) {
         nextOldFiber = oldFiber;
@@ -667,12 +658,15 @@ function ChildReconciler(shouldTrackSideEffects) {
       } else {
         nextOldFiber = oldFiber.sibling;
       }
+      // 如果newChildren与oldFiber同时遍历完,则只需在第一轮遍历进行组件更新
+      // 即当oldFiber === null时newIdx === newChildren.length
       const newFiber = updateSlot(
         returnFiber,
         oldFiber,
         newChildren[newIdx],
         lanes,
       );
+      // newFiber === null意味着上面的oldFiber的key与newChildren[newIdx]的key不同
       if (newFiber === null) {
         // TODO: This breaks on empty slots like null children. That's
         // unfortunate because it triggers the slow path all the time. We need
@@ -704,22 +698,29 @@ function ChildReconciler(shouldTrackSideEffects) {
       previousNewFiber = newFiber;
       oldFiber = nextOldFiber;
     }
-
+    // 到了这里如果满足newIdx === newChildren.length有两种可能：
+    // 1.newChildren和oldFiber都遍历完
+    // 2.newChildren遍历完，oldFiber没遍历完
+    // 意味着本次更新比之前的节点数量少，有节点被删除了。所以需要遍历剩下的oldFiber，依次标记Deletion
     if (newIdx === newChildren.length) {
       // We've reached the end of the new children. We can delete the rest.
       deleteRemainingChildren(returnFiber, oldFiber);
       return resultingFirstChild;
     }
-
+    // newChildren没遍历完，oldFiber遍历完（mount的时候oldFilber也是null）
+    // 已有的DOM节点都复用了，这时还有新加入的节点，意味着本次更新有新节点插入
+    // 我们只需要遍历剩下的newChildren为生成的workInProgress fiber依次标记Placement
     if (oldFiber === null) {
       // If we don't have any more existing children we can choose a fast path
       // since the rest will all be insertions.
       for (; newIdx < newChildren.length; newIdx++) {
         const newFiber = createChild(returnFiber, newChildren[newIdx], lanes);
         if (newFiber === null) {
+          // null节点直接跳过
           continue;
         }
         lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+        // 这里连成链表
         if (previousNewFiber === null) {
           // TODO: Move out of the loop. This only happens for the first run.
           resultingFirstChild = newFiber;
@@ -732,8 +733,9 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     // Add all children to a key map for quick lookups.
+    // Map: {key => oldFiber}
     const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
-
+    // newChildren与oldFiber都没遍历完,意味着有节点在这次更新中改变了位置
     // Keep scanning and use the map to restore deleted items as moves.
     for (; newIdx < newChildren.length; newIdx++) {
       const newFiber = updateFromMap(
@@ -746,6 +748,8 @@ function ChildReconciler(shouldTrackSideEffects) {
       if (newFiber !== null) {
         if (shouldTrackSideEffects) {
           if (newFiber.alternate !== null) {
+            // 如果newFiber.alternate !== null，意味着找到了可复用的oldFiber
+            // 那么existingChildren需要删除该可复用的oldFiber
             // The new fiber is a work in progress, but if there exists a
             // current, that means that we reused the fiber. We need to delete
             // it from the child list so that we don't add it to the deletion
@@ -770,7 +774,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       // to add them to the deletion list.
       existingChildren.forEach(child => deleteChild(returnFiber, child));
     }
-
+    console.log('reconcileChildrenArray end')
     return resultingFirstChild;
   }
 
@@ -1083,9 +1087,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   ): Fiber | null {
     
     console.log('reconcileChildFibers in ChildReconciler start')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) debugger
     // This function is not recursive.
     // If the top level item is an array, we treat it as a set of children,
     // not as a fragment. Nested arrays on the other hand will be treated as
@@ -1220,9 +1222,7 @@ export function cloneChildFibers(
 ): void {
   
   console.log('cloneChildFibers')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('cloneChildFibers')) {
-    debugger
-    }
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('cloneChildFibers')) debugger
   invariant(
     current === null || workInProgress.child === current.child,
     'Resuming work not yet implemented.',
