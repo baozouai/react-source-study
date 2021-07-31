@@ -574,7 +574,7 @@ export function scheduleUpdateOnFiber(
   // together more than necessary.
   mostRecentlyUpdatedRoot = root;
 }
-
+// 从触发状态更新的fiber通过一直往上找return得到rootFiber
 // This is split into a separate function so we can mark a fiber with pending
 // work without treating it as a typical update that originates from an event;
 // e.g. retrying a Suspense boundary isn't an update, but it does schedule work
@@ -618,7 +618,7 @@ function markUpdateLaneFromFiberToRoot(
 // of the existing task is the same as the priority of the next level that the
 // root has work on. This function is called on every update, and right before
 // exiting a task.
-// 任务调度协调
+// 通知Scheduler根据更新的优先级，决定以同步还是异步的方式调度本次更新任务
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
   console.log('ensureRootIsScheduled')
@@ -672,7 +672,8 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   if (newCallbackPriority === SyncLanePriority) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
-    // 若新任务的优先级（newCallbackPriority）为同步优先级（SyncLanePriority），则同步调度，传统的同步渲染和过期任务会走这里
+    // 若新任务的优先级（newCallbackPriority）为同步优先级（SyncLanePriority），则同步调度
+    // 传统的同步渲染和过期任务会走这里
     // 同步渲染模式
     newCallbackNode = scheduleSyncCallback(
       performSyncWorkOnRoot.bind(null, root),
@@ -701,6 +702,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   root.callbackNode = newCallbackNode;
 }
 
+// render阶段的起点
 // This is the entry point for every concurrent task, i.e. anything that
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
@@ -1726,7 +1728,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   }
   console.log('completeUnitOfWork end')
 }
-
+// commit阶段的起点 
 function commitRoot(root) {
   console.log('commitRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRoot')) debugger
