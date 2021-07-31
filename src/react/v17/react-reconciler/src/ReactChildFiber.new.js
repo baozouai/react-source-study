@@ -666,7 +666,10 @@ function ChildReconciler(shouldTrackSideEffects) {
         newChildren[newIdx],
         lanes,
       );
+      // 不可复用有两种情况：
+      // 不可复用情况1：
       // newFiber === null意味着上面的oldFiber的key与newChildren[newIdx]的key不同
+      // 会跳出循环
       if (newFiber === null) {
         // TODO: This breaks on empty slots like null children. That's
         // unfortunate because it triggers the slow path all the time. We need
@@ -678,6 +681,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         break;
       }
       if (shouldTrackSideEffects) {
+        // 不可复用情况2：key相同但type不同，将oldFiber打上DELETION，然后继续遍历
         if (oldFiber && newFiber.alternate === null) {
           // We matched the slot, but we didn't reuse the existing fiber, so we
           // need to delete the existing child.
