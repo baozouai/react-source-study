@@ -180,8 +180,7 @@ let ignorePreviousDependencies: boolean = false;
 
 
 function throwInvalidHookError() {
-  invariant(
-    false,
+  throw new Error(
     'Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for' +
       ' one of the following reasons:\n' +
       '1. You might have mismatching versions of React and the renderer (such as React DOM)\n' +
@@ -278,6 +277,12 @@ export function renderWithHooks<Props, SecondArg>(
 
   // We can assume the previous dispatcher is always this one, since we set it
   // at the beginning of the render phase and there's no re-entrancy.
+  /**
+   * Component(props, secondArg)运行后，ReactCurrentDispatcher.current指向ContextOnlyDispatcher
+   * 那么如果再函数中使用了hook，比如useEffect(() => {useState(0);})，
+   * 则ContextOnlyDispatcher.useState指向throwInvalidHookError，会抛出错误
+   */
+  
   ReactCurrentDispatcher.current = ContextOnlyDispatcher;
 
   // This check uses currentHook so that it works the same in DEV and prod bundles.
@@ -903,8 +908,10 @@ function updateMutableSource<Source, Snapshot>(
 function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
+
   console.log('mountState start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) debugger
+
   const hook = mountWorkInProgressHook();
   if (typeof initialState === 'function') {
     // $FlowFixMe: Flow doesn't like mixed types
@@ -1383,6 +1390,7 @@ function dispatchAction<S, A>(
 
   console.log('dispatchAction start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) debugger
+
   const eventTime = requestEventTime();
   const lane = requestUpdateLane(fiber);
 
@@ -1393,7 +1401,7 @@ function dispatchAction<S, A>(
     eagerState: null,
     next: (null: any),
   };
-
+  // update拼接成环形单向链表
   // Append the update to the end of the list.
   const pending = queue.pending;
   if (pending === null) {
@@ -1410,6 +1418,7 @@ function dispatchAction<S, A>(
     fiber === currentlyRenderingFiber ||
     (alternate !== null && alternate === currentlyRenderingFiber)
   ) {
+    // render阶段触发了更新，将didScheduleRenderPhaseUpdate设为true
     // This is a render phase update. Stash it in a lazily-created map of
     // queue -> linked list of updates. After this render pass, we'll restart
     // and apply the stashed updates on top of the work-in-progress hook.
@@ -1419,6 +1428,7 @@ function dispatchAction<S, A>(
       fiber.lanes === NoLanes &&
       (alternate === null || alternate.lanes === NoLanes)
     ) {
+      // fiber的updateQueue为空
       // The queue is currently empty, which means we can eagerly compute the
       // next state before entering the render phase. If the new state is the
       // same as the current state, we may be able to bail out entirely.
@@ -1433,8 +1443,10 @@ function dispatchAction<S, A>(
           // it, on the update object. If the reducer hasn't changed by the
           // time we enter the render phase, then the eager state can be used
           // without calling the reducer again.
+          // 暂存到update上
           update.eagerReducer = lastRenderedReducer;
           update.eagerState = eagerState;
+          // 如果相同，则bail out
           if (is(eagerState, currentState)) {
             // Fast path. We can bail out without scheduling React to re-render.
             // It's still possible that we'll need to rebase this update later,
@@ -1449,7 +1461,7 @@ function dispatchAction<S, A>(
         }
       }
     }
-
+    // 模拟React开始调度更新
     scheduleUpdateOnFiber(fiber, lane, eventTime);
     console.log('dispatchAction end')
   }
