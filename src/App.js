@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import State from './components/State'
+import FunctionSetState from './components/FunctionSetState'
 import LanesDemo from './components/LanesDemo'
 import AppSibling from './components/AppSibling'
 import TasksWithDifferentPriorities from './components/TasksWithDifferentPriorities'
@@ -19,7 +20,8 @@ import './App.css';
   }
 }*/
 function App() {
-
+  // 在this.setState里面又setState
+  return <FunctionSetState />
   // 事件系统
   // return <EventDemo/>
 
