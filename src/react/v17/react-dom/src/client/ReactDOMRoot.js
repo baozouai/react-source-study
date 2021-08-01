@@ -77,7 +77,7 @@ function ReactDOMBlockingRoot(
 ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function(
   children: ReactNodeList,
 ): void {
-  console.log('Scheduler: render')
+  console.log('Scheduler: render start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) debugger
   const root = this._internalRoot;
 

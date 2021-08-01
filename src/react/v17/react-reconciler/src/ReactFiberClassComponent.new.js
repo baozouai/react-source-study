@@ -112,7 +112,7 @@ const classComponentUpdater = {
       update.callback = callback;
     }
   // payload就是setState的参数，回调函数或者是对象的形式。
-    // 处理更新时参与计算新状态的过程
+    // 创建的update入队updateQueue
     enqueueUpdate(fiber, update);
     // 开始进行调度
     scheduleUpdateOnFiber(fiber, lane, eventTime);
@@ -128,6 +128,7 @@ const classComponentUpdater = {
     const lane = requestUpdateLane(fiber);
 
     const update = createUpdate(eventTime, lane);
+    // 与enqueueSetState的唯一区别
     update.tag = ReplaceState;
     update.payload = payload;
 
@@ -151,6 +152,7 @@ const classComponentUpdater = {
     const lane = requestUpdateLane(fiber);
 
     const update = createUpdate(eventTime, lane);
+    // 与enqueueSetState的唯一区别
     update.tag = ForceUpdate;
 
     if (callback !== undefined && callback !== null) {
@@ -167,7 +169,7 @@ const classComponentUpdater = {
     }
   },
 };
-
+// 内部会调用shouldComponentUpdate方法。以及当该ClassComponent为PureComponent时会浅比较state与props
 function checkShouldComponentUpdate(
   workInProgress,
   ctor,
@@ -178,6 +180,7 @@ function checkShouldComponentUpdate(
   nextContext,
 ) {
   const instance = workInProgress.stateNode;
+  // 优先处理shouldComponentUpdate
   if (typeof instance.shouldComponentUpdate === 'function') {
 
     const shouldUpdate = instance.shouldComponentUpdate(
@@ -188,13 +191,14 @@ function checkShouldComponentUpdate(
 
     return shouldUpdate;
   }
-
+  // 如果没有shouldComponentUpdate，再处理是否有PureComponent
   if (ctor.prototype && ctor.prototype.isPureReactComponent) {
+    // 该ClassComponent为PureComponent时会浅比较state与props
     return (
       !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)
     );
   }
-
+  // 否则总是返回更新
   return true;
 }
 
@@ -439,6 +443,7 @@ function resumeMountClassInstance(
   }
 
   const shouldUpdate =
+    // checkHasForceUpdateAfterProcessing：本次更新的Update中存在tag为ForceUpdate，则返回true
     checkHasForceUpdateAfterProcessing() ||
     checkShouldComponentUpdate(
       workInProgress,
@@ -538,10 +543,14 @@ function updateClassInstance(
     (typeof instance.UNSAFE_componentWillReceiveProps === 'function' ||
       typeof instance.componentWillReceiveProps === 'function')
   ) {
+    // unresolvedOldProps为组件上次更新时的props，
+    // 而unresolvedNewProps则来自ClassComponent调用this.render返回的JSX中的props参数。
+    // 可见他们的引用是不同的。所以他们全等比较为false
     if (
       unresolvedOldProps !== unresolvedNewProps ||
       oldContext !== nextContext
     ) {
+      // 会调用componentWillRecieveProps
       callComponentWillReceiveProps(
         workInProgress,
         instance,

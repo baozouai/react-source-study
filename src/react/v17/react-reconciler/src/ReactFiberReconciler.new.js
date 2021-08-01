@@ -172,8 +172,9 @@ export function createContainer(
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
   
-  console.log('ReactFiberReconciler: createContainer')
+  console.log('createContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createContainer')) debugger
+
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
 
@@ -183,12 +184,10 @@ export function updateContainer(
   parentComponent: ?React$Component<any, any>,
   callback: ?Function,
 ): Lane {
+ 
+  console.log('updateContainer start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateContainer')) debugger
 
-  
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateContainer')) {
-    console.log('ReactFiberReconciler: updateContainer')
-    debugger
-  }
   const current = container.current;
   const eventTime = requestEventTime();
 
@@ -210,13 +209,15 @@ export function updateContainer(
   // Caution: React DevTools currently depends on this property
   // being called "element".
   update.payload = {element};
-
+  // 对应ReactDom.createRoot(Concurrent模式)的render来说，callback为null
+  // 对应ReactDom.render来说，callback为ReactDom.render的第三个参数
   callback = callback === undefined ? null : callback;
   if (callback !== null) {
     update.callback = callback;
   }
-
+  // 往updateQueue加入update
   enqueueUpdate(current, update);
+  // 调度更新
   scheduleUpdateOnFiber(current, lane, eventTime);
 
   return lane;

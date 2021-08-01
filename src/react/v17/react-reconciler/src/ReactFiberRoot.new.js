@@ -68,14 +68,15 @@ function FiberRootNode(containerInfo, tag, hydrate) {
 }
 
 export function createFiberRoot(
+  // containerInfo就是根节点，如<div id='app'></div>
   containerInfo: any,
   tag: RootTag,
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): FiberRoot {
-  
   console.log('ReactFiberRoot: createFiberRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberRoot')) debugger
+  // 创建fiberRootNode
   const root: FiberRoot = (new FiberRootNode(containerInfo, tag, hydrate): any);
   if (enableSuspenseCallback) {
     root.hydrationCallbacks = hydrationCallbacks;
@@ -83,10 +84,13 @@ export function createFiberRoot(
 
   // Cyclic construction. This cheats the type system right now because
   // stateNode is any.
+   // 创建rootFiber
   const uninitializedFiber = createHostRootFiber(tag);
+  // root.current指向rootFiber
   root.current = uninitializedFiber;
+  // rootFiber.stateNode指向FiberRoot
   uninitializedFiber.stateNode = root;
-
+  // 初始化updateQueue
   initializeUpdateQueue(uninitializedFiber);
 
   return root;
