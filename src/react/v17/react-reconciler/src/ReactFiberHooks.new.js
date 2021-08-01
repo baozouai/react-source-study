@@ -1428,7 +1428,8 @@ function dispatchAction<S, A>(
       fiber.lanes === NoLanes &&
       (alternate === null || alternate.lanes === NoLanes)
     ) {
-      // fiber的updateQueue为空
+      // fiber.lanes === NoLanes意味着fiber上不存在update，
+      // 那么上面的update就是第一个update
       // The queue is currently empty, which means we can eagerly compute the
       // next state before entering the render phase. If the new state is the
       // same as the current state, we may be able to bail out entirely.
@@ -1446,7 +1447,7 @@ function dispatchAction<S, A>(
           // 暂存到update上
           update.eagerReducer = lastRenderedReducer;
           update.eagerState = eagerState;
-          // 如果相同，则bail out
+          // 如果计算出的state与该hook之前保存的state一致，那么完全不需要开启一次调度
           if (is(eagerState, currentState)) {
             // Fast path. We can bail out without scheduling React to re-render.
             // It's still possible that we'll need to rebase this update later,
