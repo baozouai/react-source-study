@@ -141,7 +141,7 @@ const callComponentWillUnmountWithTimer = function(current, instance) {
   instance.state = current.memoizedState;
   if (
     enableProfilerTimer &&
-    enableProfilerCommitHooks &&
+    enableProfilerCommitHooks && // enableProfilerCommitHooks = false
     current.mode & ProfileMode
   ) {
     try {
@@ -271,8 +271,10 @@ function commitHookEffectListUnmount(
   finishedWork: Fiber,
   nearestMountedAncestor: Fiber | null,
 ) {
+
   console.log('commitHookEffectListUnmount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListUnmount')) debugger
+
   const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
   const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;
   if (lastEffect !== null) {
@@ -324,7 +326,7 @@ function commitProfilerPassiveEffect(
   finishedRoot: FiberRoot,
   finishedWork: Fiber,
 ): void {
-  if (enableProfilerTimer && enableProfilerCommitHooks) {
+  if (enableProfilerTimer && enableProfilerCommitHooks) { // enableProfilerCommitHooks = false
     switch (finishedWork.tag) {
       case Profiler: {
         const {passiveEffectDuration} = finishedWork.stateNode;
@@ -403,7 +405,7 @@ function recursivelyCommitLayoutEffects(
         }
       }
 
-      if (enableProfilerTimer && enableProfilerCommitHooks) {
+      if (enableProfilerTimer && enableProfilerCommitHooks) {// enableProfilerCommitHooks = false
         // Propagate layout effect durations to the next nearest Profiler ancestor.
         // Do not reset these values until the next render so DevTools has a chance to read them first.
         if (prevProfilerOnStack !== null) {
@@ -569,7 +571,7 @@ function commitLayoutEffectsForProfiler(
       }
     }
 
-    if (enableProfilerCommitHooks) {
+    if (enableProfilerCommitHooks) {// enableProfilerCommitHooks = false
       if (
         (flags & OnCommitFlag) !== NoFlags &&
         typeof onCommit === 'function'
@@ -606,7 +608,7 @@ function commitLayoutEffectsForClassComponent(finishedWork: Fiber) {
 
       if (
         enableProfilerTimer &&
-        enableProfilerCommitHooks &&
+        enableProfilerCommitHooks && // enableProfilerCommitHooks = false
         finishedWork.mode & ProfileMode
       ) {
         try {
@@ -629,7 +631,7 @@ function commitLayoutEffectsForClassComponent(finishedWork: Fiber) {
       // TODO: revisit this when we implement resuming.
       if (
         enableProfilerTimer &&
-        enableProfilerCommitHooks &&
+        enableProfilerCommitHooks && // enableProfilerCommitHooks = false
         finishedWork.mode & ProfileMode
       ) {
         try {
@@ -816,7 +818,7 @@ function commitUnmount(
               if ((tag & HookLayout) !== NoHookEffect) {
                 if (
                   enableProfilerTimer &&
-                  enableProfilerCommitHooks &&
+                  enableProfilerCommitHooks && // enableProfilerCommitHooks = false
                   current.mode & ProfileMode
                 ) {
                   startLayoutEffectTimer();
@@ -846,6 +848,7 @@ function commitUnmount(
       return;
     }
     case HostComponent: {
+      // 类似commitDetachRef
       safelyDetachRef(current, nearestMountedAncestor);
       return;
     }
@@ -1437,7 +1440,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
         // by a create function in another component during the same commit.
         if (
           enableProfilerTimer &&
-          enableProfilerCommitHooks &&
+          enableProfilerCommitHooks && // enableProfilerCommitHooks = false
           finishedWork.mode & ProfileMode
         ) {
           try {
@@ -1770,7 +1773,7 @@ function commitPassiveUnmount(finishedWork: Fiber): void {
     case Block: {
       if (
         enableProfilerTimer &&
-        enableProfilerCommitHooks &&
+        enableProfilerCommitHooks && // enableProfilerCommitHooks = false
         finishedWork.mode & ProfileMode
       ) {
         startPassiveEffectTimer();
@@ -1806,7 +1809,7 @@ function commitPassiveUnmountInsideDeletedTree(
     case Block: {
       if (
         enableProfilerTimer &&
-        enableProfilerCommitHooks &&
+        enableProfilerCommitHooks && // enableProfilerCommitHooks = false
         current.mode & ProfileMode
       ) {
         startPassiveEffectTimer();
@@ -1842,7 +1845,7 @@ function commitPassiveMount(
     case Block: {
       if (
         enableProfilerTimer &&
-        enableProfilerCommitHooks &&
+        enableProfilerCommitHooks && // enableProfilerCommitHooks = false
         finishedWork.mode & ProfileMode
       ) {
         startPassiveEffectTimer();

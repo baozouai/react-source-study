@@ -210,9 +210,7 @@ if (supportsMutation) {
     let node = workInProgress.child;
     
     console.log('appendAllChildren')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('appendAllChildren')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('appendAllChildren')) debugger
     while (node !== null) {
       if (node.tag === HostComponent || node.tag === HostText) {
         appendInitialChild(parent, node.stateNode);

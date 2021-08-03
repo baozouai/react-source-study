@@ -80,7 +80,7 @@ export function onCommitRoot(
 
     }
   }
-  console.log('commitBeforeMutationEffectsImpl end')
+  console.log('onCommitRoot end')
 }
 
 export function onCommitUnmount(fiber: Fiber) {

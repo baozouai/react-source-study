@@ -187,10 +187,8 @@ if (
   // 这个过程中会涉及任务的中断和恢复、任务完成状态的判断
   const performWorkUntilDeadline = () => {
     
-    console.log('ScheduleHostConfig.default.js: performWorkUntilDeadline')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performWorkUntilDeadline')) {
-    debugger
-    }
+    console.log('performWorkUntilDeadline start')
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performWorkUntilDeadline')) debugger
     if (scheduledHostCallback !== null) {
       const currentTime = getCurrentTime();
       // Yield after `yieldInterval` ms, regardless of where we are in the vsync
@@ -224,6 +222,7 @@ if (
     // Yielding to the browser will give it a chance to paint, so we can
     // reset this.
     needsPaint = false;
+    console.log('performWorkUntilDeadline end')
   };
 
   const channel = new MessageChannel();
@@ -233,9 +232,7 @@ if (
   requestHostCallback = function(callback) {
     
     console.log('requestHostCallback')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('requestHostCallback')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('requestHostCallback')) debugger
     scheduledHostCallback = callback;
     if (!isMessageLoopRunning) {
       isMessageLoopRunning = true;

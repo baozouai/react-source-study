@@ -8,4 +8,4 @@ const Hooks = () => {
         <UseEffect/>
     </div>
 }
-export default Hooks
+export default UseEffect

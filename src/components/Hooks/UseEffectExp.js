@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react'
 
 const UseEffectExp = () => {
+    debugger
   const [ text, setText ] = useState(0)
     useEffect(() => {
         console.log('effect1')
@@ -8,12 +9,12 @@ const UseEffectExp = () => {
             console.log('destory1');
         }
     }, [text])
-    useLayoutEffect(() => {
-        console.log('effect2')
-        return () => {
-            console.log('destory2');
-        }
-    }, [])
+    // useLayoutEffect(() => {
+    //     console.log('effect2')
+    //     return () => {
+    //         console.log('destory2');
+    //     }
+    // }, [])
     return <div>
         <button onClick={() => setText(text + 1)}>{text}</button>
         useEffect

@@ -742,6 +742,7 @@ function finishClassComponent(
   console.log('finishClassComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('finishClassComponent')) debugger
   // Refs should update even if shouldComponentUpdate returns false
+  // 即使设置了shouldComponentUpdate，ref也会更新
   markRef(current, workInProgress);
 
   const didCaptureError = (workInProgress.flags & DidCapture) !== NoFlags;

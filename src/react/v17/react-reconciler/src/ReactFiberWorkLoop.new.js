@@ -428,7 +428,7 @@ export function requestUpdateLane(fiber: Fiber): Lane {
       schedulerPriority,
     );
 
-    if (decoupleUpdatePriorityFromScheduler) {
+    if (decoupleUpdatePriorityFromScheduler) { // decoupleUpdatePriorityFromScheduler === false
       // In the new strategy, we will track the current update lane priority
       // inside React and use that priority to select a lane for this update.
       // For now, we're just logging when they're different so we can assess.
@@ -471,6 +471,7 @@ export function scheduleUpdateOnFiber(
   
   console.log('scheduleUpdateOnFiber')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) debugger
+
   // 第一步，检查是否有无限更新, 例如在render函数中调用了setState
   checkForNestedUpdates();
   // 第二步，向上收集fiber.childLanes
@@ -535,6 +536,8 @@ export function scheduleUpdateOnFiber(
       // 目的是去复用已经在更新的任务，让这个已有的任务把这次更新顺便做了
       ensureRootIsScheduled(root, eventTime);
       schedulePendingInteractions(root, lane);
+      // 通过判断 executionContext 是否等于 NoContext 来确定当前更新流程是否在 React 事件流中
+      // 如果不在(NoContext)，直接调用 flushSyncCallbackQueue 更新
       if (executionContext === NoContext) {
         // Flush the synchronous work now, unless we're already working or inside
         // a batch. This is intentionally inside scheduleUpdateOnFiber instead of
@@ -544,8 +547,9 @@ export function scheduleUpdateOnFiber(
         resetRenderTimer();
         flushSyncCallbackQueue();
       }
-    }
+    } 
   } else {
+    // 异步操作
     // Schedule a discrete update but only if it's not Sync.
     if (
       (executionContext & DiscreteEventContext) !== NoContext &&
@@ -706,7 +710,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 // This is the entry point for every concurrent task, i.e. anything that
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
-  
+  debugger
   console.log('performConcurrentWorkOnRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) debugger
   // Since we know we're in a React event, we can clear the current
@@ -1097,11 +1101,14 @@ export function batchedUpdates<A, R>(fn: A => R, a: A): R {
 
 export function batchedEventUpdates<A, R>(fn: A => R, a: A): R {
   const prevExecutionContext = executionContext;
+  // 所有的事件在触发的时候，都会先调用 batchedEventUpdates 这个方法
+  // 在这里就会修改 executionContext 的值，React 就知道此时的 setState 在自己的掌控中
   executionContext |= EventContext;
   try {
     return fn(a);
   } finally {
     executionContext = prevExecutionContext;
+    // 调用结束后，调用 flushSyncCallbackQueue
     if (executionContext === NoContext) {
       // Flush the immediate callbacks that were scheduled during this batch
       resetRenderTimer();
@@ -1265,7 +1272,7 @@ function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   root.finishedLanes = NoLanes;
 
   const timeoutHandle = root.timeoutHandle;
-  if (timeoutHandle !== noTimeout) {
+  if (timeoutHandle !== noTimeout) { // noTimeout === -1
     // The root previous suspended and scheduled a timeout to commit a fallback
     // state. Now that we have additional work, cancel the timeout.
     root.timeoutHandle = noTimeout;
@@ -1509,12 +1516,13 @@ function workLoopSync() {
   
   console.log('workLoopSync')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) debugger
+
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
+
     console.log('workLoopSync in while')
-    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) {
-    debugger
-    }
+    if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) debugger
+
     performUnitOfWork(workInProgress);
   }
 }
@@ -1523,6 +1531,7 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
   
   console.log('renderRootConcurrent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootConcurrent')) debugger
+
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1745,8 +1754,10 @@ function commitRootImpl(root, renderPriorityLevel) {
   // 由于useEffect是异步调度的，有可能上一次更新调度的useEffect还未被真正执行，
   // 所以在本次更新开始前，需要先将之前的useEffect都执行掉，以保证本次更新调度的
   // useEffect都是本次更新产生的
+
   console.log('commitRootImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRootImpl')) debugger
+
   do {
     // `flushPassiveEffects` will call `flushSyncUpdateQueue` at the end, which
     // means `flushPassiveEffects` will sometimes result in additional
@@ -2192,6 +2203,7 @@ function commitMutationEffectsImpl(
 ) {
   console.log('commitMutationEffectsImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffectsImpl')) debugger
+  
   const flags = fiber.flags;
   if (flags & ContentReset) { // ContentReset =  0b0000000000,0001,0000;
     commitResetTextContent(fiber);
@@ -2200,6 +2212,7 @@ function commitMutationEffectsImpl(
   if (flags & Ref) { // Ref = 0b0000000000,1000,0000;
     const current = fiber.alternate;
     if (current !== null) {
+      // 移除之前的ref
       commitDetachRef(current);
     }
     if (enableScopeAPI) {
@@ -2295,6 +2308,7 @@ export function schedulePassiveEffectCallback() {
   }
 }
 
+// 返回副作用是否被清空的标志
 export function flushPassiveEffects(): boolean {
   console.log('flushPassiveEffects start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffects')) debugger
