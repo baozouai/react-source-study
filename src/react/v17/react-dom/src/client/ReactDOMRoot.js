@@ -80,7 +80,7 @@ ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function
   console.log('Scheduler: render start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) debugger
   const root = this._internalRoot;
-
+  // 更新的起点
   updateContainer(children, root, null, null);
 };
 

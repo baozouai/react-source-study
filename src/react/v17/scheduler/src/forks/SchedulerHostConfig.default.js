@@ -166,7 +166,7 @@ if (
     // Since we yield every frame regardless, `requestPaint` has no effect.
     requestPaint = function() {};
   }
-
+  // 动态分配时间
   forceFrameRate = function(fps) {
     if (fps < 0 || fps > 125) {
       // Using console['error'] to evade Babel and ESLint
@@ -233,6 +233,7 @@ if (
     
     console.log('requestHostCallback')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('requestHostCallback')) debugger
+    
     scheduledHostCallback = callback;
     if (!isMessageLoopRunning) {
       isMessageLoopRunning = true;

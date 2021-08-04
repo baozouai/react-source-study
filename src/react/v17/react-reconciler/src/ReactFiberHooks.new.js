@@ -910,7 +910,7 @@ function updateMutableSource<Source, Snapshot>(
 function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  debugger
+
   console.log('mountState start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) debugger
 
@@ -939,7 +939,7 @@ function mountState<S>(
 function updateState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  debugger
+
   return updateReducer(basicStateReducer, initialState);
 }
 
@@ -991,7 +991,7 @@ function updateRef<T>(initialValue: T): {current: T} {
 }
 
 function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
-  debugger
+
   const hook = mountWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   currentlyRenderingFiber.flags |= fiberFlags;
@@ -1004,7 +1004,7 @@ function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
 }
 
 function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
-  debugger
+
   const hook = updateWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   let destroy = undefined;

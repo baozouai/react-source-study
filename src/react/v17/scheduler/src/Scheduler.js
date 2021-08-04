@@ -223,6 +223,7 @@ function workLoop(hasTimeRemaining, initialTime) {
           currentTask.isQueued = false;
         }
         if (currentTask === peek(taskQueue)) {
+          // 将当前任务清除
           pop(taskQueue);
         }
       }
@@ -321,6 +322,7 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
   
   console.log('Scheduler: unstable_scheduleCallback')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('unstable_scheduleCallback')) debugger
+
   // 获取当前时间，它是计算任务开始时间、过期时间和判断任务是否过期的依据
   var currentTime = getCurrentTime();
   // 确定当前时间 startTime 和延迟更新时间 timeout
@@ -360,7 +362,7 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
   }
   // 计算任务的过期时间，任务开始时间 + timeout
   // 若是立即执行的优先级（ImmediatePriority），
-  // 它的过期时间是startTime - 1，意味着立刻就过期
+  // 它的过期时间是startTime - 1比当前时间还短，表示已经过期，需要立即被执行
   var expirationTime = startTime + timeout;
   // 创建调度任务
   var newTask = {

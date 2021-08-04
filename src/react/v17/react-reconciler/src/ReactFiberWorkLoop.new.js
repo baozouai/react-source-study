@@ -710,7 +710,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 // This is the entry point for every concurrent task, i.e. anything that
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
-  debugger
+
   console.log('performConcurrentWorkOnRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) debugger
   // Since we know we're in a React event, we can clear the current
@@ -1600,8 +1600,10 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 
 /** @noinline */
 function workLoopConcurrent() {
+
   console.log('workLoopConcurrent start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopConcurrent')) debugger
+
   // 调用shouldYield判断如果超出时间片限制，那么结束循环
   // Perform work until Scheduler asks us to yield
   while (workInProgress !== null && !shouldYield()) {
@@ -1742,6 +1744,7 @@ function commitRoot(root) {
   console.log('commitRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRoot')) debugger
   const renderPriorityLevel = getCurrentPriorityLevel();
+  // commit阶段是同步执行的，优先级最高
   runWithPriority(
     ImmediateSchedulerPriority,
     commitRootImpl.bind(null, root, renderPriorityLevel),
@@ -2203,7 +2206,7 @@ function commitMutationEffectsImpl(
 ) {
   console.log('commitMutationEffectsImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffectsImpl')) debugger
-  
+
   const flags = fiber.flags;
   if (flags & ContentReset) { // ContentReset =  0b0000000000,0001,0000;
     commitResetTextContent(fiber);
