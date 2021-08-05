@@ -176,6 +176,7 @@ function setInitialDOMProperties(
       if (nextProp != null) {
 
         if (!enableEagerRootListeners) { // enableEagerRootListeners === true
+          // V17是createRootImpl调用listenToAllSupportedEvents监听所有事件
           ensureListeningTo(rootContainerElement, propKey, domElement);
         } else if (propKey === 'onScroll') {
           listenToNonDelegatedEvent('scroll', domElement);
@@ -429,9 +430,9 @@ export function diffProperties(
   nextRawProps: Object,
   rootContainerElement: Element | Document,
 ): null | Array<mixed> {
-  console.log('ReactDomComponent: diffProperties')
+  console.log('diffProperties start')
   
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) debugger
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('diffProperties')) debugger
   let updatePayload: null | Array<any> = null;
 
   let lastProps: Object;
@@ -585,7 +586,7 @@ export function diffProperties(
       if (nextProp != null) {
         // We eagerly listen to this even though we haven't committed yet.
 
-        if (!enableEagerRootListeners) {
+        if (!enableEagerRootListeners) { // enableEagerRootListeners === true
           ensureListeningTo(rootContainerElement, propKey, domElement);
         } else if (propKey === 'onScroll') {
           listenToNonDelegatedEvent('scroll', domElement);
@@ -616,6 +617,7 @@ export function diffProperties(
 
     (updatePayload = updatePayload || []).push(STYLE, styleUpdates);
   }
+  console.log('diffProperties end')
   return updatePayload;
 }
 

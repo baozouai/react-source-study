@@ -15,10 +15,11 @@ const UseEffectExp = () => {
     //         console.log('destory2');
     //     }
     // }, [])
-    return <div>
-        <button onClick={() => setText(text + 1)}>{text}</button>
-        useEffect
-    </div>
+    return <button onClick={() => {
+            debugger
+            setText(text => text + 1)
+        }}>{text}</button>
+
 }
 
 export default UseEffectExp

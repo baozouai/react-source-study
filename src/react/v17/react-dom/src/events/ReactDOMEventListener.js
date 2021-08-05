@@ -96,7 +96,8 @@ export function createEventListenerWrapperWithPriority(
   domEventName: DOMEventName,
   eventSystemFlags: EventSystemFlags,
 ): Function {
-  // debugger        
+  console.log('createEventListenerWrapperWithPriority start')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') debugger
   const eventPriority = getEventPriorityForPluginSystem(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
@@ -114,6 +115,7 @@ export function createEventListenerWrapperWithPriority(
       listenerWrapper = dispatchEvent;
       break;
   }
+  console.log('createEventListenerWrapperWithPriority end')
   return listenerWrapper.bind(
     null,
     domEventName,
@@ -155,7 +157,7 @@ function dispatchUserBlockingUpdate(
   container,
   nativeEvent,
 ) {
-  if (decoupleUpdatePriorityFromScheduler) {
+  if (decoupleUpdatePriorityFromScheduler) { // decoupleUpdatePriorityFromScheduler === false
     const previousPriority = getCurrentUpdateLanePriority();
     try {
       // TODO: Double wrapping is necessary while we decouple Scheduler priority.
@@ -193,6 +195,8 @@ export function dispatchEvent(
   targetContainer: EventTarget,
   nativeEvent: AnyNativeEvent,
 ): void {
+  console.log('dispatchEvent start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEvent')) debugger
   if (!_enabled) {
     return;
   }
@@ -276,6 +280,7 @@ export function dispatchEvent(
     null,
     targetContainer,
   );
+  console.log('dispatchEvent end')
 }
 
 // Attempt dispatching an event. Returns a SuspenseInstance or Container if it's blocked.

@@ -115,7 +115,7 @@ function getClientEnvironment(publicUrl) {
       // 'markContainerAsRoot',
       // 'listenToAllSupportedEvents',
       // 'render',
-      'updateContainer',
+      // 'updateContainer',
       // 'enqueueUpdate',
       // 'scheduleUpdateOnFiber',
       // 'ensureRootIsScheduled',
@@ -133,6 +133,10 @@ function getClientEnvironment(publicUrl) {
       // 'FiberNode',
       // 'performUnitOfWork',
       // 'beginWork',
+      'setInitialDOMProperties',
+      'setInitialProperties',
+      'diffProperties',
+      // 'dispatchEvent',
       // 'mountIndeterminateComponent',
       // 'renderWithHooks',
       // 'useState',
@@ -172,7 +176,8 @@ function getClientEnvironment(publicUrl) {
       // 'updateFiberProps',
       // 'hadNoMutationsEffects',
       // 'bubbleProperties',
-      // 'dispatchDiscreteEvent'
+      // 'dispatchDiscreteEvent',
+      // 'createEventListenerWrapperWithPriority',
       // 'updateWorkInProgressHook'
     ]),
   };

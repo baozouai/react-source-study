@@ -105,7 +105,7 @@ function extractEvents(
   // This is the basic functionality of the event system. All
   // the other plugins are essentially polyfills. So the plugin
   // should probably be inlined somewhere and have its logic
-  // be core the to event system. This would potentially allow
+  // be core thex to event system. This would potentially allow
   // us to ship builds of React without the polyfilled plugins below.
   SimpleEventPlugin.extractEvents(
     dispatchQueue,
@@ -235,6 +235,10 @@ function processDispatchQueueItemsInOrder(
   dispatchListeners: Array<DispatchListener>,
   inCapturePhase: boolean,
 ): void {
+
+  console.log('processDispatchQueueItemsInOrder start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processDispatchQueueItemsInOrder')) debugger
+
   let previousInstance;
   if (inCapturePhase) {
     for (let i = dispatchListeners.length - 1; i >= 0; i--) {
@@ -255,12 +259,15 @@ function processDispatchQueueItemsInOrder(
       previousInstance = instance;
     }
   }
+  console.log('processDispatchQueueItemsInOrder end')
 }
 
 export function processDispatchQueue(
   dispatchQueue: DispatchQueue,
   eventSystemFlags: EventSystemFlags,
 ): void {
+  console.log('processDispatchQueue start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processDispatchQueue')) debugger
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
   for (let i = 0; i < dispatchQueue.length; i++) {
     // 从dispatchQueue中取出事件对象和事件监听数组
@@ -269,6 +276,7 @@ export function processDispatchQueue(
     processDispatchQueueItemsInOrder(event, listeners, inCapturePhase);
     //  event system doesn't use pooling.
   }
+  console.log('processDispatchQueue end')
   // This would be a good time to rethrow if any of the event handlers threw.
   rethrowCaughtError();
 }
@@ -280,8 +288,12 @@ function dispatchEventsForPlugins(
   targetInst: null | Fiber,
   targetContainer: EventTarget,
 ): void {
+  if (domEventName === 'click') {
+    debugger
+  }
   const nativeEventTarget = getEventTarget(nativeEvent);
   const dispatchQueue: DispatchQueue = [];
+  // 事件对象的合成，收集事件到执行路径上
   extractEvents(
     dispatchQueue,
     domEventName,
@@ -291,6 +303,7 @@ function dispatchEventsForPlugins(
     eventSystemFlags,
     targetContainer,
   );
+  // 执行收集到的组件中真正的事件
   processDispatchQueue(dispatchQueue, eventSystemFlags);
 }
 
@@ -298,6 +311,8 @@ export function listenToNonDelegatedEvent(
   domEventName: DOMEventName,
   targetElement: Element,
 ): void {
+  console.log('listenToNonDelegatedEvent start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNonDelegatedEvent')) debugger
   const isCapturePhaseListener = false;
   const listenerSet = getEventListenerSet(targetElement);
   const listenerSetKey = getListenerSetKey(
@@ -313,6 +328,7 @@ export function listenToNonDelegatedEvent(
     );
     listenerSet.add(listenerSetKey);
   }
+  console.log('listenToNonDelegatedEvent end')
 }
 
 const listeningMarker =
@@ -323,7 +339,7 @@ const listeningMarker =
 
 export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   
-  console.log('DomPluginEventSystem: listenToAllSupportedEvents')
+  console.log('listenToAllSupportedEvents start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToAllSupportedEvents')) debugger
   if (enableEagerRootListeners) { // enableEagerRootListeners = true
     if (rootContainerElement[listeningMarker]) {
@@ -352,6 +368,7 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
       );
     });
   }
+  console.log('listenToAllSupportedEvents end')
 }
 
 export function listenToNativeEvent(
@@ -361,8 +378,9 @@ export function listenToNativeEvent(
   targetElement: Element | null,
   eventSystemFlags?: EventSystemFlags = 0,
 ): void {
+  console.log('listenToNativeEvent start')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNativeEvent')) && domEventName === 'click') debugger
   let target = rootContainerElement;
-
   // selectionchange needs to be attached to the document
   // otherwise it won't capture incoming events that are only
   // triggered on the document directly.
@@ -417,6 +435,7 @@ export function listenToNativeEvent(
     );
     listenerSet.add(listenerSetKey);
   }
+  console.log('listenToNativeEvent end')
 }
 
 export function listenToReactEvent(
@@ -480,7 +499,8 @@ function addTrappedEventListener(
   isCapturePhaseListener: boolean,
   isDeferredListenerForLegacyFBSupport?: boolean,
 ) {
-  // debugger
+  console.log('addTrappedEventListener start')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('addTrappedEventListener')) && domEventName === 'click') debugger
   let listener = createEventListenerWrapperWithPriority(
     targetContainer,
     domEventName,
@@ -567,6 +587,7 @@ function addTrappedEventListener(
       );
     }
   }
+  console.log('addTrappedEventListener end')
 }
 
 function deferClickToDocumentForLegacyFBSupport(
@@ -604,6 +625,8 @@ export function dispatchEventForPluginEventSystem(
   targetInst: null | Fiber,
   targetContainer: EventTarget,
 ): void {
+  console.log('dispatchEventForPluginEventSystem start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventForPluginEventSystem')) debugger
   let ancestorInst = targetInst;
   if (
     (eventSystemFlags & IS_EVENT_HANDLE_NON_MANAGED_NODE) === 0 &&
@@ -705,6 +728,7 @@ export function dispatchEventForPluginEventSystem(
       targetContainer,
     ),
   );
+  console.log('dispatchEventForPluginEventSystem end')
 }
 
 function createDispatchListener(
@@ -726,6 +750,10 @@ export function accumulateSinglePhaseListeners(
   inCapturePhase: boolean,
   accumulateTargetOnly: boolean,
 ): Array<DispatchListener> {
+
+  console.log('accumulateSinglePhaseListeners start')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('accumulateSinglePhaseListeners')) debugger
+
   // 根据事件名来识别是冒泡阶段的事件还是捕获阶段的事件
   const captureName = reactName !== null ? reactName + 'Capture' : null;
   const reactEventName = inCapturePhase ? captureName : reactName;
@@ -811,6 +839,7 @@ export function accumulateSinglePhaseListeners(
     }
     instance = instance.return;
   }
+  console.log('accumulateSinglePhaseListeners end')
   return listeners;
 }
 

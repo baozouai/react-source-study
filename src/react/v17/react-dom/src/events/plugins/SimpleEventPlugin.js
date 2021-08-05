@@ -58,6 +58,8 @@ function extractEvents(
   eventSystemFlags: EventSystemFlags,
   targetContainer: EventTarget,
 ): void {
+  console.log('extractEvents start')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('extractEvents')) && domEventName === 'click') debugger
   const reactName = topLevelEventsToReactNames.get(domEventName);
   if (reactName === undefined) {
     return;
@@ -160,7 +162,7 @@ function extractEvents(
 
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
   if (
-    enableCreateEventHandleAPI &&
+    enableCreateEventHandleAPI && // enableCreateEventHandleAPI === false
     eventSystemFlags & IS_EVENT_HANDLE_NON_MANAGED_NODE
   ) {
     const listeners = accumulateEventHandleNonManagedNodeListeners(
