@@ -484,6 +484,7 @@ export function scheduleUpdateOnFiber(
   markRootUpdated(root, lane, eventTime);
 
   if (root === workInProgressRoot) {
+    // workInProgressRoo存在，意味着是当前根节点触发的更新
     // Received an update to a tree that's in the middle of rendering. Mark
     // that there was an interleaved update work on this root. Unless the
     // `deferRenderPhaseUpdateToNextBatch` flag is off and this is a render
@@ -552,6 +553,7 @@ export function scheduleUpdateOnFiber(
     // 异步操作
     // Schedule a discrete update but only if it's not Sync.
     if (
+      // 是否是用户事件触发的上下文
       (executionContext & DiscreteEventContext) !== NoContext &&
       // Only updates at user-blocking priority or greater are considered
       // discrete, even inside a discrete event.
@@ -627,7 +629,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
   console.log('ensureRootIsScheduled')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) debugger
-  // 获取旧任务
+  // 获取旧任务，对应task上的callback，代表当前根节点正在被调度的任务
   const existingCallbackNode = root.callbackNode;
 
   // 记录任务的过期时间，检查是否有过期任务，有则立即将它放到root.expiredLanes，
@@ -664,8 +666,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
       // The priority hasn't changed. We can reuse the existing task. Exit.
       return;
     }
-    // 代码执行到这里说明新任务的优先级高于旧任务的优先级
-    // 取消掉旧任务，实现高优先级任务插队
+    // 代码执行到这里说明新任务的优先级高于旧任务的优先级，取消掉旧任务，实现高优先级任务插队
     // The priority changed. Cancel the existing callback. We'll schedule a new
     // one below.
     cancelCallback(existingCallbackNode);

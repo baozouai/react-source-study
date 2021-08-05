@@ -189,23 +189,33 @@ if (
     
     console.log('performWorkUntilDeadline start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performWorkUntilDeadline')) debugger
+
     if (scheduledHostCallback !== null) {
       const currentTime = getCurrentTime();
       // Yield after `yieldInterval` ms, regardless of where we are in the vsync
       // cycle. This means there's always time remaining at the beginning of
       // the message event.
+      // 计算deadline，deadline会参与到shouldYieldToHost（根据时间片去限制任务执行）的计算中
       deadline = currentTime + yieldInterval;
+      // hasTimeRemaining表示任务是否还有剩余时间，它和时间片一起限制任务的执行。如果没有时间，
+      // 或者任务的执行时间超出时间片限制了，那么中断任务。它的默认为true，表示一直有剩余时间
+      // 因为MessageChannel的port在postMessage，是比setTimeout还靠前执行的宏任务，这意味着
+      // 在这一帧开始时，总是会有剩余时间，所以现在中断任务只看时间片的了
       const hasTimeRemaining = true;
       try {
+        // scheduledHostCallback去执行任务的函数，当任务因为时间片被打断时，它会返回true，表示
+        // 还有任务，所以会再让调度者调度一个执行者继续执行任务
         // scheduledHostCallback 由requestHostCallback 赋值为flushWork
         const hasMoreWork = scheduledHostCallback(
           hasTimeRemaining,
           currentTime,
         );
         if (!hasMoreWork) {
+          // 如果没有任务了，停止调度
           isMessageLoopRunning = false;
           scheduledHostCallback = null;
         } else {
+          // 如果还有任务，继续让调度者调度执行者，便于继续完成任务
           // If there's more work, schedule the next message event at the end
           // of the preceding one.
           port.postMessage(null);

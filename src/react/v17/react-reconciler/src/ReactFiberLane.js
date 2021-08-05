@@ -451,6 +451,8 @@ function computeExpirationTime(lane: Lane, currentTime: number) {
   // TODO: Expiration heuristic is constant per lane, so could use a map.
   getHighestPriorityLanes(lane);
   const priority = return_highestLanePriority;
+  // 以下两个判断会通过当前时间加上延迟时间来获得过期时间
+  // 优先级越低，对应的延迟时间就越高
   if (priority >= InputContinuousLanePriority) {
     // User interactions should expire slightly more quickly.
     //

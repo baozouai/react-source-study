@@ -84,9 +84,11 @@ function advanceTimers(currentTime) {
   let timer = peek(timerQueue);
   while (timer !== null) {
     if (timer.callback === null) {
+      // 该任务被取消了，弹出
       // Timer was cancelled.
       pop(timerQueue);
     } else if (timer.startTime <= currentTime) {
+      // 任务已过期，放到taskQueue中
       // Timer fired. Transfer to the task queue.
       pop(timerQueue);
       timer.sortIndex = timer.expirationTime;
@@ -96,6 +98,7 @@ function advanceTimers(currentTime) {
         timer.isQueued = true;
       }
     } else {
+      // 由于是小顶堆，第一个未过期的话，剩下的都是未过期，无需再遍历
       // Remaining timers are pending.
       return;
     }
@@ -104,10 +107,8 @@ function advanceTimers(currentTime) {
 }
 
 function handleTimeout(currentTime) {
-  // 这个函数的作用是检查timerQueue中的任务，如果有快过期的任务，将它
-  // 放到taskQueue中，执行掉
-  // 如果没有快过期的，并且taskQueue中没有任务，那就取出timerQueue中的
-  // 第一个任务，等它的任务快过期了，执行掉它
+  // 这个函数的作用是检查timerQueue中的任务，如果有快过期的任务，将它放到taskQueue中，执行掉
+  // 如果没有快过期的，并且taskQueue中没有任务，那就取出timerQueue中的第一个任务，等它的任务快过期了，执行掉它
   isHostTimeoutScheduled = false;
   // 检查过期任务队列中不应再被推迟的，放到taskQueue中
   advanceTimers(currentTime);
@@ -115,6 +116,7 @@ function handleTimeout(currentTime) {
   if (!isHostCallbackScheduled) {
     if (peek(taskQueue) !== null) {
       isHostCallbackScheduled = true;
+      // 如果taskQueue不为空，发起一次调度
       requestHostCallback(flushWork);
     } else {
       const firstTimer = peek(timerQueue);
@@ -129,6 +131,7 @@ function flushWork(hasTimeRemaining, initialTime) {
   
   console.log('Scheduler: flushWork')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushWork')) debugger
+
   if (enableProfiling) {
     markSchedulerUnsuspended(initialTime);
   }
@@ -146,6 +149,7 @@ function flushWork(hasTimeRemaining, initialTime) {
   try {
     if (enableProfiling) {
       try {
+        // workLoop的调用使得任务最终被执行
         return workLoop(hasTimeRemaining, initialTime);
       } catch (error) {
         if (currentTask !== null) {
@@ -169,18 +173,16 @@ function flushWork(hasTimeRemaining, initialTime) {
     }
   }
 }
-
+// workLoop是通过判断任务函数的返回值去识别任务的完成状态的,true表示完成，false没完成
 function workLoop(hasTimeRemaining, initialTime) {
   console.log('Scheduler: workLoop')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) debugger
   let currentTime = initialTime;
-  // 开始执行前检查一下timerQueue中的过期任务，
-  // 放到taskQueue中
+  // 开始执行前检查一下timerQueue中的过期任务，放到taskQueue中
   advanceTimers(currentTime);
   // 获取taskQueue中最紧急的任务
   currentTask = peek(taskQueue);
-  // 循环taskQueue，执行任务
-  // 相当于 while (currentTask !== null)
+  // 循环taskQueue，执行任务，相当于 while (currentTask !== null)
   while (
     currentTask !== null &&
     !(enableSchedulerDebugging && isSchedulerPaused) // enableSchedulerDebugging === false
@@ -189,8 +191,10 @@ function workLoop(hasTimeRemaining, initialTime) {
       currentTask.expirationTime > currentTime &&
       (!hasTimeRemaining || shouldYieldToHost())
     ) {
+      // hasTimeRemaining一直为true，这与MessageChannel作为宏任务的执行时机有关
       // This currentTask hasn't expired, and we've reached the deadline.
-      // 当前任务没有过期，但是已经到了时间片的末尾，需要中断循环
+      // 当前任务没有过期（urrentTask.expirationTime > currentTime），但是已经到了时间片的末尾，需要中断循环
+      // 使得本次循环下面currentTask执行的逻辑都不能被执行到（此处是中断任务的关键）
       break;
     }
     // 执行任务 ---------------------------------------------------
@@ -213,11 +217,11 @@ function workLoop(hasTimeRemaining, initialTime) {
         // 是否相同，来决定是否返回自身，如果相同，则说明还有任务没做完，返回自身，其作为新的callback
         // 被放到当前的task上。while循环完成一次之后，检查shouldYieldToHost，如果需要让出执行权，
         // 则中断循环，走到下方，判断currentTask不为null，返回true，说明还有任务，回到performWorkUntilDeadline
-        // 中，判断还有任务，继续port.postMessage(null)，调用监听函数performWorkUntilDeadline，
-        // 继续执行任务
+        // 中，判断还有任务，继续port.postMessage(null)，调用监听函数performWorkUntilDeadline，继续执行任务
         currentTask.callback = continuationCallback;
         markTaskYield(currentTask, currentTime);
       } else {
+        // 返回不是函数，说明当前任务执行完了
         if (enableProfiling) {
           markTaskCompleted(currentTask, currentTime);
           currentTask.isQueued = false;
@@ -229,11 +233,11 @@ function workLoop(hasTimeRemaining, initialTime) {
       }
       advanceTimers(currentTime);
     } else {
+      // 任务的callback不是函数 ，则弹出
       pop(taskQueue);
     }
     // 从taskQueue中继续获取任务，如果上一个任务未完成，那么它将不会
-    // 被从队列剔除，所以获取到的currentTask还是上一个任务，会继续
-    // 去执行它
+    // 被从队列剔除，所以获取到的currentTask还是上一个任务，会继续去执行它
     currentTask = peek(taskQueue);
   }
   // Return whether there's additional work
@@ -243,11 +247,16 @@ function workLoop(hasTimeRemaining, initialTime) {
   // 但它被取消过，导致currentTask.callback为null
   // 所以会被删除，此时的taskQueue为空，低优先级的任务重新调度，加入taskQueue
   if (currentTask !== null) {
+    // 如果currentTask不为空，说明是时间片的限制导致了任务中断，只是被中止了，
+    // return 一个 true告诉外部，此时任务还未执行完，还有任务，
+    // 翻译成英文就是hasMoreWork，此处是(恢复任务的关键)
     return true;
   } else {
-    // 若任务完成，去timerQueue中找需要最早开始执行的那个任务
-    // 调度requestHostTimeout，目的是等到了它的开始事件时把它
-    // 放到taskQueue中，再次调度
+    // 如果currentTask为空，说明taskQueue队列中的任务已经都
+    // 执行完了，然后从timerQueue中找任务，调用requestHostTimeout
+    // 去把task放到taskQueue中，到时会再次发起调度，但是这次，
+    // 会先return false，告诉外部当前的taskQueue已经清空，
+    // 先停止执行任务，也就是终止任务调度
     const firstTimer = peek(timerQueue);
     if (firstTimer !== null) {
       requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
