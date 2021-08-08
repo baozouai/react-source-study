@@ -1651,6 +1651,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   
   console.log('completeUnitOfWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeUnitOfWork')) debugger
+
   do {
     // 向上一直循环到root的过程
     // The current, flushed, state of this fiber is the alternate. Ideally
@@ -2053,7 +2054,6 @@ function commitRootImpl(root, renderPriorityLevel) {
   * 保证root上任何的pendingLanes都能被处理,即确保是否还有任务需要被调度。
   * 例如，高优先级插队的更新完成后，commit完成后，还会再执行一遍，保证之前跳过的低优先级任务
   * 重新调度
-  *
   * */
   // Always call this before exiting `commitRoot`, to ensure that any
   // additional work on this root is scheduled.

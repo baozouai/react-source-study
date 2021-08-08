@@ -117,7 +117,7 @@ export function setCurrentUpdateLanePriority(newLanePriority: LanePriority) {
 // "Registers" used to "return" multiple values
 // Used by getHighestPriorityLanes and getNextLanes:
 let return_highestLanePriority: LanePriority = DefaultLanePriority;
-// getHighestPriorityLanes
+// 生成任务优先级
 function getHighestPriorityLanes(lanes: Lanes | Lane): Lanes {
   // 相关commit https://github.com/facebook/react/pull/19302
   // 该函数的目的是找到对应优先级范围内优先级最高的那一批lanes
@@ -290,26 +290,22 @@ export function getNextLanes(root: FiberRoot, wipLanes: Lanes): Lanes {
     // even if the work is suspended.
     // 即使具有优先级的任务被挂起，也不要处理空闲的任务，除非有优先级的任务都被处理完了
 
-    // nonIdlePendingLanes 是所有需要处理的优先级。然后判断这些优先级
-    // （nonIdlePendingLanes）是不是为空。
-    //
-    // 不为空的话，把被挂起任务的优先级踢出去，只剩下那些真正待处理的任务的优先级集合。
     // 然后从这些优先级里找出最紧急的return出去。如果已经将挂起任务优先级踢出了之后还是
     // 为空，那么就说明需要处理这些被挂起的任务了。将它们重启。pingedLanes是那些被挂起
     // 任务的优先级
-
+    // nonIdlePendingLanes 是所有需要处理的优先级。然后判断这些优先级（nonIdlePendingLanes）是不是为空
     const nonIdlePendingLanes = pendingLanes & NonIdleLanes;
     if (nonIdlePendingLanes !== NoLanes) {
+      // 不为空的话，把被挂起任务的优先级踢出去，只剩下那些真正待处理的任务的优先级集合
       const nonIdleUnblockedLanes = nonIdlePendingLanes & ~suspendedLanes;
       // nonIdleUnblockedLanes也就是未被阻塞的那些lanes，未被阻塞，那就应该去处理。
       // 它等于所有未闲置的lanes中除去被挂起的那些lanes。& ~ 相当于删除
       if (nonIdleUnblockedLanes !== NoLanes) {
-        // nonIdleUnblockedLanes不为空，说明如果有任务需要被处理。
-        // 那么从这些任务中挑出最重要的
+        // nonIdleUnblockedLanes不为空，说明如果有任务需要被处理，那么从这些任务中挑出最重要的
         nextLanes = getHighestPriorityLanes(nonIdleUnblockedLanes);
         nextLanePriority = return_highestLanePriority;
       } else {
-        // 如果目前没有任务需要被处理，就从正在那些被挂起的lanes中找到优先级最高的
+        // 如果目前没有任务需要被处理，就从那些正在被挂起的lanes中找到优先级最高的
         const nonIdlePingedLanes = nonIdlePendingLanes & pingedLanes;
         if (nonIdlePingedLanes !== NoLanes) {
           nextLanes = getHighestPriorityLanes(nonIdlePingedLanes);
@@ -451,8 +447,7 @@ function computeExpirationTime(lane: Lane, currentTime: number) {
   // TODO: Expiration heuristic is constant per lane, so could use a map.
   getHighestPriorityLanes(lane);
   const priority = return_highestLanePriority;
-  // 以下两个判断会通过当前时间加上延迟时间来获得过期时间
-  // 优先级越低，对应的延迟时间就越高
+  // 以下两个判断会通过当前时间加上延迟时间来获得过期时间，优先级越低，对应的延迟时间就越高
   if (priority >= InputContinuousLanePriority) {
     // User interactions should expire slightly more quickly.
     //
@@ -484,13 +479,12 @@ export function markStarvedLanesAsExpired(
   currentTime: number,
 ): void {
   /**
-  * 计算lane的过期时间，饥饿问题（过期的lane被立即执行）的关键所在
+   * 计算lane的过期时间，饥饿问题（过期的lane被立即执行）的关键所在
    * 模型是这样的，假设lanes有7个二进制位（实际是31个）：
-     0b0011000
-     对应一个7个元素的数组，每个元素表示一个过期时间，与lanes中的位相对应
-     [ -1, -1, 4395.2254, -1, -1, -1, -1 ]
-     -1表示任务未过期。root.expirationTimes就是这个数组
-   *
+   * 0b0011000
+   * 对应一个7个元素的数组，每个元素表示一个过期时间，与lanes中的位相对应
+   * [ -1, -1, 4395.2254, -1, -1, -1, -1 ]
+   * -1表示任务未过期。root.expirationTimes就是这个数组
   * */
   // TODO: This gets called every time we yield. We can optimize by storing
   // the earliest expiration time on the root. Then use that to quickly bail out
@@ -526,11 +520,14 @@ export function markStarvedLanesAsExpired(
 
     const expirationTime = expirationTimes[index];
     if (expirationTime === NoTimestamp) {
+      // expirationTime === NoTimestamp(-1)即没有过期
       // Found a pending lane with no expiration time. If it's not suspended, or
       // if it's pinged, assume it's CPU-bound. Compute a new expiration time
       // using the current time.
-      // 发现一个没有过期时间并且待处理的lane，如果它没被挂起或者被触发，那么将它视为CPU密集型的任务，
-      // 用当前时间计算一个新的过期时间
+      // 发现一个没有过期时间并且待处理的lane，如果它:
+      // 1.没被挂起 (lane & suspendedLanes) === NoLanes
+      // 2或没被触发(lane & suspendedLanes) === NoLanes
+      // 那么将它视为CPU密集型的任务，用当前时间计算一个新的过期时间
       if (
         (lane & suspendedLanes) === NoLanes ||
         (lane & pingedLanes) !== NoLanes
@@ -948,7 +945,7 @@ export function markRootFinished(root: FiberRoot, remainingLanes: Lanes) {
    * 假设 lanes = 0b0000000000000000000000000011100      // 十进制为10
    *     index = pickArbitraryLaneIndex(lanes)          // index = 4
    *                       // 1 为 0b0000000000000000000000000000001
-   *     lane = 1 << 4  //        0b0000000000000000000000000001000
+   *     lane = 1 << 4  //        0b0000000000000000000000000010000
    * 经过
    * lanes &= ~lane
    * 的位运算
@@ -980,13 +977,14 @@ export function markRootFinished(root: FiberRoot, remainingLanes: Lanes) {
   // Clear the lanes that no longer have pending work
   let lanes = noLongerPendingLanes;
   while (lanes > 0) {
+    // 最左侧第一位不为0的距离最右侧的index
     const index = pickArbitraryLaneIndex(lanes);
     const lane = 1 << index;
 
     entanglements[index] = NoLanes;
     eventTimes[index] = NoTimestamp;
     expirationTimes[index] = NoTimestamp;
-
+    // 将 lane 从 lanes 中删除
     lanes &= ~lane;
   }
 }

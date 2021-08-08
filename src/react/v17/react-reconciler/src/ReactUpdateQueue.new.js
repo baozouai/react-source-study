@@ -393,7 +393,7 @@ export function processUpdateQueue<State>(
   // Check if there are pending updates. If so, transfer them to the base queue.
   let pendingQueue = queue.shared.pending;
   if (pendingQueue !== null) {
-    // pedingQueue不为空，说明上面有新增的更新，即queue.shared.peding = u4 -> u3 -↓
+    // pedingQueue不为空，说明上面有新增的更新，即queue.shared.pending = u4 -> u3 -↓
     //                                                             ↑   ←   ← ↓
     // 上面已经拿到pedingQueue了，那么将queue的pending置空
     queue.shared.pending = null;
@@ -478,7 +478,7 @@ export function processUpdateQueue<State>(
           next: null,
         };
         if (newLastBaseUpdate === null) {
-          // 如果newLastBaseUpdate为空，那么newLastBaseUpdate和newLastBaseUpdate都指向该被跳过的update
+          // 如果newLastBaseUpdate为空，那么newFirstBaseUpdate和newLastBaseUpdate都指向该被跳过的update
           newFirstBaseUpdate = newLastBaseUpdate = clone;
           // 该update前一个产生的state将作为新的baseState
           newBaseState = newState;
@@ -503,6 +503,8 @@ export function processUpdateQueue<State>(
         // This update does have sufficient priority.
 
         if (newLastBaseUpdate !== null) {
+          // newLastBaseUpdate不为空，意味着肯定有update优先级不足被跳过
+          // 即!isSubsetOfLanes(renderLanes, updateLane) === true满足条件
           const clone: Update<State> = {
             eventTime: updateEventTime,
             // This update is going to be committed so we never want uncommit
@@ -518,7 +520,7 @@ export function processUpdateQueue<State>(
             next: null,
           };
           /**
-           * 这里要注意，虽然改update会被commit掉，但如果newLastBaseUpdatenewLastBaseUpdate !== null，
+           * 这里要注意，虽然该update会被commit掉，但如果newLastBaseUpdatenewLastBaseUpdate !== null，
            * 那么意味着优先级足够的update在baseUpdate里面
            * 比如baseUpdate为:u1(1) -> u2(2) -> u3(1) -> u4(2),括号里的数字越小代表优先级越高，
            * 这里假定只有优先级1才满足isSubsetOfLanes(renderLanes, updateLane)
@@ -559,8 +561,7 @@ export function processUpdateQueue<State>(
         // baseUpdate都遍历完了
         /**
          * 这里要特别注意：
-         * 上面已经把queue.shared.pending = null置空了
-         *  那为何现在queue.shared.pending又有？
+         * 上面已经把queue.shared.pending = null置空了，那为何现在queue.shared.pending又有？
          * 原因是上面运行了getStateFromUpdate，里面会处理一些回调的更新，比如：
          * this.setState((prevState, nextProps) => {
          * ...
@@ -589,6 +590,7 @@ export function processUpdateQueue<State>(
     } while (true);
 
     if (newLastBaseUpdate === null) {
+      // newLastBaseUpdate为空意味着没有update因为优先级低被跳过，所以newState每次都得到新的值
       newBaseState = newState;
     }
 
