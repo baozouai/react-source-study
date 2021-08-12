@@ -520,7 +520,7 @@ export function processUpdateQueue<State>(
             next: null,
           };
           /**
-           * 这里要注意，虽然该update会被commit掉，但如果newLastBaseUpdatenewLastBaseUpdate !== null，
+           * 这里要注意，虽然该update会被commit掉，但如果newLastBaseUpdate !== null，
            * 那么意味着优先级足够的update在baseUpdate里面
            * 比如baseUpdate为:u1(1) -> u2(2) -> u3(1) -> u4(2),括号里的数字越小代表优先级越高，
            * 这里假定只有优先级1才满足isSubsetOfLanes(renderLanes, updateLane)
