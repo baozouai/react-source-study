@@ -547,6 +547,7 @@ if (supportsMutation) {
       workInProgress.stateNode = currentInstance;
       return;
     }
+    debugger
     const newInstance = cloneInstance(
       currentInstance,
       updatePayload,

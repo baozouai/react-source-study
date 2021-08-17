@@ -875,23 +875,6 @@ export function didNotFindHydratableInstance(
 
 }
 
-export function didNotFindHydratableTextInstance(
-  parentType: string,
-  parentProps: Props,
-  parentInstance: Instance,
-  text: string,
-) {
-
-}
-
-export function didNotFindHydratableSuspenseInstance(
-  parentType: string,
-  parentProps: Props,
-  parentInstance: Instance,
-) {
-
-}
-
 export function getFundamentalComponentInstance(
   fundamentalInstance: ReactDOMFundamentalComponentInstance,
 ): Instance {

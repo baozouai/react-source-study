@@ -430,9 +430,10 @@ export function diffProperties(
   nextRawProps: Object,
   rootContainerElement: Element | Document,
 ): null | Array<mixed> {
+
   console.log('diffProperties start')
-  
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('diffProperties')) debugger
+  // updatePayload为[key1, value1, key2, value2,...]
   let updatePayload: null | Array<any> = null;
 
   let lastProps: Object;
@@ -477,14 +478,22 @@ export function diffProperties(
   let styleName;
   let styleUpdates = null;
   for (propKey in lastProps) {
+    // 循环lastProps，找出需要标记删除的propKey
     if (
       nextProps.hasOwnProperty(propKey) ||
       !lastProps.hasOwnProperty(propKey) ||
       lastProps[propKey] == null
     ) {
+      // 如果nextProps有，或lastProps没有，则跳过，不需要标记为删除
       continue;
     }
+    /**
+     * 到了这里，说明propKey满足了条件：
+     * !nextProps.hasOwnProperty(propKey) && lastProps[propKey] != null
+     * 即新的props没有，老的props有，则要删除
+     */
     if (propKey === STYLE) {
+      // 对应style
       const lastStyle = lastProps[propKey];
       for (styleName in lastStyle) {
         if (lastStyle.hasOwnProperty(styleName)) {
@@ -504,6 +513,7 @@ export function diffProperties(
     } else if (propKey === AUTOFOCUS) {
       // Noop. It doesn't work on updates anyway.
     } else if (registrationNameDependencies.hasOwnProperty(propKey)) {
+      // 监听函数
       // This is a special case. If any listener updates we need to ensure
       // that the "current" fiber pointer gets updated so we need a commit
       // to update this element.
@@ -517,6 +527,7 @@ export function diffProperties(
     }
   }
   for (propKey in nextProps) {
+    // 将新prop添加到updatePayload
     const nextProp = nextProps[propKey];
     const lastProp = lastProps != null ? lastProps[propKey] : undefined;
     if (
@@ -524,28 +535,47 @@ export function diffProperties(
       nextProp === lastProp ||
       (nextProp == null && lastProp == null)
     ) {
+      // 如果nextProps不存在propKey，或者前后的value相同，或者前后的value都为null
+      // 那么不需要添加进去，跳出本次循环继续处理下一个prop
       continue;
     }
+    /**
+     * 到了这里，则满足条件：
+     * nextProps.hasOwnProperty(propKey) // nextProps存在propKey 
+     * && nextProp !== lastProp // nextProp不等于lastProp
+     * && [nextProp, lastProp].every(prop => prop == null) 两者不都为null
+     */
     if (propKey === STYLE) {
+      // 对应style prop来说
       if (lastProp) {
+        // 如果存在旧的style prop
+        // 比如：
+        // lastProp：{ color": "red", fontSize: 18 }
+        // nextProp：{ color: "blue" }
         // Unset styles on `lastProp` but not on `nextProp`.
+        // 重置lastProp上的style
         for (styleName in lastProp) {
           if (
             lastProp.hasOwnProperty(styleName) &&
             (!nextProp || !nextProp.hasOwnProperty(styleName))
           ) {
+            // 如果lastProp存在styleName，但nextProp不存在styleName，则重置styleName为空字符串
             if (!styleUpdates) {
               styleUpdates = {};
             }
             styleUpdates[styleName] = '';
           }
         }
+        // 经过上面循环后，styleUpdates = {fontSize: ''}
         // Update styles that changed since `lastProp`.
+        // 更新lastProp上的style
+        // 经过下面循环后，styleUpdates = { color: 'blue', fontSize: ''}
         for (styleName in nextProp) {
           if (
             nextProp.hasOwnProperty(styleName) &&
             lastProp[styleName] !== nextProp[styleName]
           ) {
+            // 如果nextProp存在styleName且前后styleName对应的value不等，跟下为新的value
             if (!styleUpdates) {
               styleUpdates = {};
             }
@@ -553,6 +583,7 @@ export function diffProperties(
           }
         }
       } else {
+        // 不存在旧的style prop
         // Relies on `updateStylesByID` not mutating `styleUpdates`.
         if (!styleUpdates) {
           if (!updatePayload) {
@@ -593,6 +624,7 @@ export function diffProperties(
         }
       }
       if (!updatePayload && lastProp !== nextProp) {
+        // 事件重新绑定后，需要赋值updatePayload，使这个节点得以被更新
         // This is a special case. If any listener updates we need to ensure
         // that the "current" props pointer gets updated so we need a commit
         // to update this element.
@@ -603,6 +635,7 @@ export function diffProperties(
       nextProp !== null &&
       nextProp.$$typeof === REACT_OPAQUE_ID_TYPE
     ) {
+      // 服务端渲染相关
       // If we encounter useOpaqueReference's opaque object, this means we are hydrating.
       // In this case, call the opaque object's toString function which generates a new client
       // ID so client and server IDs match and throws to rerender.

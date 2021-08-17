@@ -17,7 +17,7 @@ class PropsDiff extends React.Component {
             className="test"
             onClick={this.onClickDiv}
             title={this.state.title}
-            style={{color: this.state.color, fontSize: this.state.fontSize}}
+            style={this.state.color !== 'red' && {color: this.state.color, fontSize: this.state.fontSize}}
             {...this.state.color === 'red' && {props: '自定义旧属性'}}
         >
             测试div的Props变化

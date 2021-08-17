@@ -230,6 +230,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   
   console.log('createWorkInProgress start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) debugger
+  
   if (workInProgress === null) {
     // We use a double buffering pooling technique because we know that we'll
     // only ever need at most two versions of a tree. We pool the "other" unused

@@ -230,6 +230,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     
     console.log('useFiber')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useFiber')) debugger
+    
     const clone = createWorkInProgress(fiber, pendingProps);
     clone.index = 0;
     clone.sibling = null;
@@ -289,6 +290,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ) {
     if (current === null || current.tag !== HostText) {
+      /**
+       * 1.current === null 说明是新建的
+       * 2.current.tag !== HostText 说明oldFiber不是Text节点
+       * 那么就是执行插入操作
+       */
       // Insert
       const created = createFiberFromText(textContent, returnFiber.mode, lanes);
       created.return = returnFiber;
@@ -310,6 +316,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     
     console.log('updateElement')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) debugger
+    
     if (current !== null) {
       if (
         current.elementType === element.type
@@ -404,8 +411,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    
     console.log('createChild start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createChild')) debugger
+    
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text

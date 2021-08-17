@@ -9,6 +9,7 @@ import SchedulerTask from './components/SchedulerTask'
 import Concurrent from './components/ConcurrentInput'
 import Diff from './components/Diff'
 import PropsDiff from './components/PropsDiff'
+import DiffProperties from './components/DiffProperties'
 import Hooks from "./components/Hooks";
 import EventDemo from "./components/EventDemo";
 import ContextDemo from "./components/Context";
@@ -26,7 +27,7 @@ function App() {
   // 事件系统
   // return <EventDemo/>
 
-  return <Hooks/>
+  return <PropsDiff/>
   // fiber树
   // return (
   //   <div className="App">
@@ -50,4 +51,4 @@ function App() {
 
 }
 
-export default Hooks;
+export default DiffProperties;
