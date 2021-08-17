@@ -87,25 +87,42 @@ function createRootErrorUpdate(
   };
   return update;
 }
-
+// 创建class组件的错误update，update有可能包含：
+// 1.getDerivedStateFromError的payload
+// 2.componentDidCatch的callback
 function createClassErrorUpdate(
   fiber: Fiber,
   errorInfo: CapturedValue<mixed>,
   lane: Lane,
 ): Update<mixed> {
   const update = createUpdate(NoTimestamp, lane);
+  // update的tag打上CaptureUpdate
   update.tag = CaptureUpdate;
+  // 拿静态属性getDerivedStateFromError
   const getDerivedStateFromError = fiber.type.getDerivedStateFromError;
   if (typeof getDerivedStateFromError === 'function') {
+    /**
+     * 如果是函数，则将其加入到update的payload中，比如
+     * static getDerivedStateFromError(error) {
+     * return { hasError: true };
+     * }
+     */
     const error = errorInfo.value;
     update.payload = () => {
       logCapturedError(fiber, errorInfo);
+      // 参照上面例子，这里用return后，payload的值即为{ hasError: true }
       return getDerivedStateFromError(error);
     };
   }
-
+  // 获取实例
   const inst = fiber.stateNode;
   if (inst !== null && typeof inst.componentDidCatch === 'function') {
+    /**
+     * 如果有componentDidCatch,如，将其放入update的callback中：
+     * componentDidCatch(error, errorInfo) {
+     *  logErrorToMyService(error, errorInfo);
+     * }
+     */
     update.callback = function callback() {
 
       if (typeof getDerivedStateFromError !== 'function') {
@@ -346,6 +363,11 @@ function throwException(
         const errorInfo = value;
         const ctor = workInProgress.type;
         const instance = workInProgress.stateNode;
+        /**
+         * 1.如果静态属性上有getDerivedStateFromError
+         * 2.或者实例组件上有componentDidCatch
+         * 则该fiber是错误边界，打上ShouldCapture的flag
+         */
         if (
           (workInProgress.flags & DidCapture) === NoFlags &&
           (typeof ctor.getDerivedStateFromError === 'function' ||
@@ -353,16 +375,19 @@ function throwException(
               typeof instance.componentDidCatch === 'function' &&
               !isAlreadyFailedLegacyErrorBoundary(instance)))
         ) {
+          // 打上ShouldCapture，之后可以在completeUnitOfWork中的unwindWork识别到是错误边界的fiber
           workInProgress.flags |= ShouldCapture;
           const lane = pickArbitraryLane(rootRenderLanes);
           workInProgress.lanes = mergeLanes(workInProgress.lanes, lane);
           // Schedule the error boundary to re-render using updated state
+          // 创建错误边界的update，重新render会使用这个update
           const update = createClassErrorUpdate(
             workInProgress,
             errorInfo,
             lane,
           );
           enqueueCapturedUpdate(workInProgress, update);
+          // 找到错误边界后直接return，不再找
           return;
         }
         break;

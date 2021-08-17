@@ -53,6 +53,7 @@ function unwindWork(workInProgress: Fiber, renderLanes: Lanes) {
       }
       const flags = workInProgress.flags;
       if (flags & ShouldCapture) {
+        // 如果有ShouldCapture的flag，则先去掉ShouldCapture，再加上DidCapture
         workInProgress.flags = (flags & ~ShouldCapture) | DidCapture;
         if (
           enableProfilerTimer &&
@@ -60,6 +61,7 @@ function unwindWork(workInProgress: Fiber, renderLanes: Lanes) {
         ) {
           transferActualDuration(workInProgress);
         }
+        // 该fiber就是错误边界所在位置
         return workInProgress;
       }
       return null;

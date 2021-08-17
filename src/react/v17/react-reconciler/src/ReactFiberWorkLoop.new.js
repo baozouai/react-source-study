@@ -1681,6 +1681,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         return;
       }
     } else {
+      // 进行错误处理
       // This fiber did not complete because something threw. Pop values off
       // the stack without entering the complete phase. If this is a boundary,
       // capture values if possible.
@@ -1716,6 +1717,18 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       }
 
       if (returnFiber !== null) {
+        /**
+         * 给父fiber打上Incomplete，之后父fiber也会走unwindWork
+         * 直到找到错误边界的父fiber，上面的next !== null，将workInProgress指向该错误边界，然后return掉
+         * 错误边界的父fiber重新走beginWork处理updateQueue，改错误边界为增加了一个update，update的payload有getDerivedStateFromError
+         * 故渲染出备用的ui
+         * render() {
+         *  if (this.state.hasError) {
+         *  return <h1>Something went wrong.</h1>;
+         *  }
+         *  return this.props.children;
+         * }
+         */
         // Mark the parent fiber as incomplete
         returnFiber.flags |= Incomplete;
         returnFiber.subtreeFlags = NoFlags;
