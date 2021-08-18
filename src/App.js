@@ -13,6 +13,7 @@ import DiffProperties from './components/DiffProperties'
 import Hooks from "./components/Hooks";
 import EventDemo from "./components/EventDemo";
 import ContextDemo from "./components/Context";
+import Delection from "./components/Delection";
 import './App.css';
 
 // propsDiff
@@ -51,4 +52,4 @@ function App() {
 
 }
 
-export default DiffProperties;
+export default Delection;

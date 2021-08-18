@@ -286,6 +286,7 @@ function commitHookEffectListUnmount(
         const destroy = effect.destroy;
         effect.destroy = undefined;
         if (destroy !== undefined) {
+          // 调用清理副作用函数destroy
           safelyCallDestroy(finishedWork, nearestMountedAncestor, destroy);
         }
       }
@@ -807,8 +808,10 @@ function commitUnmount(
     case Block: {
       const updateQueue: FunctionComponentUpdateQueue | null = (current.updateQueue: any);
       if (updateQueue !== null) {
+        // updateQueue不为空
         const lastEffect = updateQueue.lastEffect;
         if (lastEffect !== null) {
+          // 处理清除副作用
           const firstEffect = lastEffect.next;
 
           let effect = firstEffect;
@@ -816,6 +819,7 @@ function commitUnmount(
             const {destroy, tag} = effect;
             if (destroy !== undefined) {
               if ((tag & HookLayout) !== NoHookEffect) {
+                // 只处理useLayoutEffect的清除副作用
                 if (
                   enableProfilerTimer &&
                   enableProfilerCommitHooks && // enableProfilerCommitHooks = false
@@ -836,8 +840,10 @@ function commitUnmount(
       return;
     }
     case ClassComponent: {
+      // 对于class组件，则卸载ref
       safelyDetachRef(current, nearestMountedAncestor);
       const instance = current.stateNode;
+      // 然后调用componentWillUnmount
       if (typeof instance.componentWillUnmount === 'function') {
         safelyCallComponentWillUnmount(
           current,
@@ -912,6 +918,7 @@ function commitNestedUnmounts(
   // we do an inner loop while we're still inside the host node.
   let node: Fiber = root;
   while (true) {
+    // 先卸载自己，然后再卸载child和child的sibling，最后回溯到一开始传入的root，跳出函数
     commitUnmount(
       finishedRoot,
       node,
@@ -930,10 +937,14 @@ function commitNestedUnmounts(
       node = node.child;
       continue;
     }
+    // 到了这里说明到了叶子节点
     if (node === root) {
+      // 节点是root，说明处理完了
       return;
     }
+    // 如果节点sibling为空，则回溯到父节点，直到节点sibling不为空或者到了一开始传进来的root节点才跳出
     while (node.sibling === null) {
+      // sibling为null，且return为null、或者return为删除的目标节点，说明目标节点的所有子节点都卸载完，则return掉
       if (node.return === null || node.return === root) {
         return;
       }
@@ -1250,6 +1261,7 @@ function unmountHostComponents(
     if (!currentParentIsValid) {
       let parent = node.return;
       findParent: while (true) {
+        // 1.找到目标节点的DOM层面的父节点
         invariant(
           parent !== null,
           'Expected to find a host parent. This error is likely caused by ' +
@@ -1279,8 +1291,8 @@ function unmountHostComponents(
       }
       currentParentIsValid = true;
     }
-
     if (node.tag === HostComponent || node.tag === HostText) {
+      // 2.如果目标节点是dom节点，则遍历子树执行fiber节点的卸载
       commitNestedUnmounts(
         finishedRoot,
         node,
@@ -1289,7 +1301,9 @@ function unmountHostComponents(
       );
       // After all the children have unmounted, it is now safe to remove the
       // node from the tree.
+      // 目标节点所有children卸载后，才可以安全地将Node的DOM节点从父节点中移除
       if (currentParentIsContainer) {
+        // 如果目标节点的父节点为根节点
         removeChildFromContainer(
           ((currentParent: any): Container),
           (node.stateNode: Instance | TextInstance),
@@ -1360,6 +1374,7 @@ function unmountHostComponents(
         continue;
       }
     } else {
+      // 目标节点不是dom节点，先卸载自己
       commitUnmount(
         finishedRoot,
         node,
@@ -1373,10 +1388,14 @@ function unmountHostComponents(
         continue;
       }
     }
+    // node节点等于一开始传进来的current节点则跳出
     if (node === current) {
       return;
     }
+    // 如果节点sibling为空，则回溯到父节点，直到节点sibling不为空或者到了一开始传进来的current节点才跳出
     while (node.sibling === null) {
+      // sibling为null，且return为null、或者return为删除的目标节点current
+      // 说明目标节点的所有子节点都卸载完，则return掉
       if (node.return === null || node.return === current) {
         return;
       }
@@ -1401,6 +1420,7 @@ function commitDeletion(
   if (supportsMutation) {
     // Recursively delete all host nodes from the parent.
     // Detach refs and call componentWillUnmount() on the whole subtree.
+    // 递归删除parent下的所有dom节点，卸载ref和调用componentWillUnmount
     unmountHostComponents(
       finishedRoot,
       current,

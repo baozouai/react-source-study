@@ -2179,8 +2179,10 @@ function commitMutationEffects(
   root: FiberRoot,
   renderPriorityLevel: ReactPriorityLevel,
 ) {
+
   console.log('commitMutationEffects start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffects')) debugger
+
   let fiber = firstChild;
   while (fiber !== null) {
     const deletions = fiber.deletions;
@@ -2193,7 +2195,8 @@ function commitMutationEffects(
         renderPriorityLevel,
       );
     }
-
+    // 如果删除之后的fiber还有子节点，
+    // 递归调用commitMutationEffects来处理
     if (fiber.child !== null) {
       const mutationFlags = fiber.subtreeFlags & MutationMask;
       if (mutationFlags !== NoFlags) {
