@@ -1203,12 +1203,15 @@ function insertOrAppendPlacementNode(
   before: ?Instance,
   parent: Instance,
 ): void {
+
   console.log('insertOrAppendPlacementNode start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('insertOrAppendPlacementNode')) debugger
+
   const {tag} = node;
+  // 是否是dom节点
   const isHost = tag === HostComponent || tag === HostText;
   if (isHost || (enableFundamentalAPI && tag === FundamentalComponent)) {
-    // 如果是原生dom，直接插入
+    // 如果是原生dom，fiber的stateNode指向对应的dom，直接插入
     const stateNode = isHost ? node.stateNode : node.stateNode.instance;
     if (before) {
       // 有before，意味着stateNode要插入到before之前
@@ -1222,13 +1225,13 @@ function insertOrAppendPlacementNode(
     // down its children. Instead, we'll get insertions from each child in
     // the portal directly.
   } else {
-    // 不是原生dom节点
+    // 如果不是原生dom节点，找子节点
     const child = node.child;
     if (child !== null) {
       // 从child切入，找到第一个dom
       insertOrAppendPlacementNode(child, before, parent);
       let sibling = child.sibling;
-      // 兄弟节点也插入
+      // child的兄弟节点也插入
       while (sibling !== null) {
         insertOrAppendPlacementNode(sibling, before, parent);
         // 继续检查兄弟节点
