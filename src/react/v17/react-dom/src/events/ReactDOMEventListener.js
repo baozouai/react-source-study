@@ -83,6 +83,11 @@ export function createEventListenerWrapper(
   domEventName: DOMEventName,
   eventSystemFlags: EventSystemFlags,
 ): Function {
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapper')) && domEventName === 'click') {
+    console.log('createEventListenerWrapper start')
+    debugger
+  }
+
   return dispatchEvent.bind(
     null,
     domEventName,
@@ -96,26 +101,32 @@ export function createEventListenerWrapperWithPriority(
   domEventName: DOMEventName,
   eventSystemFlags: EventSystemFlags,
 ): Function {
-  console.log('createEventListenerWrapperWithPriority start')
-  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') debugger
+
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') {
+    console.log('createEventListenerWrapperWithPriority start')
+    debugger
+  }
+  // 根据dom事件名获取时间优先级
   const eventPriority = getEventPriorityForPluginSystem(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
-    // 0
+    // 0：离散事件，如click
     case DiscreteEvent:
       listenerWrapper = dispatchDiscreteEvent;
       break;
-    // 1
+    // 1: 用户阻塞事件
     case UserBlockingEvent:
       listenerWrapper = dispatchUserBlockingUpdate;
       break;
-    // 2
+    // 2：连续事件
     case ContinuousEvent:
     default:
       listenerWrapper = dispatchEvent;
       break;
   }
-  console.log('createEventListenerWrapperWithPriority end')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') {
+    console.log('createEventListenerWrapperWithPriority end')
+  }
   return listenerWrapper.bind(
     null,
     domEventName,
@@ -131,8 +142,11 @@ function dispatchDiscreteEvent(
   nativeEvent,
 ) {
   
-  console.log('ReactDomEventListener: dispatchDiscreteEvent')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchDiscreteEvent') && domEventName === 'click') debugger
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchDiscreteEvent') && domEventName === 'click') {
+    console.log('ReactDomEventListener: dispatchDiscreteEvent')
+    debugger
+  }
+
   // enableLegacyFBSupport === false
   if (
     !enableLegacyFBSupport ||
@@ -195,13 +209,17 @@ export function dispatchEvent(
   targetContainer: EventTarget,
   nativeEvent: AnyNativeEvent,
 ): void {
-  console.log('dispatchEvent start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEvent')) debugger
+
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEvent') && domEventName === 'click') {
+    console.log('dispatchEvent start')
+    debugger
+  }
+
   if (!_enabled) {
     return;
   }
   let allowReplay = true;
-  if (enableEagerRootListeners) {
+  if (enableEagerRootListeners) { // enableEagerRootListeners === true
     // TODO: replaying capture phase events is currently broken
     // because we used to do it during top-level native bubble handlers
     // but now we use different bubble and capture handlers.
@@ -280,7 +298,9 @@ export function dispatchEvent(
     null,
     targetContainer,
   );
-  console.log('dispatchEvent end')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEvent') && domEventName === 'click') {
+    console.log('dispatchEvent end')
+  }
 }
 
 // Attempt dispatching an event. Returns a SuspenseInstance or Container if it's blocked.
@@ -291,13 +311,14 @@ export function attemptToDispatchEvent(
   nativeEvent: AnyNativeEvent,
 ): null | Container | SuspenseInstance {
   // TODO: Warn if _enabled is false.
-
+  // 一般是nativeEvent.target
   const nativeEventTarget = getEventTarget(nativeEvent);
   let targetInst = getClosestInstanceFromNode(nativeEventTarget);
 
   if (targetInst !== null) {
     const nearestMounted = getNearestMountedFiber(targetInst);
     if (nearestMounted === null) {
+      // 树已经被卸载
       // This tree has been unmounted already. Dispatch without a target.
       targetInst = null;
     } else {

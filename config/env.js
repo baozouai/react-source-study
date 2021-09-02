@@ -105,7 +105,7 @@ function getClientEnvironment(publicUrl) {
     '__LOG_NAMES__': JSON.stringify([
       // 'createRoot',
       // 'ReactDOMRoot',
-      // 'createRootImpl',
+      'createRootImpl',
       // 'createContainer',
       // 'createFiberRoot',
       // 'createHostRootFiber',
@@ -136,7 +136,7 @@ function getClientEnvironment(publicUrl) {
       // 'setInitialDOMProperties',
       // 'setInitialProperties',
       // 'diffProperties',
-      // 'dispatchEvent',
+      'dispatchEvent',
       // 'mountIndeterminateComponent',
       'renderWithHooks',
       // 'useState',
@@ -176,8 +176,8 @@ function getClientEnvironment(publicUrl) {
       // 'updateFiberProps',
       // 'hadNoMutationsEffects',
       // 'bubbleProperties',
-      // 'dispatchDiscreteEvent',
-      // 'createEventListenerWrapperWithPriority',
+      'dispatchDiscreteEvent',
+      'createEventListenerWrapperWithPriority',
       // 'updateWorkInProgressHook'
     ]),
   };

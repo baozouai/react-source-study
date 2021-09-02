@@ -52,4 +52,4 @@ function App() {
 
 }
 
-export default Delection;
+export default EventDemo;

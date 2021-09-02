@@ -90,7 +90,7 @@ export function discreteUpdates(fn, a, b, c, d) {
 
 let lastFlushedEventTimeStamp = 0;
 export function flushDiscreteUpdatesIfNeeded(timeStamp: number) {
-  if (enableDiscreteEventFlushingChange) {
+  if (enableDiscreteEventFlushingChange) { // enableDiscreteEventFlushingChange === false
     // event.timeStamp isn't overly reliable due to inconsistencies in
     // how different browsers have historically provided the time stamp.
     // Some browsers provide high-resolution time stamps for all events,

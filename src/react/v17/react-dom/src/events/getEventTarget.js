@@ -26,6 +26,7 @@ function getEventTarget(nativeEvent) {
 
   // Safari may fire events on text nodes (Node.TEXT_NODE is 3).
   // @see http://www.quirksmode.org/js/events_properties.html
+  // 如果是text节点，则事件target为父节点
   return target.nodeType === TEXT_NODE ? target.parentNode : target;
 }
 

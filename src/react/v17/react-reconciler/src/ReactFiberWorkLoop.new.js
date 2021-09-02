@@ -2339,7 +2339,7 @@ export function flushPassiveEffects(): boolean {
         ? NormalSchedulerPriority
         : pendingPassiveEffectsRenderPriority;
     pendingPassiveEffectsRenderPriority = NoSchedulerPriority;
-    if (decoupleUpdatePriorityFromScheduler) {
+    if (decoupleUpdatePriorityFromScheduler) {// decoupleUpdatePriorityFromScheduler === false
       const previousLanePriority = getCurrentUpdateLanePriority();
       try {
         setCurrentUpdateLanePriority(

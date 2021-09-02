@@ -1,58 +1,40 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './index.css'
-class EventDemo extends React.Component{
-  state = {
-    count: 0,
-  }
+function EventDemo () {
+  const [count, setCount] = useState(0)
 
-  componentDidMount() {
-    this.setState({count: this.state.count + 1});
-    console.log(this.state.count);
-    this.setState({count: this.state.count + 1});
-    console.log(this.state.count);
-    setTimeout(() => {
-      this.setState({count: this.state.count + 1});
-      console.log(this.state.count);
-      this.setState({count: this.state.count + 1});
-      console.log(this.state.count);
-    }, 0);
-  }
+  const onDemoClick = e => {
 
-  onDemoClick = e => {
-
-    this.setState({
-      count: this.state.count + 1
-    })
+    setCount(state => state + 1)
   }
-  onParentClick = () => {
+  const onParentClick = (e) => {
     console.log('父级元素的点击事件被触发了');
   }
-  onParentClickCapture = () => {
+  const onParentClickCapture = (e) => {
     console.log('父级元素捕获到点击事件');
   }
-  onSubCounterClick = () => {
+  const onSubCounterClick = (e) => {
     console.log('子元素点击事件');
   }
-  render() {
-    const { count } = this.state
 
-    return <div
+
+    return (<div
         className={'counter-parent'}
-        onClick={this.onParentClick}
-        onClickCapture={this.onParentClickCapture}
+        onClick={onParentClick}
+        onClickCapture={onParentClickCapture}
     >
       counter-parent
       <div
-          onClick={this.onDemoClick}
+          onClick={onDemoClick}
           className={'counter'}
       >
         counter：{count}
-        <div className={'sub-counter'} onClick={this.onSubCounterClick}>
+        <div className={'sub-counter'} onClick={onSubCounterClick}>
           子组件
         </div>
       </div>
-    </div>
+    </div>)
   }
-}
+
 
 export default EventDemo

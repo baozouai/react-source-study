@@ -58,12 +58,17 @@ function extractEvents(
   eventSystemFlags: EventSystemFlags,
   targetContainer: EventTarget,
 ): void {
-  console.log('extractEvents start')
-  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('extractEvents')) && domEventName === 'click') debugger
+  
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('extractEvents')) && domEventName === 'click') {
+    console.log('extractEvents start')
+    debugger
+  }
+  // 获取domEventName对应的ReactEventName，如click => onClick
   const reactName = topLevelEventsToReactNames.get(domEventName);
   if (reactName === undefined) {
     return;
   }
+  // SyntheticEvent = createSyntheticEvent(EventInterface)
   let SyntheticEventCtor = SyntheticEvent;
   let reactEventType: string = domEventName;
   switch (domEventName) {
@@ -108,6 +113,7 @@ function extractEvents(
     case 'mouseout':
     case 'mouseover':
     case 'contextmenu':
+      // const SyntheticMouseEvent = createSyntheticEvent(MouseEventInterface)
       SyntheticEventCtor = SyntheticMouseEvent;
       break;
     case 'drag':
@@ -159,7 +165,7 @@ function extractEvents(
       // Unknown event. This is used by createEventHandle.
       break;
   }
-
+  // IS_CAPTURE_PHASE = 1 << 2 = 0b0100
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
   if (
     enableCreateEventHandleAPI && // enableCreateEventHandleAPI === false

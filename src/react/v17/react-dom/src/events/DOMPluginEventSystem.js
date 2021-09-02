@@ -225,6 +225,7 @@ function executeDispatch(
   currentTarget: EventTarget,
 ): void {
   const type = event.type || 'unknown-event';
+  // 将currentTarget，运行真正的事件函数后，如onClick后，再将event.currentTarget置为null
   event.currentTarget = currentTarget;
   invokeGuardedCallbackAndCatchFirstError(type, listener, undefined, event);
   event.currentTarget = null;
@@ -241,8 +242,12 @@ function processDispatchQueueItemsInOrder(
 
   let previousInstance;
   if (inCapturePhase) {
+    // 事件捕获倒序循环
     for (let i = dispatchListeners.length - 1; i >= 0; i--) {
       const {instance, currentTarget, listener} = dispatchListeners[i];
+      // onClick = e => e.stopPropagation()后
+      // event的isPropagationStopped = functionThatReturnsTrue = () => true
+      // 那么就不会在调用后面的listener了，下面的冒泡同理
       if (instance !== previousInstance && event.isPropagationStopped()) {
         return;
       }
@@ -250,6 +255,7 @@ function processDispatchQueueItemsInOrder(
       previousInstance = instance;
     }
   } else {
+    // 事件冒泡正序循环
     for (let i = 0; i < dispatchListeners.length; i++) {
       const {instance, currentTarget, listener} = dispatchListeners[i];
       if (instance !== previousInstance && event.isPropagationStopped()) {
@@ -266,8 +272,12 @@ export function processDispatchQueue(
   dispatchQueue: DispatchQueue,
   eventSystemFlags: EventSystemFlags,
 ): void {
-  console.log('processDispatchQueue start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processDispatchQueue')) debugger
+
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processDispatchQueue')) {
+    console.log('processDispatchQueue start')
+    debugger
+  }
+
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
   for (let i = 0; i < dispatchQueue.length; i++) {
     // 从dispatchQueue中取出事件对象和事件监听数组
@@ -276,7 +286,7 @@ export function processDispatchQueue(
     processDispatchQueueItemsInOrder(event, listeners, inCapturePhase);
     //  event system doesn't use pooling.
   }
-  console.log('processDispatchQueue end')
+  // console.log('processDispatchQueue end')
   // This would be a good time to rethrow if any of the event handlers threw.
   rethrowCaughtError();
 }
@@ -288,9 +298,9 @@ function dispatchEventsForPlugins(
   targetInst: null | Fiber,
   targetContainer: EventTarget,
 ): void {
-  if (domEventName === 'click') {
-    debugger
-  }
+
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventsForPlugins') && domEventName === 'click') debugger
+  // 一般是nativeEvent.target
   const nativeEventTarget = getEventTarget(nativeEvent);
   const dispatchQueue: DispatchQueue = [];
   // 事件对象的合成，收集事件到执行路径上
@@ -352,6 +362,7 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
     }
     rootContainerElement[listeningMarker] = true;
     allNativeEvents.forEach(domEventName => {
+      if (domEventName === 'click') debugger
       if (!nonDelegatedEvents.has(domEventName)) {
         listenToNativeEvent(
           domEventName,
@@ -378,8 +389,10 @@ export function listenToNativeEvent(
   targetElement: Element | null,
   eventSystemFlags?: EventSystemFlags = 0,
 ): void {
-  console.log('listenToNativeEvent start')
-  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNativeEvent')) && domEventName === 'click') debugger
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNativeEvent')) && domEventName === 'click') {
+    console.log('listenToNativeEvent start')
+    debugger
+  }
   let target = rootContainerElement;
   // selectionchange needs to be attached to the document
   // otherwise it won't capture incoming events that are only
@@ -416,7 +429,8 @@ export function listenToNativeEvent(
   }
   // 给dom设置一个属性值（new Set()),如果已有则返回原先的
   const listenerSet = getEventListenerSet(target);
-  // 根据domEventName和释放是捕获，生成最终的eventName，如cancel__capture或cancel__bubble
+  // 根据domEventName和是否是捕获（isCapturePhaseListener）
+  // 生成最终的eventName，如cancel__capture或cancel__bubble
   const listenerSetKey = getListenerSetKey(
     domEventName,
     isCapturePhaseListener,
@@ -435,7 +449,10 @@ export function listenToNativeEvent(
     );
     listenerSet.add(listenerSetKey);
   }
-  console.log('listenToNativeEvent end')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNativeEvent')) && domEventName === 'click') {
+    console.log('listenToNativeEvent end')
+    debugger
+  }
 }
 
 export function listenToReactEvent(
@@ -499,8 +516,11 @@ function addTrappedEventListener(
   isCapturePhaseListener: boolean,
   isDeferredListenerForLegacyFBSupport?: boolean,
 ) {
-  console.log('addTrappedEventListener start')
-  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('addTrappedEventListener')) && domEventName === 'click') debugger
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('addTrappedEventListener')) && domEventName === 'click') {
+    console.log('addTrappedEventListener start')
+    debugger
+  }
+  // 根据事件优先级创建事件监听器wrapper(bind)
   let listener = createEventListenerWrapperWithPriority(
     targetContainer,
     domEventName,
@@ -587,7 +607,10 @@ function addTrappedEventListener(
       );
     }
   }
-  console.log('addTrappedEventListener end')
+  if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('addTrappedEventListener')) && domEventName === 'click') {
+    console.log('addTrappedEventListener end')
+    debugger
+  }
 }
 
 function deferClickToDocumentForLegacyFBSupport(
@@ -625,12 +648,16 @@ export function dispatchEventForPluginEventSystem(
   targetInst: null | Fiber,
   targetContainer: EventTarget,
 ): void {
-  console.log('dispatchEventForPluginEventSystem start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventForPluginEventSystem')) debugger
+
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventForPluginEventSystem') && domEventName === 'click') {
+    console.log('dispatchEventForPluginEventSystem start')
+    debugger
+  }
+
   let ancestorInst = targetInst;
   if (
-    (eventSystemFlags & IS_EVENT_HANDLE_NON_MANAGED_NODE) === 0 &&
-    (eventSystemFlags & IS_NON_DELEGATED) === 0
+    (eventSystemFlags & IS_EVENT_HANDLE_NON_MANAGED_NODE) === 0 && // IS_EVENT_HANDLE_NON_MANAGED_NODE = 1
+    (eventSystemFlags & IS_NON_DELEGATED) === 0 // IS_NON_DELEGATED = 2
   ) {
     const targetContainerNode = ((targetContainer: any): Node);
 
@@ -638,7 +665,7 @@ export function dispatchEventForPluginEventSystem(
     // defer the event to the null with a one
     // time event listener so we can defer the event.
     if (
-      enableLegacyFBSupport &&
+      enableLegacyFBSupport && // enableLegacyFBSupport = false
       // If our event flags match the required flags for entering
       // FB legacy mode and we are prcocessing the "click" event,
       // then we can defer the event to the "document", to allow
@@ -728,7 +755,9 @@ export function dispatchEventForPluginEventSystem(
       targetContainer,
     ),
   );
-  console.log('dispatchEventForPluginEventSystem end')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventForPluginEventSystem') && domEventName === 'click') {
+    console.log('dispatchEventForPluginEventSystem end')
+  }
 }
 
 function createDispatchListener(
@@ -751,8 +780,10 @@ export function accumulateSinglePhaseListeners(
   accumulateTargetOnly: boolean,
 ): Array<DispatchListener> {
 
-  console.log('accumulateSinglePhaseListeners start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('accumulateSinglePhaseListeners')) debugger
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('accumulateSinglePhaseListeners') && reactName === 'onClick') {
+    console.log('accumulateSinglePhaseListeners start')
+    debugger
+  }
 
   // 根据事件名来识别是冒泡阶段的事件还是捕获阶段的事件
   const captureName = reactName !== null ? reactName + 'Capture' : null;
@@ -839,7 +870,9 @@ export function accumulateSinglePhaseListeners(
     }
     instance = instance.return;
   }
-  console.log('accumulateSinglePhaseListeners end')
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('accumulateSinglePhaseListeners') && reactName === 'onClick') {
+    console.log('accumulateSinglePhaseListeners start')
+  }
   return listeners;
 }
 
