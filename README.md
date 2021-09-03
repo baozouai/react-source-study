@@ -6,8 +6,8 @@
 ```shell
 yarn install
 ```
-## 🔨 自定义配置env文件下的__LOG_NAMES__，需要debugger的函数名都可以在里面加上，__LOG_NAMES__为空则都会进入debugger模式
-
+## 🔨 配置env文件
+自定义配置env文件下的__LOG_NAMES__，需要debugger的函数名都可以在里面加上，__LOG_NAMES__为空则都会进入debugger模式
 如配置了`__LOG_NAMES__`中包含`createRootImpl`
 ```js
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createRootImpl')) debugger
