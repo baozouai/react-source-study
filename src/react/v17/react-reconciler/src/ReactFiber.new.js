@@ -98,26 +98,39 @@ function FiberNode(
   mode: TypeOfMode,
 ) {
   // Instance
+  /** Fiber对应组件的类型 Function/Class/HostComponent(如div)/HostText(html中的纯文本)等 */
   this.tag = tag;
   this.key = key;
+  /** 一般跟type相同 */
   this.elementType = null;
+  /** 
+   * 对于组件，指组件对应的名称，如App
+   * 对于html，则type等于tagName，如div、span、h1等
+   * */
   this.type = null;
+  /** 对于root，存储FiberRoot，对应dom Fiber，用来存储该Fiber对应的dom节点 */
   this.stateNode = null;
 
   // Fiber
+  /** 指向父级 */
   this.return = null;
+  /** 指向第一个child */
   this.child = null;
+  /** 指向第一个兄弟 */
   this.sibling = null;
   this.index = 0;
 
   this.ref = null;
-
+  /** 产生更新的props */
   this.pendingProps = pendingProps;
+  /** 更新后的props */
   this.memoizedProps = null;
+  /** 产生更新的更新队列，是一个环状链表 */
   this.updateQueue = null;
+  /** 组件内部的状态 */
   this.memoizedState = null;
   this.dependencies = null;
-
+  /** 模式，如ConcurrentRoot模式 */ 
   this.mode = mode;
   
   console.log('FiberNode')
@@ -381,8 +394,12 @@ export function createHostRootFiber(tag: RootTag): Fiber {
   
   console.log('createHostRootFiber start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) debugger
+
   let mode;
   if (tag === ConcurrentRoot) {
+    // StrictMode =     0b00001;
+    // BlockingMode =   0b00010;
+    // ConcurrentMode = 0b00100;
     mode = ConcurrentMode | BlockingMode | StrictMode;
   } else if (tag === BlockingRoot) {
     mode = BlockingMode | StrictMode;
