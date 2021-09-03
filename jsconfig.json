@@ -2,20 +2,20 @@
   "compilerOptions": {
       "target": "ES6",
       "jsx": "react",
-      "baseUrl": ".",
       "module": "commonjs",
+      "baseUrl": "./",
       "paths": {
-        "react": [".src/react/v17/react"],
+        "react/*": [".src/react/v17/react/*"],
 
-        "react-dom": ["./src/react/v17/react-dom"],
+        "react-dom/*": ["./src/react/v17/react-dom/*"],
     
         "legacy-events": ["./src/react/v17/legacy-events"],
     
-        "shared": ["./src/react/v17/shared"],
+        "shared/*": ["./src/react/v17/shared/*"],
     
-        "scheduler": ["./src/react/v17/scheduler"],
+        "scheduler/*": ["./src/react/v17/scheduler/*"],
     
-        "react-reconciler": ["./src/react/v17/react-reconciler"]
+        "react-reconciler/*": ["./src/react/v17/react-reconciler/*"]
       }
   },
   "exclude": ["node_modules", "dist"],

@@ -56,6 +56,7 @@ export type Fiber = {
   // minimize the number of objects created during the initial render.
 
   // Tag identifying the type of fiber.
+  /** Fiber对应组件的类型 Function/Class/HostComponent(如div)/HostText(html中的纯文本)等 */
   tag: WorkTag,
 
   // Unique identifier of this child.
@@ -63,12 +64,18 @@ export type Fiber = {
 
   // The value of element.type which is used to preserve the identity during
   // reconciliation of this child.
+  /** 一般跟type相同 */
   elementType: any,
 
   // The resolved function/class/ associated with this fiber.
+  /** 
+   * 对于组件，指组件对应的名称，如App
+   * 对于html，则type等于tagName，如div、span、h1等
+   * */
   type: any,
 
   // The local state associated with this fiber.
+  /** 对于root，存储FiberRoot，对应dom Fiber，用来存储该Fiber对应的dom节点 */
   stateNode: any,
 
   // Conceptual aliases
@@ -81,10 +88,13 @@ export type Fiber = {
   // This is effectively the parent, but there can be multiple parents (two)
   // so this is only the parent of the thing we're currently processing.
   // It is conceptually the same as the return address of a stack frame.
+  /** 指向父级 */
   return: Fiber | null,
 
   // Singly Linked List Tree Structure.
+  /** 指向第一个child */
   child: Fiber | null,
+  /** 指向第一个兄弟 */
   sibling: Fiber | null,
   index: number,
 
@@ -96,13 +106,17 @@ export type Fiber = {
     | RefObject,
 
   // Input is the data coming into process this fiber. Arguments. Props.
+  /** 产生更新的props */
   pendingProps: any, // This type will be more specific once we overload the tag.
+  /** 更新后的props */
   memoizedProps: any, // The props used to create the output.
 
   // A queue of state updates and callbacks.
+  /** 产生更新的更新队列，是一个环状链表 */
   updateQueue: mixed,
 
   // The state used to create the output
+  /** 组件内部的状态 */
   memoizedState: any,
 
   // Dependencies (contexts, events) for this fiber, if it has any
