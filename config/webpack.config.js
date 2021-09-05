@@ -148,14 +148,6 @@ module.exports = function(webpackEnv) {
 
     'react-reconciler': path.resolve(__dirname, `../src/react/${REACT_VERSION}/react-reconciler`),
   }
-  if (REACT_VERSION === 'Lanes') {
-    alias.react = path.resolve(__dirname, `../src/react/Lanes/react`)
-    alias['react-dom'] = path.resolve(__dirname, `../src/react/Lanes/react-dom`)
-    alias['legacy-events'] = path.resolve(__dirname, `../src/react/v16.13.1/legacy-events`)
-    alias['shared'] = path.resolve(__dirname, `../src/react/v16.13.1/shared`)
-    alias['scheduler'] = path.resolve(__dirname, `../src/react/v16.13.1/scheduler`)
-    alias['react-reconciler'] = path.resolve(__dirname, `../src/react/v16.13.1/react-reconciler`)
-  }
   if (REACT_VERSION === 'none') {
     alias = {}
   }
