@@ -356,7 +356,8 @@ module.exports = function(webpackEnv) {
               'babel-preset-react-app/webpack-overrides'
             ),
             plugins: [
-              [require.resolve('@babel/plugin-transform-flow-strip-types')]
+              [require.resolve('@babel/plugin-transform-flow-strip-types')],
+              ['@babel/plugin-transform-react-jsx',{runtime:'automatic'}]
               // 配置忽略flow类型检测
             ],
           },
