@@ -50,6 +50,7 @@ export function precacheFiberNode(
 
   console.log('ReactDomComponentTree: createElement')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
+  
   (node: any)[internalInstanceKey] = hostInst;
 }
 

@@ -92,7 +92,7 @@ import {NoLane, NoLanes, isSubsetOfLanes, mergeLanes} from './ReactFiberLane';
 import {Callback, ShouldCapture, DidCapture} from './ReactFiberFlags';
 
 
-import {markSkippedUpdateLanes} from './ReactFiberWorkLoop.new';
+import { markSkippedUpdateLanes } from './ReactFiberWorkLoop.new';
 import invariant from 'shared/invariant';
 
 
@@ -181,6 +181,7 @@ export function createUpdate(eventTime: number, lane: Lane): Update<*> {
   const update: Update<*> = {
     // 任务时间，通过performance.now()获取的毫秒数
     eventTime,
+    // 更新优先级
     lane,
     // 表示更新是哪种类型（UpdateState，ReplaceState，ForceUpdate，CaptureUpdate）
     tag: UpdateState,
@@ -190,7 +191,7 @@ export function createUpdate(eventTime: number, lane: Lane): Update<*> {
     payload: null,
     // setState的回调
     callback: null,
-    // setState的回调
+    // 指向下一个update
     next: null,
   };
   return update;
@@ -329,6 +330,7 @@ function getStateFromUpdate<State>(
     }
     // CaptureUpdate === 3
     case CaptureUpdate: {
+      // 如果已经判断到是CaptureUpdate的update，那就去掉该标志，加上DidCapture的标志
       workInProgress.flags =
         (workInProgress.flags & ~ShouldCapture) | DidCapture;
     }
@@ -562,7 +564,8 @@ export function processUpdateQueue<State>(
         /**
          * 这里要特别注意：
          * 上面已经把queue.shared.pending = null置空了，那为何现在queue.shared.pending又有？
-         * 原因是上面运行了getStateFromUpdate，里面会处理一些回调的更新，比如：
+         * 原因是上面运行了getStateFromUpdate，里面会处理一些回调的更新，
+         * 在typeof payload === 'functiion' && payload.call(instance, prevState, nextProps)中，比如：
          * this.setState((prevState, nextProps) => {
          * ...
          *  this.setState({...})

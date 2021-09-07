@@ -218,6 +218,7 @@ export function renderWithHooks<Props, SecondArg>(
   
   console.log('ReactFiberHooks.new: renderWithHooks')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) debugger
+  
   renderLanes = nextRenderLanes;
   currentlyRenderingFiber = workInProgress;
 
@@ -287,9 +288,10 @@ export function renderWithHooks<Props, SecondArg>(
 
   // This check uses currentHook so that it works the same in DEV and prod bundles.
   // hookTypesDev could catch more cases (e.g. context) but only in DEV bundles.
+  // 到了这里currentHook不是最后一个hook，则意味是运行少了，有可能一些hook上面有return语句满足条件
   const didRenderTooFewHooks =
     currentHook !== null && currentHook.next !== null;
-
+  // 上面的children = Component(props, secondArg);运行后，下面的就重置掉
   renderLanes = NoLanes;
   currentlyRenderingFiber = (null: any);
 

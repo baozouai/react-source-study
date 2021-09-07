@@ -245,6 +245,11 @@ if (
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('requestHostCallback')) debugger
     
     scheduledHostCallback = callback;
+    /**
+     * performWorkUntilDeadline里面将isMessageLoopRunning设为false有两处:
+     * 1.判断scheduledHostCallback为null
+     * 2.或者判断scheduledHostCallback不为null，执行scheduledHostCallback返回结果为null
+     */
     if (!isMessageLoopRunning) {
       isMessageLoopRunning = true;
       port.postMessage(null);

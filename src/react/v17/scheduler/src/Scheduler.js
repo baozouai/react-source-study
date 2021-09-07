@@ -9,7 +9,6 @@
 /* eslint-disable no-var */
 
 import {
-  enableSchedulerDebugging,
   enableProfiling,
 } from './SchedulerFeatureFlags';
 import {
@@ -183,10 +182,7 @@ function workLoop(hasTimeRemaining, initialTime) {
   // 获取taskQueue中最紧急的任务
   currentTask = peek(taskQueue);
   // 循环taskQueue，执行任务，相当于 while (currentTask !== null)
-  while (
-    currentTask !== null &&
-    !(enableSchedulerDebugging && isSchedulerPaused) // enableSchedulerDebugging === false
-  ) {
+  while (currentTask !== null) {
     if (
       currentTask.expirationTime > currentTime &&
       (!hasTimeRemaining || shouldYieldToHost())
@@ -267,11 +263,11 @@ function workLoop(hasTimeRemaining, initialTime) {
 
 function unstable_runWithPriority(priorityLevel, eventHandler) {
   switch (priorityLevel) {
-    case ImmediatePriority:
-    case UserBlockingPriority:
-    case NormalPriority:
-    case LowPriority:
-    case IdlePriority:
+    case ImmediatePriority: // 1
+    case UserBlockingPriority: // 2
+    case NormalPriority: // 3
+    case LowPriority: // 4
+    case IdlePriority: // 5
       break;
     default:
       priorityLevel = NormalPriority;
@@ -407,6 +403,7 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
       // All tasks are delayed, and this is the task with the earliest delay.
       if (isHostTimeoutScheduled) {
         // Cancel an existing timeout.
+        // clearTimeout
         cancelHostTimeout();
       } else {
         isHostTimeoutScheduled = true;
@@ -431,8 +428,13 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
     // 调度一个主线程回调，如果已经执行了一个任务，等到下一次交还执行权的时候再执行回调。
     // 立即调度
     if (!isHostCallbackScheduled && !isPerformingWork) {
+      // isPerformingWork在flushWork一开始设置为true，调用完后设置为false
       isHostCallbackScheduled = true;
-      // 开始执行任务，使用flushWork去执行taskQueue
+      /**
+       * requestHostCallback里面会将scheduledHostCallback设置为flushWork
+       * 这里会通过postMessage调度一个任务，port.onMessage在下一个事件循环开始执行回调performWorkUntilDeadline，
+       * 里面会执行flushWork，使用flushWork去执行taskQueue
+       */
       requestHostCallback(flushWork);
     }
   }

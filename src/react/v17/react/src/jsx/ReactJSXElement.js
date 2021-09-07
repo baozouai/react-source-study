@@ -78,7 +78,8 @@ const ReactElement = function(type, key, ref, self, source, owner, props) {
  * @param {string} key
  */
 export function jsx(type, config, maybeKey) {
-
+  debugger
+  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('jsx')) debugger
   let propName;
 
   // Reserved names are extracted
@@ -93,20 +94,28 @@ export function jsx(type, config, maybeKey) {
   // but as an intermediary step, we will use jsxDEV for everything except
   // <div {...props} key="Hi" />, because we aren't currently able to tell if
   // key is explicitly declared to be undefined or not.
+  // 以下面代码为🌰：
+  // const config = {key: 'app'}
+  // <App key="APP" {...config}/>
+  // 这里的maybeKey对应大写的"APP"，config.key则是'app'
   if (maybeKey !== undefined) {
     key = '' + maybeKey;
   }
-
+  // 如果同时存在maybeKey和config.key，后者会覆盖前者
   if (hasValidKey(config)) {
     key = '' + config.key;
   }
-
+  // 这里是判断ref
   if (hasValidRef(config)) {
     ref = config.ref;
   }
 
   // Remaining properties are added to a new props object
   for (propName in config) {
+    /**
+     * 1.如果是自身prop，不是继承的
+     * 2.不是保留的prop，有 key,ref,__self,__source,四个，那么设置props
+     */
     if (
       hasOwnProperty.call(config, propName) &&
       !RESERVED_PROPS.hasOwnProperty(propName)
@@ -115,6 +124,8 @@ export function jsx(type, config, maybeKey) {
     }
   }
 
+  // 如果组件设置了defaultProps，比如App.defaultProps = { xxx }，
+  // 且传给组件的prop为undefined，那么prop使用defaultProps上面的值
   // Resolve default props
   if (type && type.defaultProps) {
     const defaultProps = type.defaultProps;

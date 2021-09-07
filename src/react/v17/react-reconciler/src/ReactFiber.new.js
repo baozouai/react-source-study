@@ -436,9 +436,11 @@ export function createFiberFromTypeAndProps(
   let resolvedType = type;
   if (typeof type === 'function') {
     if (shouldConstruct(type)) {
+      // 是类组件
       fiberTag = ClassComponent;
     }
   } else if (typeof type === 'string') {
+    // 是原生dom
     fiberTag = HostComponent;
   } else {
     getTag: switch (type) {
@@ -534,11 +536,13 @@ export function createFiberFromElement(
   
   console.log('createFiberFromElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) debugger
+
   let owner = null;
 
   const type = element.type;
   const key = element.key;
   const pendingProps = element.props;
+  
   const fiber = createFiberFromTypeAndProps(
     type,
     key,

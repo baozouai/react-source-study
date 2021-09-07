@@ -247,13 +247,14 @@ export function createInstance(
   props: Props,
   rootContainerInstance: Container,
   hostContext: HostContext,
+  /** domElement对应的workInProgress Fiber */
   internalInstanceHandle: Object,
 ): Instance {
-  let parentNamespace: string;
   
   console.log('ReactChildHostConfig: createInstance')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createInstance')) debugger
-    parentNamespace = ((hostContext: any): HostContextProd);
+
+  const parentNamespace = (hostContext: HostContextProd);
 
   const domElement: Instance = createElement(
     type,
@@ -261,7 +262,9 @@ export function createInstance(
     rootContainerInstance,
     parentNamespace,
   );
+  // 将workInProgress Fiber挂载到domElement上面的__reactFiber$hash上
   precacheFiberNode(internalInstanceHandle, domElement);
+  // 将props（workInProgress.pendingProps)挂载到domElement上面的__reactProps$hash上
   updateFiberProps(domElement, props);
   return domElement;
 }
@@ -280,7 +283,9 @@ export function finalizeInitialChildren(
   rootContainerInstance: Container,
   hostContext: HostContext,
 ): boolean {
+  // 在这里给domElement加上属性
   setInitialProperties(domElement, type, props, rootContainerInstance);
+  // 'button':'input':'select':'textarea'等如果有设置了autoFocus，那么去autoFocus，否则是false
   return shouldAutoFocusHostComponent(type, props);
 }
 
@@ -587,8 +592,10 @@ export function unhideTextInstance(
 }
 
 export function clearContainer(container: Container): void {
+  
   console.log('clearContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('clearContainer')) debugger
+  
   if (container.nodeType === ELEMENT_NODE) { // ELEMENT_NODE === 1
     ((container: any): Element).textContent = '';
   } else if (container.nodeType === DOCUMENT_NODE) {

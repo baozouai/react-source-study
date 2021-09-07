@@ -362,7 +362,7 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
     }
     rootContainerElement[listeningMarker] = true;
     allNativeEvents.forEach(domEventName => {
-      if (domEventName === 'click') debugger
+      if (__LOG_NAMES__.includes('listenToAllSupportedEvents') && domEventName === 'click') debugger
       if (!nonDelegatedEvents.has(domEventName)) {
         listenToNativeEvent(
           domEventName,

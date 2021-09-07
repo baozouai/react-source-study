@@ -35,7 +35,6 @@ import {
 } from './ReactWorkTags';
 
 import invariant from 'shared/invariant';
-import {enableSchedulingProfiler} from 'shared/ReactFeatureFlags';
 import ReactSharedInternals from 'shared/ReactSharedInternals';
 import {getPublicInstance} from './ReactFiberHostConfig';
 import {
@@ -64,24 +63,17 @@ import {
   act,
 } from './ReactFiberWorkLoop.new';
 import {createUpdate, enqueueUpdate} from './ReactUpdateQueue.new';
-import {
-  isRendering as ReactCurrentFiberIsRendering,
-  current as ReactCurrentFiberCurrent,
-  resetCurrentFiber as resetCurrentDebugFiberInDEV,
-  setCurrentFiber as setCurrentDebugFiberInDEV,
-} from './ReactCurrentFiber';
-import {StrictMode} from './ReactTypeOfMode';
+
 import {
   SyncLane,
   InputDiscreteHydrationLane,
   SelectiveHydrationLane,
-  NoTimestamp,
   getHighestPriorityPendingLanes,
   higherPriorityLane,
   getCurrentUpdateLanePriority,
   setCurrentUpdateLanePriority,
 } from './ReactFiberLane';
-import {markRenderScheduled} from './SchedulingProfiler';
+
 
 export {registerMutableSourceForHydration} from './ReactMutableSource.new';
 export {createPortal} from './ReactPortal';
@@ -189,13 +181,10 @@ export function updateContainer(
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateContainer')) debugger
 
   const current = container.current;
+  // 获取事件开始时间，一般是performance.now()
   const eventTime = requestEventTime();
-
+  // 获取更新优先级
   const lane = requestUpdateLane(current);
-
-  if (enableSchedulingProfiler) {
-    markRenderScheduled(lane);
-  }
 
   const context = getContextForSubtree(parentComponent);
   if (container.context === null) {
@@ -204,13 +193,14 @@ export function updateContainer(
     container.pendingContext = context;
   }
 
-
+  // 创建更新任务
   const update = createUpdate(eventTime, lane);
   // Caution: React DevTools currently depends on this property
   // being called "element".
-  update.payload = {element};
-  // 对应ReactDom.createRoot(Concurrent模式)的render来说，callback为null
-  // 对应ReactDom.render来说，callback为ReactDom.render的第三个参数
+  // 对于container，其update的payload就是React.element
+  update.payload = { element };
+  // 对于ReactDom.createRoot(Concurrent模式)的render来说，callback为null
+  // 对于ReactDom.render来说，callback为ReactDom.render的第三个参数
   callback = callback === undefined ? null : callback;
   if (callback !== null) {
     update.callback = callback;
