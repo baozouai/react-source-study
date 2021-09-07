@@ -25,8 +25,6 @@ import type {OffscreenProps} from './ReactFiberOffscreenComponent';
 import invariant from 'shared/invariant';
 import {
   enableProfilerTimer,
-  enableFundamentalAPI,
-  enableScopeAPI,
   enableBlocksAPI,
 } from 'shared/ReactFeatureFlags';
 import {NoFlags, Placement, StaticMask} from './ReactFiberFlags';
@@ -465,9 +463,6 @@ export function createFiberFromTypeAndProps(
       case REACT_LEGACY_HIDDEN_TYPE:
         return createFiberFromLegacyHidden(pendingProps, mode, lanes, key);
       case REACT_SCOPE_TYPE:
-        if (enableScopeAPI) {
-          return createFiberFromScope(type, pendingProps, mode, lanes, key);
-        }
       // eslint-disable-next-line no-fallthrough
       default: {
         if (typeof type === 'object' && type !== null) {
@@ -493,15 +488,6 @@ export function createFiberFromTypeAndProps(
               fiberTag = Block;
               break getTag;
             case REACT_FUNDAMENTAL_TYPE:
-              if (enableFundamentalAPI) {
-                return createFiberFromFundamental(
-                  type,
-                  pendingProps,
-                  mode,
-                  lanes,
-                  key,
-                );
-              }
               break;
           }
         }

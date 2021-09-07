@@ -8,24 +8,9 @@
  */
 
 import type {Source} from 'shared/ReactElementType';
-import type {LazyComponent} from 'react/src/ReactLazy';
-
-import {enableComponentStackLocations} from 'shared/ReactFeatureFlags';
-
-import {
-  REACT_SUSPENSE_TYPE,
-  REACT_SUSPENSE_LIST_TYPE,
-  REACT_FORWARD_REF_TYPE,
-  REACT_MEMO_TYPE,
-  REACT_BLOCK_TYPE,
-  REACT_LAZY_TYPE,
-} from 'shared/ReactSymbols';
 
 
 
-import ReactSharedInternals from 'shared/ReactSharedInternals';
-
-const {ReactCurrentDispatcher} = ReactSharedInternals;
 
 let prefix;
 export function describeBuiltInComponentFrame(
@@ -33,27 +18,20 @@ export function describeBuiltInComponentFrame(
   source: void | null | Source,
   ownerFn: void | null | Function,
 ): string {
-  if (enableComponentStackLocations) {
-    if (prefix === undefined) {
-      // Extract the VM specific prefix used by each line.
-      try {
-        throw Error();
-      } catch (x) {
-        const match = x.stack.trim().match(/\n( *(at )?)/);
-        prefix = (match && match[1]) || '';
-      }
+  if (prefix === undefined) {
+    // Extract the VM specific prefix used by each line.
+    try {
+      throw Error();
+    } catch (x) {
+      const match = x.stack.trim().match(/\n( *(at )?)/);
+      prefix = (match && match[1]) || '';
     }
-    // We use the prefix to ensure our stacks line up with native stack frames.
-    return '\n' + prefix + name;
-  } else {
-    let ownerName = null;
-
-    return describeComponentFrame(name, source, ownerName);
   }
+  // We use the prefix to ensure our stacks line up with native stack frames.
+  return '\n' + prefix + name;
 }
 
 let reentry = false;
-let componentFrameCache;
 
 
 export function describeNativeComponentFrame(
@@ -192,11 +170,7 @@ export function describeClassComponentFrame(
   source: void | null | Source,
   ownerFn: void | null | Function,
 ): string {
-  if (enableComponentStackLocations) {
     return describeNativeComponentFrame(ctor, true);
-  } else {
-    return describeFunctionComponentFrame(ctor, source, ownerFn);
-  }
 }
 
 export function describeFunctionComponentFrame(
@@ -204,16 +178,6 @@ export function describeFunctionComponentFrame(
   source: void | null | Source,
   ownerFn: void | null | Function,
 ): string {
-  if (enableComponentStackLocations) {
     return describeNativeComponentFrame(fn, false);
-  } else {
-    if (!fn) {
-      return '';
-    }
-    const name = fn.displayName || fn.name || null;
-    let ownerName = null;
-
-    return describeComponentFrame(name, source, ownerName);
-  }
 }
 

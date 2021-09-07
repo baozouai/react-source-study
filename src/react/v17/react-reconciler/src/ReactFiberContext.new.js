@@ -11,7 +11,6 @@ import type {Fiber} from './ReactInternalTypes';
 import type {StackCursor} from './ReactFiberStack.new';
 
 import {isFiberMounted} from './ReactFiberTreeReflection';
-import {disableLegacyContext} from 'shared/ReactFeatureFlags';
 import {ClassComponent, HostRoot} from './ReactWorkTags';
 import getComponentName from 'shared/getComponentName';
 import invariant from 'shared/invariant';
@@ -41,18 +40,14 @@ function getUnmaskedContext(
   Component: Function,
   didPushOwnContextIfProvider: boolean,
 ): Object {
-  if (disableLegacyContext) {
-    return emptyContextObject;
-  } else {
-    if (didPushOwnContextIfProvider && isContextProvider(Component)) {
-      // If the fiber is a context provider itself, when we read its context
-      // we may have already pushed its own child context on the stack. A context
-      // provider should not "see" its own child context. Therefore we read the
-      // previous (parent) context instead for a context provider.
-      return previousContext;
-    }
-    return contextStackCursor.current;
+  if (didPushOwnContextIfProvider && isContextProvider(Component)) {
+    // If the fiber is a context provider itself, when we read its context
+    // we may have already pushed its own child context on the stack. A context
+    // provider should not "see" its own child context. Therefore we read the
+    // previous (parent) context instead for a context provider.
+    return previousContext;
   }
+  return contextStackCursor.current;
 }
 
 function cacheContext(
@@ -60,89 +55,71 @@ function cacheContext(
   unmaskedContext: Object,
   maskedContext: Object,
 ): void {
-  if (disableLegacyContext) {
-    return;
-  } else {
-    const instance = workInProgress.stateNode;
-    instance.__reactInternalMemoizedUnmaskedChildContext = unmaskedContext;
-    instance.__reactInternalMemoizedMaskedChildContext = maskedContext;
-  }
+  const instance = workInProgress.stateNode;
+  instance.__reactInternalMemoizedUnmaskedChildContext = unmaskedContext;
+  instance.__reactInternalMemoizedMaskedChildContext = maskedContext;
 }
 
 function getMaskedContext(
   workInProgress: Fiber,
   unmaskedContext: Object,
 ): Object {
-  if (disableLegacyContext) {
+  const type = workInProgress.type;
+  const contextTypes = type.contextTypes;
+  if (!contextTypes) {
     return emptyContextObject;
-  } else {
-    const type = workInProgress.type;
-    const contextTypes = type.contextTypes;
-    if (!contextTypes) {
-      return emptyContextObject;
-    }
-
-    // Avoid recreating masked context unless unmasked context has changed.
-    // Failing to do this will result in unnecessary calls to componentWillReceiveProps.
-    // This may trigger infinite loops if componentWillReceiveProps calls setState.
-    const instance = workInProgress.stateNode;
-    if (
-      instance &&
-      instance.__reactInternalMemoizedUnmaskedChildContext === unmaskedContext
-    ) {
-      return instance.__reactInternalMemoizedMaskedChildContext;
-    }
-
-    const context = {};
-    for (const key in contextTypes) {
-      context[key] = unmaskedContext[key];
-    }
-
-
-
-    // Cache unmasked context so we can avoid recreating masked context unless necessary.
-    // Context is created before the class component is instantiated so check for instance.
-    if (instance) {
-      cacheContext(workInProgress, unmaskedContext, context);
-    }
-
-    return context;
   }
+
+  // Avoid recreating masked context unless unmasked context has changed.
+  // Failing to do this will result in unnecessary calls to componentWillReceiveProps.
+  // This may trigger infinite loops if componentWillReceiveProps calls setState.
+  const instance = workInProgress.stateNode;
+  if (
+    instance &&
+    instance.__reactInternalMemoizedUnmaskedChildContext === unmaskedContext
+  ) {
+    return instance.__reactInternalMemoizedMaskedChildContext;
+  }
+
+  const context = {};
+  for (const key in contextTypes) {
+    context[key] = unmaskedContext[key];
+  }
+
+
+
+  // Cache unmasked context so we can avoid recreating masked context unless necessary.
+  // Context is created before the class component is instantiated so check for instance.
+  if (instance) {
+    cacheContext(workInProgress, unmaskedContext, context);
+  }
+
+  return context;
 }
 
 function hasContextChanged(): boolean {
-  if (disableLegacyContext) {
-    return false;
-  } else {
     return didPerformWorkStackCursor.current;
-  }
 }
 
 function isContextProvider(type: Function): boolean {
-  if (disableLegacyContext) {
-    return false;
-  } else {
+
     const childContextTypes = type.childContextTypes;
     return childContextTypes !== null && childContextTypes !== undefined;
-  }
+
 }
 
 function popContext(fiber: Fiber): void {
-  if (disableLegacyContext) {
-    return;
-  } else {
+
     pop(didPerformWorkStackCursor, fiber);
     pop(contextStackCursor, fiber);
-  }
+
 }
 
 function popTopLevelContextObject(fiber: Fiber): void {
-  if (disableLegacyContext) {
-    return;
-  } else {
+
     pop(didPerformWorkStackCursor, fiber);
     pop(contextStackCursor, fiber);
-  }
+
 }
 
 function pushTopLevelContextObject(
@@ -150,9 +127,7 @@ function pushTopLevelContextObject(
   context: Object,
   didChange: boolean,
 ): void {
-  if (disableLegacyContext) {
-    return;
-  } else {
+
     invariant(
       contextStackCursor.current === emptyContextObject,
       'Unexpected context found on stack. ' +
@@ -161,7 +136,7 @@ function pushTopLevelContextObject(
 
     push(contextStackCursor, context, fiber);
     push(didPerformWorkStackCursor, didChange, fiber);
-  }
+
 }
 
 function processChildContext(
@@ -169,9 +144,6 @@ function processChildContext(
   type: any,
   parentContext: Object,
 ): Object {
-  if (disableLegacyContext) {
-    return parentContext;
-  } else {
     const instance = fiber.stateNode;
     const childContextTypes = type.childContextTypes;
 
@@ -194,13 +166,10 @@ function processChildContext(
 
 
     return {...parentContext, ...childContext};
-  }
+
 }
 
 function pushContextProvider(workInProgress: Fiber): boolean {
-  if (disableLegacyContext) {
-    return false;
-  } else {
     const instance = workInProgress.stateNode;
     // We push the context as early as possible to ensure stack integrity.
     // If the instance does not exist yet, we will push null at first,
@@ -220,7 +189,6 @@ function pushContextProvider(workInProgress: Fiber): boolean {
     );
 
     return true;
-  }
 }
 
 function invalidateContextProvider(
@@ -228,9 +196,6 @@ function invalidateContextProvider(
   type: any,
   didChange: boolean,
 ): void {
-  if (disableLegacyContext) {
-    return;
-  } else {
     const instance = workInProgress.stateNode;
     invariant(
       instance,
@@ -260,13 +225,9 @@ function invalidateContextProvider(
       pop(didPerformWorkStackCursor, workInProgress);
       push(didPerformWorkStackCursor, didChange, workInProgress);
     }
-  }
 }
 
 function findCurrentUnmaskedContext(fiber: Fiber): Object {
-  if (disableLegacyContext) {
-    return emptyContextObject;
-  } else {
     // Currently this is only used with renderSubtreeIntoContainer; not sure if it
     // makes sense elsewhere
     invariant(
@@ -295,7 +256,6 @@ function findCurrentUnmaskedContext(fiber: Fiber): Object {
       'Found unexpected detached subtree parent. ' +
         'This error is likely caused by a bug in React. Please file an issue.',
     );
-  }
 }
 
 export {

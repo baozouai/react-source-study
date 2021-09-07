@@ -23,7 +23,6 @@ import {
   ContinuousEvent,
 } from 'shared/ReactTypes';
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
 
 export const topLevelEventsToReactNames: Map<
   DOMEventName,
@@ -88,13 +87,6 @@ const otherDiscreteEvents: Array<DOMEventName> = [
   'compositionupdate',
 ];
 
-if (enableCreateEventHandleAPI) {
-  // Special case: these two events don't have on* React handler
-  // and are only accessible via the createEventHandle API.
-  topLevelEventsToReactNames.set('beforeblur', null);
-  topLevelEventsToReactNames.set('afterblur', null);
-  otherDiscreteEvents.push('beforeblur', 'afterblur');
-}
 
 // prettier-ignore
 const userBlockingPairsForSimpleEventPlugin: Array<string | DOMEventName> = [

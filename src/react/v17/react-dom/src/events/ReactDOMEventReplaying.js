@@ -16,7 +16,6 @@ import type {LanePriority} from 'react-reconciler/src/ReactFiberLane';
 
 import {
   enableSelectiveHydration,
-  enableEagerRootListeners,
 } from 'shared/ReactFeatureFlags';
 import {
   unstable_runWithPriority as runWithPriority,
@@ -176,32 +175,7 @@ export function isReplayableDiscreteEvent(eventType: DOMEventName): boolean {
   return discreteReplayableEvents.indexOf(eventType) > -1;
 }
 
-function trapReplayableEventForContainer(
-  domEventName: DOMEventName,
-  container: Container,
-) {
-  // When the flag is on, we do this in a unified codepath elsewhere.
-  if (!enableEagerRootListeners) {
-    listenToNativeEvent(domEventName, false, ((container: any): Element), null);
-  }
-}
 
-export function eagerlyTrapReplayableEvents(
-  container: Container,
-  document: Document,
-) {
-  // When the flag is on, we do this in a unified codepath elsewhere.
-  if (!enableEagerRootListeners) {
-    // Discrete
-    discreteReplayableEvents.forEach(domEventName => {
-      trapReplayableEventForContainer(domEventName, container);
-    });
-    // Continuous
-    continuousReplayableEvents.forEach(domEventName => {
-      trapReplayableEventForContainer(domEventName, container);
-    });
-  }
-}
 
 function createQueuedReplayableEvent(
   blockedOn: null | Container | SuspenseInstance,

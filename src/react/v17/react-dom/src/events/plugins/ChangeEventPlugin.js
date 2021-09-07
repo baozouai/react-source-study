@@ -23,7 +23,6 @@ import {updateValueIfChanged} from '../../client/inputValueTracking';
 import {setDefaultValue} from '../../client/ReactDOMInput';
 import {enqueueStateRestore} from '../ReactDOMControlledComponent';
 
-import {disableInputAttributeSyncing} from 'shared/ReactFeatureFlags';
 import {batchedUpdates} from '../ReactDOMUpdateBatching';
 import {
   processDispatchQueue,
@@ -253,10 +252,10 @@ function handleControlledInputBlur(node: HTMLInputElement) {
     return;
   }
 
-  if (!disableInputAttributeSyncing) {
-    // If controlled, assign the value attribute to the current value on blur
-    setDefaultValue((node: any), 'number', (node: any).value);
-  }
+
+  // If controlled, assign the value attribute to the current value on blur
+  setDefaultValue((node: any), 'number', (node: any).value);
+
 }
 
 /**

@@ -9,17 +9,12 @@
 
 import type {Fiber} from './ReactInternalTypes';
 import type {Lanes, Lane} from './ReactFiberLane';
-import type {
-  ReactFundamentalComponentInstance,
-  ReactScopeInstance,
-} from 'shared/ReactTypes';
 import type {FiberRoot} from './ReactInternalTypes';
 import type {
   Instance,
   Type,
   Props,
   Container,
-  ChildSet,
 } from './ReactFiberHostConfig';
 import type {
   SuspenseState,
@@ -87,20 +82,7 @@ import {
   appendInitialChild,
   finalizeInitialChildren,
   prepareUpdate,
-  supportsMutation,
-  supportsPersistence,
-  cloneInstance,
-  cloneHiddenInstance,
-  cloneHiddenTextInstance,
-  createContainerChildSet,
-  appendChildToContainerChildSet,
-  finalizeContainerChildren,
-  getFundamentalComponentInstance,
-  mountFundamentalComponent,
-  cloneFundamentalInstance,
-  shouldUpdateFundamentalComponent,
   preparePortalMount,
-  prepareScopeUpdate,
 } from './ReactFiberHostConfig';
 import {
   getRootHostContainer,
@@ -135,10 +117,7 @@ import {
 } from './ReactFiberHydrationContext.new';
 import {
   enableSchedulerTracing,
-  enableSuspenseCallback,
   enableSuspenseServerRenderer,
-  enableFundamentalAPI,
-  enableScopeAPI,
   enableBlocksAPI,
   enableProfilerTimer,
 } from 'shared/ReactFeatureFlags';
@@ -151,7 +130,7 @@ import {
   getRenderTargetTime,
   subtreeRenderLanes,
 } from './ReactFiberWorkLoop.new';
-import {createFundamentalStateInstance} from './ReactFiberFundamental.new';
+
 import {
   OffscreenLane,
   SomeRetryLane,
@@ -160,7 +139,7 @@ import {
   mergeLanes,
 } from './ReactFiberLane';
 import {resetChildFibers} from './ReactChildFiber.new';
-import {createScopeInstance} from './ReactFiberScope.new';
+
 import {transferActualDuration} from './ReactProfilerTimer.new';
 
 function markUpdate(workInProgress: Fiber) {
@@ -1127,79 +1106,9 @@ function completeWork(
       return null;
     }
     case FundamentalComponent: {
-      if (enableFundamentalAPI) {
-        const fundamentalImpl = workInProgress.type.impl;
-        let fundamentalInstance: ReactFundamentalComponentInstance<
-          any,
-          any,
-        > | null = workInProgress.stateNode;
-
-        if (fundamentalInstance === null) {
-          const getInitialState = fundamentalImpl.getInitialState;
-          let fundamentalState;
-          if (getInitialState !== undefined) {
-            fundamentalState = getInitialState(newProps);
-          }
-          fundamentalInstance = workInProgress.stateNode = createFundamentalStateInstance(
-            workInProgress,
-            newProps,
-            fundamentalImpl,
-            fundamentalState || {},
-          );
-          const instance = ((getFundamentalComponentInstance(
-            fundamentalInstance,
-          ): any): Instance);
-          fundamentalInstance.instance = instance;
-          if (fundamentalImpl.reconcileChildren === false) {
-            bubbleProperties(workInProgress);
-            return null;
-          }
-          appendAllChildren(instance, workInProgress, false, false);
-          mountFundamentalComponent(fundamentalInstance);
-        } else {
-          // We fire update in commit phase
-          const prevProps = fundamentalInstance.props;
-          fundamentalInstance.prevProps = prevProps;
-          fundamentalInstance.props = newProps;
-          fundamentalInstance.currentFiber = workInProgress;
-          if (supportsPersistence) {
-            const instance = cloneFundamentalInstance(fundamentalInstance);
-            fundamentalInstance.instance = instance;
-            appendAllChildren(instance, workInProgress, false, false);
-          }
-          const shouldUpdate = shouldUpdateFundamentalComponent(
-            fundamentalInstance,
-          );
-          if (shouldUpdate) {
-            markUpdate(workInProgress);
-          }
-        }
-        bubbleProperties(workInProgress);
-        return null;
-      }
       break;
     }
     case ScopeComponent: {
-      if (enableScopeAPI) {
-        if (current === null) {
-          const scopeInstance: ReactScopeInstance = createScopeInstance();
-          workInProgress.stateNode = scopeInstance;
-          prepareScopeUpdate(scopeInstance, workInProgress);
-          if (workInProgress.ref !== null) {
-            markRef(workInProgress);
-            markUpdate(workInProgress);
-          }
-        } else {
-          if (workInProgress.ref !== null) {
-            markUpdate(workInProgress);
-          }
-          if (current.ref !== workInProgress.ref) {
-            markRef(workInProgress);
-          }
-        }
-        bubbleProperties(workInProgress);
-        return null;
-      }
       break;
     }
     case Block:

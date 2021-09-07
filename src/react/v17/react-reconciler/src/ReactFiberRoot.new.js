@@ -20,11 +20,9 @@ import {
 } from './ReactFiberLane';
 import {
   enableSchedulerTracing,
-  enableSuspenseCallback,
 } from 'shared/ReactFeatureFlags';
 import {unstable_getThreadID} from '../../scheduler/tracing';
 import {initializeUpdateQueue} from './ReactUpdateQueue.new';
-import {LegacyRoot, BlockingRoot, ConcurrentRoot} from './ReactRootTags';
 
 function FiberRootNode(containerInfo, tag, hydrate) {
   // type RootTag = 0 | 1 | 2;
@@ -72,9 +70,6 @@ function FiberRootNode(containerInfo, tag, hydrate) {
     this.memoizedInteractions = new Set();
     this.pendingInteractionMap = new Map();
   }
-  if (enableSuspenseCallback) { // enableSuspenseCallback === false
-    this.hydrationCallbacks = null;
-  }
 
 }
 
@@ -92,9 +87,6 @@ export function createFiberRoot(
   // 创建fiberRootNode
   const root: FiberRoot = (new FiberRootNode(containerInfo, tag, hydrate): any);
 
-  if (enableSuspenseCallback) { // enableSuspenseCallback === false
-    root.hydrationCallbacks = hydrationCallbacks;
-  }
 
   // Cyclic construction. This cheats the type system right now because
   // stateNode is any.

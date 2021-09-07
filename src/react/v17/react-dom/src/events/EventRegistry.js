@@ -9,14 +9,9 @@
 
 import type {DOMEventName} from './DOMEventNames';
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
 
 export const allNativeEvents: Set<DOMEventName> = new Set();
 
-if (enableCreateEventHandleAPI) { // enableCreateEventHandleAPI = false
-  allNativeEvents.add('beforeblur');
-  allNativeEvents.add('afterblur');
-}
 
 /**
  * Mapping from registration name to event name

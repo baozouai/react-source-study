@@ -36,7 +36,6 @@ import {
 } from './ReactWorkTags';
 import invariant from 'shared/invariant';
 import {
-  warnAboutStringRefs,
   enableBlocksAPI,
   enableLazyElements,
 } from 'shared/ReactFeatureFlags';

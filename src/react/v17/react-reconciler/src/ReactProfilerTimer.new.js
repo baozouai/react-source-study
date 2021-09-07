@@ -11,7 +11,6 @@ import type {Fiber} from './ReactInternalTypes';
 
 import {
   enableProfilerTimer,
-  enableProfilerCommitHooks,
 } from 'shared/ReactFeatureFlags';
 import {Profiler} from './ReactWorkTags';
 
@@ -84,7 +83,7 @@ function stopProfilerTimerIfRunningAndRecordDelta(
 }
 
 function recordLayoutEffectDuration(fiber: Fiber): void {
-  if (!enableProfilerTimer || !enableProfilerCommitHooks) {
+  if (!enableProfilerTimer) {
     return;
   }
 
@@ -107,7 +106,7 @@ function recordLayoutEffectDuration(fiber: Fiber): void {
 }
 
 function recordPassiveEffectDuration(fiber: Fiber): void {
-  if (!enableProfilerTimer || !enableProfilerCommitHooks) {
+  if (!enableProfilerTimer) {
     return;
   }
 
@@ -135,14 +134,14 @@ function recordPassiveEffectDuration(fiber: Fiber): void {
 }
 
 function startLayoutEffectTimer(): void {
-  if (!enableProfilerTimer || !enableProfilerCommitHooks) {
+  if (!enableProfilerTimer) {
     return;
   }
   layoutEffectStartTime = now();
 }
 
 function startPassiveEffectTimer(): void {
-  if (!enableProfilerTimer || !enableProfilerCommitHooks) {
+  if (!enableProfilerTimer) {
     return;
   }
   passiveEffectStartTime = now();

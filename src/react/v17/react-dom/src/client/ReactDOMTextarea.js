@@ -9,14 +9,9 @@
 
 import invariant from 'shared/invariant';
 
-import {checkControlledValueProps} from '../shared/ReactControlledValuePropTypes';
-import {getCurrentFiberOwnerNameInDevOrNull} from 'react-reconciler/src/ReactCurrentFiber';
 import {getToStringValue, toString} from './ToStringValue';
 import type {ToStringValue} from './ToStringValue';
 
-import {disableTextareaChildren} from 'shared/ReactFeatureFlags';
-
-let didWarnValDefaultVal = false;
 
 type TextAreaWithWrapperState = HTMLTextAreaElement & {
   _wrapperState: {initialValue: ToStringValue},
@@ -72,21 +67,19 @@ export function initWrapperState(element: Element, props: Object) {
     let {children, defaultValue} = props;
     if (children != null) {
 
-      if (!disableTextareaChildren) {
+      invariant(
+        defaultValue == null,
+        'If you supply `defaultValue` on a <textarea>, do not pass children.',
+      );
+      if (Array.isArray(children)) {
         invariant(
-          defaultValue == null,
-          'If you supply `defaultValue` on a <textarea>, do not pass children.',
+          children.length <= 1,
+          '<textarea> can only have at most one child.',
         );
-        if (Array.isArray(children)) {
-          invariant(
-            children.length <= 1,
-            '<textarea> can only have at most one child.',
-          );
-          children = children[0];
-        }
-
-        defaultValue = children;
+        children = children[0];
       }
+
+      defaultValue = children;
     }
     if (defaultValue == null) {
       defaultValue = '';

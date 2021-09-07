@@ -36,15 +36,9 @@ import {
   diffHydratedProperties,
   diffHydratedText,
   trapClickOnNonInteractiveElement,
-  warnForUnmatchedText,
-  warnForDeletedHydratableElement,
-  warnForDeletedHydratableText,
-  warnForInsertedHydratedElement,
-  warnForInsertedHydratedText,
 } from './ReactDOMComponent';
 import {getSelectionInformation, restoreSelection} from './ReactInputSelection';
 import setTextContent from './setTextContent';
-import {validateDOMNesting, updatedAncestorInfo} from './validateDOMNesting';
 import {
   isEnabled as ReactBrowserEventEmitterIsEnabled,
   setEnabled as ReactBrowserEventEmitterSetEnabled,
@@ -64,14 +58,9 @@ import {retryIfBlockedOn} from '../events/ReactDOMEventReplaying';
 
 import {
   enableSuspenseServerRenderer,
-  enableFundamentalAPI,
-  enableCreateEventHandleAPI,
-  enableScopeAPI,
-  enableEagerRootListeners,
 } from 'shared/ReactFeatureFlags';
 import {HostComponent, HostText} from 'react-reconciler/src/ReactWorkTags';
 import {
-  listenToReactEvent,
   listenToAllSupportedEvents,
 } from '../events/DOMPluginEventSystem';
 
@@ -209,30 +198,14 @@ export function prepareForCommit(containerInfo: Container): Object | null {
   eventsEnabled = ReactBrowserEventEmitterIsEnabled();
   selectionInformation = getSelectionInformation();
   let activeInstance = null;
-  if (enableCreateEventHandleAPI) { // enableCreateEventHandleAPI === false
-    const focusedElem = selectionInformation.focusedElem;
-    if (focusedElem !== null) {
-      activeInstance = getClosestInstanceFromNode(focusedElem);
-    }
-  }
   ReactBrowserEventEmitterSetEnabled(false);
   return activeInstance;
 }
 
 export function beforeActiveInstanceBlur(): void {
-  if (enableCreateEventHandleAPI) {
-    ReactBrowserEventEmitterSetEnabled(true);
-    dispatchBeforeDetachedBlur((selectionInformation: any).focusedElem);
-    ReactBrowserEventEmitterSetEnabled(false);
-  }
 }
 
 export function afterActiveInstanceBlur(): void {
-  if (enableCreateEventHandleAPI) {
-    ReactBrowserEventEmitterSetEnabled(true);
-    dispatchAfterDetachedBlur((selectionInformation: any).focusedElem);
-    ReactBrowserEventEmitterSetEnabled(false);
-  }
 }
 
 export function resetAfterCommit(containerInfo: Container): void {
@@ -464,26 +437,7 @@ function createEvent(type: DOMEventName, bubbles: boolean): Event {
   return event;
 }
 
-function dispatchBeforeDetachedBlur(target: HTMLElement): void {
-  if (enableCreateEventHandleAPI) {
-    const event = createEvent('beforeblur', true);
-    // Dispatch "beforeblur" directly on the target,
-    // so it gets picked up by the event system and
-    // can propagate through the React internal tree.
-    target.dispatchEvent(event);
-  }
-}
 
-function dispatchAfterDetachedBlur(target: HTMLElement): void {
-  if (enableCreateEventHandleAPI) {
-    const event = createEvent('afterblur', false);
-    // So we know what was detached, make the relatedTarget the
-    // detached target on the "afterblur" event.
-    (event: any).relatedTarget = target;
-    // Dispatch the event on the document.
-    document.dispatchEvent(event);
-  }
-}
 
 export function removeChild(
   parentInstance: Instance,
@@ -885,12 +839,6 @@ export function didNotFindHydratableInstance(
 export function getFundamentalComponentInstance(
   fundamentalInstance: ReactDOMFundamentalComponentInstance,
 ): Instance {
-  if (enableFundamentalAPI) {
-    const {currentFiber, impl, props, state} = fundamentalInstance;
-    const instance = impl.getInstance(null, props, state);
-    precacheFiberNode(currentFiber, instance);
-    return instance;
-  }
   // Because of the flag above, this gets around the Flow error;
   return (null: any);
 }
@@ -898,50 +846,22 @@ export function getFundamentalComponentInstance(
 export function mountFundamentalComponent(
   fundamentalInstance: ReactDOMFundamentalComponentInstance,
 ): void {
-  if (enableFundamentalAPI) {
-    const {impl, instance, props, state} = fundamentalInstance;
-    const onMount = impl.onMount;
-    if (onMount !== undefined) {
-      onMount(null, instance, props, state);
-    }
-  }
 }
 
 export function shouldUpdateFundamentalComponent(
   fundamentalInstance: ReactDOMFundamentalComponentInstance,
 ): boolean {
-  if (enableFundamentalAPI) {
-    const {impl, prevProps, props, state} = fundamentalInstance;
-    const shouldUpdate = impl.shouldUpdate;
-    if (shouldUpdate !== undefined) {
-      return shouldUpdate(null, prevProps, props, state);
-    }
-  }
   return true;
 }
 
 export function updateFundamentalComponent(
   fundamentalInstance: ReactDOMFundamentalComponentInstance,
 ): void {
-  if (enableFundamentalAPI) {
-    const {impl, instance, prevProps, props, state} = fundamentalInstance;
-    const onUpdate = impl.onUpdate;
-    if (onUpdate !== undefined) {
-      onUpdate(null, instance, prevProps, props, state);
-    }
-  }
 }
 
 export function unmountFundamentalComponent(
   fundamentalInstance: ReactDOMFundamentalComponentInstance,
 ): void {
-  if (enableFundamentalAPI) {
-    const {impl, instance, props, state} = fundamentalInstance;
-    const onUnmount = impl.onUnmount;
-    if (onUnmount !== undefined) {
-      onUnmount(null, instance, props, state);
-    }
-  }
 }
 
 export function getInstanceFromNode(node: HTMLElement): null | Object {
@@ -986,28 +906,20 @@ export function makeOpaqueHydratingObject(
 }
 
 export function preparePortalMount(portalInstance: Instance): void {
-  if (enableEagerRootListeners) {
-    listenToAllSupportedEvents(portalInstance);
-  } else {
-    listenToReactEvent('onMouseEnter', portalInstance, null);
-  }
+  listenToAllSupportedEvents(portalInstance);
 }
 
 export function prepareScopeUpdate(
   scopeInstance: ReactScopeInstance,
   internalInstanceHandle: Object,
 ): void {
-  if (enableScopeAPI) {
-    precacheFiberNode(internalInstanceHandle, scopeInstance);
-  }
+
 }
 
 export function getInstanceFromScope(
   scopeInstance: ReactScopeInstance,
 ): null | Object {
-  if (enableScopeAPI) {
-    return getFiberFromScopeInstance(scopeInstance);
-  }
+
   return null;
 }
 
