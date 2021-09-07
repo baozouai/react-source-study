@@ -38,7 +38,7 @@ class OriginDemo extends React.Component {
       <p>不需要点击这个按钮，这个按钮是交给js去模拟点击用的，模拟点击之后产生的是高优先级任务</p>
       <button ref={this.buttonRef} onClick={this.handleButtonClick}>增加2</button>
       <div>
-        {Array.from(new Array(16000)).map( (v,index) =>
+        {Array.from(new Array(160)).map( (v,index) =>
           <div key={index}>{this.state.count}</div>
         )}
       </div>

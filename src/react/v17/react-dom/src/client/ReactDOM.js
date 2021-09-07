@@ -43,7 +43,6 @@ import {createPortal as createPortalImpl} from 'react-reconciler/src/ReactPortal
 import ReactVersion from 'shared/ReactVersion';
 import invariant from 'shared/invariant';
 import {
-  warnUnstableRenderSubtreeIntoContainer,
   enableNewReconciler,
 } from 'shared/ReactFeatureFlags';
 
@@ -76,9 +75,6 @@ setAttemptContinuousHydration(attemptContinuousHydration);
 setAttemptHydrationAtCurrentPriority(attemptHydrationAtCurrentPriority);
 setGetCurrentUpdatePriority(getCurrentUpdateLanePriority);
 setAttemptHydrationAtPriority(runWithPriority);
-
-let didWarnAboutUnstableCreatePortal = false;
-let didWarnAboutUnstableRenderSubtreeIntoContainer = false;
 
 
 

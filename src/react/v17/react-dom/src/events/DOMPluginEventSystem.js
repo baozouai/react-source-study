@@ -33,7 +33,6 @@ import {
   HostPortal,
   HostComponent,
   HostText,
-  ScopeComponent,
 } from 'react-reconciler/src/ReactWorkTags';
 
 import getEventTarget from './getEventTarget';
@@ -48,19 +47,12 @@ import getListener from './getListener';
 import {passiveBrowserEventsSupported} from './checkPassiveEvents';
 
 import {
-  enableLegacyFBSupport,
-  enableCreateEventHandleAPI,
-  enableScopeAPI,
-  enableEagerRootListeners,
-} from 'shared/ReactFeatureFlags';
-import {
   invokeGuardedCallbackAndCatchFirstError,
   rethrowCaughtError,
 } from 'shared/ReactErrorUtils';
 import {DOCUMENT_NODE} from '../shared/HTMLNodeType';
 import {createEventListenerWrapperWithPriority} from './ReactDOMEventListener';
 import {
-  removeEventListener,
   addEventCaptureListener,
   addEventBubbleListener,
   addEventBubbleListenerWithPassiveFlag,
@@ -351,34 +343,32 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   
   console.log('listenToAllSupportedEvents start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToAllSupportedEvents')) debugger
-  if (enableEagerRootListeners) { // enableEagerRootListeners = true
-    if (rootContainerElement[listeningMarker]) {
-      // 第一次的是false
-      // Performance optimization: don't iterate through events
-      // for the same portal container or root node more than once.
-      // TODO: once we remove the flag, we may be able to also
-      // remove some of the bookkeeping maps used for laziness.
-      return;
-    }
-    rootContainerElement[listeningMarker] = true;
-    allNativeEvents.forEach(domEventName => {
-      if (__LOG_NAMES__.includes('listenToAllSupportedEvents') && domEventName === 'click') debugger
-      if (!nonDelegatedEvents.has(domEventName)) {
-        listenToNativeEvent(
-          domEventName,
-          false,
-          ((rootContainerElement: any): Element),
-          null,
-        );
-      }
+  if (rootContainerElement[listeningMarker]) {
+    // 第一次的是false
+    // Performance optimization: don't iterate through events
+    // for the same portal container or root node more than once.
+    // TODO: once we remove the flag, we may be able to also
+    // remove some of the bookkeeping maps used for laziness.
+    return;
+  }
+  rootContainerElement[listeningMarker] = true;
+  allNativeEvents.forEach(domEventName => {
+    if (__LOG_NAMES__.includes('listenToAllSupportedEvents') && domEventName === 'click') debugger
+    if (!nonDelegatedEvents.has(domEventName)) {
       listenToNativeEvent(
         domEventName,
-        true,
+        false,
         ((rootContainerElement: any): Element),
         null,
       );
-    });
-  }
+    }
+    listenToNativeEvent(
+      domEventName,
+      true,
+      ((rootContainerElement: any): Element),
+      null,
+    );
+  });
   console.log('listenToAllSupportedEvents end')
 }
 
@@ -460,53 +450,6 @@ export function listenToReactEvent(
   rootContainerElement: Element,
   targetElement: Element | null,
 ): void {
-  if (!enableEagerRootListeners) {
-    const dependencies = registrationNameDependencies[reactEvent];
-    const dependenciesLength = dependencies.length;
-    // If the dependencies length is 1, that means we're not using a polyfill
-    // plugin like ChangeEventPlugin, BeforeInputPlugin, EnterLeavePlugin
-    // and SelectEventPlugin. We always use the native bubble event phase for
-    // these plugins and emulate two phase event dispatching. SimpleEventPlugin
-    // always only has a single dependency and SimpleEventPlugin events also
-    // use either the native capture event phase or bubble event phase, there
-    // is no emulation (except for focus/blur, but that will be removed soon).
-    const isPolyfillEventPlugin = dependenciesLength !== 1;
-
-    if (isPolyfillEventPlugin) {
-      const listenerSet = getEventListenerSet(rootContainerElement);
-      // When eager listeners are off, this Set has a dual purpose: it both
-      // captures which native listeners we registered (e.g. "click__bubble")
-      // and *React* lazy listeners (e.g. "onClick") so we don't do extra checks.
-      // This second usage does not exist in the eager mode.
-      if (!listenerSet.has(reactEvent)) {
-        listenerSet.add(reactEvent);
-        for (let i = 0; i < dependenciesLength; i++) {
-          listenToNativeEvent(
-            dependencies[i],
-            false,
-            rootContainerElement,
-            targetElement,
-          );
-        }
-      }
-    } else {
-      const isCapturePhaseListener =
-        reactEvent.substr(-7) === 'Capture' &&
-        // Edge case: onGotPointerCapture and onLostPointerCapture
-        // end with "Capture" but that's part of their event names.
-        // The Capture versions would end with CaptureCapture.
-        // So we have to check against that.
-        // This check works because none of the events we support
-        // end with "Pointer".
-        reactEvent.substr(-14, 7) !== 'Pointer';
-      listenToNativeEvent(
-        dependencies[0],
-        isCapturePhaseListener,
-        rootContainerElement,
-        targetElement,
-      );
-    }
-  }
 }
 
 function addTrappedEventListener(
@@ -545,11 +488,6 @@ function addTrappedEventListener(
       isPassiveListener = true;
     }
   }
-  // enableLegacyFBSupport = false
-  targetContainer =
-    enableLegacyFBSupport && isDeferredListenerForLegacyFBSupport
-      ? (targetContainer: any).ownerDocument
-      : targetContainer;
 
   let unsubscribeListener;
   // When legacyFBSupport is enabled, it's for when we
@@ -563,18 +501,6 @@ function addTrappedEventListener(
   // browsers do not support this today, and given this is
   // to support legacy code patterns, it's likely they'll
   // need support for such browsers.
-  if (enableLegacyFBSupport && isDeferredListenerForLegacyFBSupport) {
-    const originalListener = listener;
-    listener = function(...p) {
-      removeEventListener(
-        targetContainer,
-        domEventName,
-        unsubscribeListener,
-        isCapturePhaseListener,
-      );
-      return originalListener.apply(this, p);
-    };
-  }
   // TODO: There are too many combinations here. Consolidate them.
   if (isCapturePhaseListener) {
     if (isPassiveListener !== undefined) {
@@ -664,19 +590,6 @@ export function dispatchEventForPluginEventSystem(
     // If we are using the legacy FB support flag, we
     // defer the event to the null with a one
     // time event listener so we can defer the event.
-    if (
-      enableLegacyFBSupport && // enableLegacyFBSupport = false
-      // If our event flags match the required flags for entering
-      // FB legacy mode and we are prcocessing the "click" event,
-      // then we can defer the event to the "document", to allow
-      // for legacy FB support, where the expected behavior was to
-      // match React < 16 behavior of delegated clicks to the doc.
-      domEventName === 'click' &&
-      (eventSystemFlags & SHOULD_NOT_DEFER_CLICK_FOR_FB_SUPPORT_MODE) === 0
-    ) {
-      deferClickToDocumentForLegacyFBSupport(domEventName, targetContainer);
-      return;
-    }
     if (targetInst !== null) {
       // The below logic attempts to work out if we need to change
       // the target fiber to a different ancestor. We had similar logic
@@ -801,28 +714,6 @@ export function accumulateSinglePhaseListeners(
     if (tag === HostComponent && stateNode !== null) {
       lastHostComponent = stateNode;
 
-      // createEventHandle listeners
-      if (enableCreateEventHandleAPI) { // enableCreateEventHandleAPI === false
-        const eventHandlerListeners = getEventHandlerListeners(
-          lastHostComponent,
-        );
-        if (eventHandlerListeners !== null) {
-          eventHandlerListeners.forEach(entry => {
-            if (
-              entry.type === nativeEventType &&
-              entry.capture === inCapturePhase
-            ) {
-              listeners.push(
-                createDispatchListener(
-                  instance,
-                  entry.callback,
-                  (lastHostComponent: any),
-                ),
-              );
-            }
-          });
-        }
-      }
 
       // Standard React on* listeners, i.e. onClick or onClickCapture
       if (reactEventName !== null) {
@@ -832,34 +723,6 @@ export function accumulateSinglePhaseListeners(
             createDispatchListener(instance, listener, lastHostComponent),
           );
         }
-      }
-    } else if (
-      enableCreateEventHandleAPI &&
-      enableScopeAPI &&
-      tag === ScopeComponent &&
-      lastHostComponent !== null &&
-      stateNode !== null
-    ) {
-      // Scopes
-      const reactScopeInstance = stateNode;
-      const eventHandlerListeners = getEventHandlerListeners(
-        reactScopeInstance,
-      );
-      if (eventHandlerListeners !== null) {
-        eventHandlerListeners.forEach(entry => {
-          if (
-            entry.type === nativeEventType &&
-            entry.capture === inCapturePhase
-          ) {
-            listeners.push(
-              createDispatchListener(
-                instance,
-                entry.callback,
-                (lastHostComponent: any),
-              ),
-            );
-          }
-        });
       }
     }
     // If we are only accumulating events for the target, then we don't

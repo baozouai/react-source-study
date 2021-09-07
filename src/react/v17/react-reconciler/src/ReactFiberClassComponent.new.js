@@ -14,8 +14,6 @@ import type {UpdateQueue} from './ReactUpdateQueue.new';
 import * as React from 'react';
 import {Update, Snapshot} from './ReactFiberFlags';
 import {
-
-  disableLegacyContext,
   enableSchedulingProfiler,
 } from 'shared/ReactFeatureFlags';
 
@@ -229,7 +227,7 @@ function constructClassInstance(
 
   if (typeof contextType === 'object' && contextType !== null) {
     context = readContext((contextType: any));
-  } else if (!disableLegacyContext) {
+  } else {
     unmaskedContext = getUnmaskedContext(workInProgress, ctor, true);
     const contextTypes = ctor.contextTypes;
     isLegacyContextConsumer =
@@ -314,8 +312,6 @@ function mountClassInstance(
   const contextType = ctor.contextType;
   if (typeof contextType === 'object' && contextType !== null) {
     instance.context = readContext(contextType);
-  } else if (disableLegacyContext) {
-    instance.context = emptyContextObject;
   } else {
     const unmaskedContext = getUnmaskedContext(workInProgress, ctor, true);
     instance.context = getMaskedContext(workInProgress, unmaskedContext);
@@ -375,7 +371,7 @@ function resumeMountClassInstance(
   let nextContext = emptyContextObject;
   if (typeof contextType === 'object' && contextType !== null) {
     nextContext = readContext(contextType);
-  } else if (!disableLegacyContext) {
+  } else  {
     const nextLegacyUnmaskedContext = getUnmaskedContext(
       workInProgress,
       ctor,
@@ -522,7 +518,7 @@ function updateClassInstance(
   let nextContext = emptyContextObject;
   if (typeof contextType === 'object' && contextType !== null) {
     nextContext = readContext(contextType);
-  } else if (!disableLegacyContext) {
+  } else  {
     const nextUnmaskedContext = getUnmaskedContext(workInProgress, ctor, true);
     nextContext = getMaskedContext(workInProgress, nextUnmaskedContext);
   }

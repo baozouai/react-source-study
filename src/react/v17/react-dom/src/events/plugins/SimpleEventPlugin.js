@@ -40,14 +40,12 @@ import {
 } from '../DOMEventProperties';
 import {
   accumulateSinglePhaseListeners,
-  accumulateEventHandleNonManagedNodeListeners,
 } from '../DOMPluginEventSystem';
 import {IS_EVENT_HANDLE_NON_MANAGED_NODE} from '../EventSystemFlags';
 
 import getEventCharCode from '../getEventCharCode';
 import {IS_CAPTURE_PHASE} from '../EventSystemFlags';
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
 
 function extractEvents(
   dispatchQueue: DispatchQueue,
@@ -167,61 +165,36 @@ function extractEvents(
   }
   // IS_CAPTURE_PHASE = 1 << 2 = 0b0100
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
-  if (
-    enableCreateEventHandleAPI && // enableCreateEventHandleAPI === false
-    eventSystemFlags & IS_EVENT_HANDLE_NON_MANAGED_NODE
-  ) {
-    const listeners = accumulateEventHandleNonManagedNodeListeners(
-      // TODO: this cast may not make sense for events like
-      // "focus" where React listens to e.g. "focusin".
-      ((reactEventType: any): DOMEventName),
-      targetContainer,
-      inCapturePhase,
-    );
-    if (listeners.length > 0) {
-      // Intentionally create event lazily.
-      // 构造合成事件对象
-      const event = new SyntheticEventCtor(
-        reactName,
-        reactEventType,
-        null,
-        nativeEvent,
-        nativeEventTarget,
-      );
-      dispatchQueue.push({event, listeners});
-    }
-  } else {
-    // scroll事件不冒泡
-    // Some events don't bubble in the browser.
-    // In the past, React has always bubbled them, but this can be surprising.
-    // We're going to try aligning closer to the browser behavior by not bubbling
-    // them in React either. We'll start by not bubbling onScroll, and then expand.
-    const accumulateTargetOnly =
-      !inCapturePhase &&
-      // TODO: ideally, we'd eventually add all events from
-      // nonDelegatedEvents list in DOMPluginEventSystem.
-      // Then we can remove this special list.
-      // This is a breaking change that can wait until React 18.
-      domEventName === 'scroll';
-    // 事件对象分发 & 收集事件
-    const listeners = accumulateSinglePhaseListeners(
-      targetInst,
+  // scroll事件不冒泡
+  // Some events don't bubble in the browser.
+  // In the past, React has always bubbled them, but this can be surprising.
+  // We're going to try aligning closer to the browser behavior by not bubbling
+  // them in React either. We'll start by not bubbling onScroll, and then expand.
+  const accumulateTargetOnly =
+    !inCapturePhase &&
+    // TODO: ideally, we'd eventually add all events from
+    // nonDelegatedEvents list in DOMPluginEventSystem.
+    // Then we can remove this special list.
+    // This is a breaking change that can wait until React 18.
+    domEventName === 'scroll';
+  // 事件对象分发 & 收集事件
+  const listeners = accumulateSinglePhaseListeners(
+    targetInst,
+    reactName,
+    nativeEvent.type,
+    inCapturePhase,
+    accumulateTargetOnly,
+  );
+  if (listeners.length > 0) {
+    // Intentionally create event lazily.
+    const event = new SyntheticEventCtor(
       reactName,
-      nativeEvent.type,
-      inCapturePhase,
-      accumulateTargetOnly,
+      reactEventType,
+      null,
+      nativeEvent,
+      nativeEventTarget,
     );
-    if (listeners.length > 0) {
-      // Intentionally create event lazily.
-      const event = new SyntheticEventCtor(
-        reactName,
-        reactEventType,
-        null,
-        nativeEvent,
-        nativeEventTarget,
-      );
-      dispatchQueue.push({event, listeners});
-    }
+    dispatchQueue.push({event, listeners});
   }
 }
 

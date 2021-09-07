@@ -38,11 +38,7 @@ import {
 import getEventTarget from './getEventTarget';
 import {getClosestInstanceFromNode} from '../client/ReactDOMComponentTree';
 
-import {
-  enableLegacyFBSupport,
-  enableEagerRootListeners,
-  decoupleUpdatePriorityFromScheduler,
-} from 'shared/ReactFeatureFlags';
+
 import {
   UserBlockingEvent,
   ContinuousEvent,
@@ -54,11 +50,7 @@ import {
   flushDiscreteUpdatesIfNeeded,
   discreteUpdates,
 } from './ReactDOMUpdateBatching';
-import {
-  InputContinuousLanePriority,
-  getCurrentUpdateLanePriority,
-  setCurrentUpdateLanePriority,
-} from 'react-reconciler/src/ReactFiberLane';
+
 
 const {
   unstable_UserBlockingPriority: UserBlockingPriority,
@@ -147,9 +139,7 @@ function dispatchDiscreteEvent(
     debugger
   }
 
-  // enableLegacyFBSupport === false
   if (
-    !enableLegacyFBSupport ||
     // If we are in Legacy FB support mode, it means we've already
     // flushed for this event and we don't need to do it again.
     (eventSystemFlags & IS_LEGACY_FB_SUPPORT_MODE) === 0
@@ -171,36 +161,16 @@ function dispatchUserBlockingUpdate(
   container,
   nativeEvent,
 ) {
-  if (decoupleUpdatePriorityFromScheduler) { // decoupleUpdatePriorityFromScheduler === false
-    const previousPriority = getCurrentUpdateLanePriority();
-    try {
-      // TODO: Double wrapping is necessary while we decouple Scheduler priority.
-      setCurrentUpdateLanePriority(InputContinuousLanePriority);
-      runWithPriority(
-        UserBlockingPriority,
-        dispatchEvent.bind(
-          null,
-          domEventName,
-          eventSystemFlags,
-          container,
-          nativeEvent,
-        ),
-      );
-    } finally {
-      setCurrentUpdateLanePriority(previousPriority);
-    }
-  } else {
-    runWithPriority(
-      UserBlockingPriority,
-      dispatchEvent.bind(
-        null,
-        domEventName,
-        eventSystemFlags,
-        container,
-        nativeEvent,
-      ),
-    );
-  }
+  runWithPriority(
+    UserBlockingPriority,
+    dispatchEvent.bind(
+      null,
+      domEventName,
+      eventSystemFlags,
+      container,
+      nativeEvent,
+    ),
+  );
 }
 
 export function dispatchEvent(
@@ -219,15 +189,13 @@ export function dispatchEvent(
     return;
   }
   let allowReplay = true;
-  if (enableEagerRootListeners) { // enableEagerRootListeners === true
-    // TODO: replaying capture phase events is currently broken
-    // because we used to do it during top-level native bubble handlers
-    // but now we use different bubble and capture handlers.
-    // In eager mode, we attach capture listeners early, so we need
-    // to filter them out until we fix the logic to handle them correctly.
-    // This could've been outside the flag but I put it inside to reduce risk.
-    allowReplay = (eventSystemFlags & IS_CAPTURE_PHASE) === 0;
-  }
+  // TODO: replaying capture phase events is currently broken
+  // because we used to do it during top-level native bubble handlers
+  // but now we use different bubble and capture handlers.
+  // In eager mode, we attach capture listeners early, so we need
+  // to filter them out until we fix the logic to handle them correctly.
+  // This could've been outside the flag but I put it inside to reduce risk.
+  allowReplay = (eventSystemFlags & IS_CAPTURE_PHASE) === 0;
   if (
     allowReplay &&
     hasQueuedDiscreteEvents() &&

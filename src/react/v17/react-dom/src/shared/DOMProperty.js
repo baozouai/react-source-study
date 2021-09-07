@@ -7,7 +7,6 @@
  * @flow
  */
 
-import {enableFilterEmptyStringAttributesDOM} from 'shared/ReactFeatureFlags';
 
 type PropertyType = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -162,12 +161,6 @@ export function shouldRemoveAttribute(
     return false;
   }
   if (propertyInfo !== null) {
-    if (enableFilterEmptyStringAttributesDOM) {
-      if (propertyInfo.removeEmptyString && value === '') {
-
-        return true;
-      }
-    }
 
     switch (propertyInfo.type) {
       case BOOLEAN:
