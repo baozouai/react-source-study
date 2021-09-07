@@ -15,14 +15,9 @@ import * as Scheduler from '../../scheduler';
 import {__interactionsRef} from '../../scheduler/tracing';
 import {
   enableSchedulerTracing,
-  decoupleUpdatePriorityFromScheduler,
 } from 'shared/ReactFeatureFlags';
 import invariant from 'shared/invariant';
-import {
-  SyncLanePriority,
-  getCurrentUpdateLanePriority,
-  setCurrentUpdateLanePriority,
-} from './ReactFiberLane';
+
 
 const {
   unstable_runWithPriority: Scheduler_runWithPriority,
@@ -109,16 +104,16 @@ export function getCurrentPriorityLevel(): ReactPriorityLevel {
 
 function reactPriorityToSchedulerPriority(reactPriorityLevel) {
   switch (reactPriorityLevel) {
-    case ImmediatePriority:
-      return Scheduler_ImmediatePriority;
-    case UserBlockingPriority:
-      return Scheduler_UserBlockingPriority;
-    case NormalPriority:
-      return Scheduler_NormalPriority;
-    case LowPriority:
-      return Scheduler_LowPriority;
-    case IdlePriority:
-      return Scheduler_IdlePriority;
+    case ImmediatePriority: // 99
+      return Scheduler_ImmediatePriority; // 1
+    case UserBlockingPriority: // 98
+      return Scheduler_UserBlockingPriority; // 2
+    case NormalPriority: // 97
+      return Scheduler_NormalPriority; // 3
+    case LowPriority: // 96
+      return Scheduler_LowPriority; // 4
+    case IdlePriority: // 95
+      return Scheduler_IdlePriority; //5
     default:
       invariant(false, 'Unknown priority level.');
   }
@@ -178,68 +173,39 @@ export function flushSyncCallbackQueue(): boolean {
 }
 
 function flushSyncCallbackQueueImpl() {
+  // 如果没有正在清空同步队列且同步队列不为空
   if (!isFlushingSyncQueue && syncQueue !== null) {
     // Prevent re-entrancy.
     isFlushingSyncQueue = true;
     let i = 0;
-    if (decoupleUpdatePriorityFromScheduler) {
-      const previousLanePriority = getCurrentUpdateLanePriority();
-      try {
-        const isSync = true;
-        const queue = syncQueue;
-        setCurrentUpdateLanePriority(SyncLanePriority);
-        runWithPriority(ImmediatePriority, () => {
-          for (; i < queue.length; i++) {
-            let callback = queue[i];
-            do {
-              callback = callback(isSync);
-            } while (callback !== null);
-          }
-        });
-        syncQueue = null;
-      } catch (error) {
-        // If something throws, leave the remaining callbacks on the queue.
-        if (syncQueue !== null) {
-          syncQueue = syncQueue.slice(i + 1);
+
+    try {
+      const isSync = true;
+      const queue = syncQueue;
+      runWithPriority(ImmediatePriority, () => {
+        for (; i < queue.length; i++) {
+          let callback = queue[i];
+          do {
+            callback = callback(isSync);
+          } while (callback !== null);
         }
-        // Resume flushing in the next tick
-        Scheduler_scheduleCallback(
-          Scheduler_ImmediatePriority,
-          flushSyncCallbackQueue,
-        );
-        throw error;
-      } finally {
-        setCurrentUpdateLanePriority(previousLanePriority);
-        isFlushingSyncQueue = false;
+      });
+      syncQueue = null;
+    } catch (error) {
+      // If something throws, leave the remaining callbacks on the queue.
+      if (syncQueue !== null) {
+        syncQueue = syncQueue.slice(i + 1);
       }
-    } else {
-      try {
-        const isSync = true;
-        const queue = syncQueue;
-        runWithPriority(ImmediatePriority, () => {
-          for (; i < queue.length; i++) {
-            let callback = queue[i];
-            do {
-              callback = callback(isSync);
-            } while (callback !== null);
-          }
-        });
-        syncQueue = null;
-      } catch (error) {
-        // If something throws, leave the remaining callbacks on the queue.
-        if (syncQueue !== null) {
-          syncQueue = syncQueue.slice(i + 1);
-        }
-        // Resume flushing in the next tick
-        Scheduler_scheduleCallback(
-          Scheduler_ImmediatePriority,
-          flushSyncCallbackQueue,
-        );
-        throw error;
-      } finally {
-        isFlushingSyncQueue = false;
-      }
+      // Resume flushing in the next tick
+      Scheduler_scheduleCallback(
+        Scheduler_ImmediatePriority,
+        flushSyncCallbackQueue,
+      );
+      throw error;
+    } finally {
+      isFlushingSyncQueue = false;
     }
+
     return true;
   } else {
     return false;

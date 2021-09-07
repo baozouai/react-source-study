@@ -110,7 +110,9 @@ function getOwnerDocumentFromRootContainer(
 }
 
 function noop() {}
-
+/**
+ * safari移动端如果不给dom节点加onclick，那么不会触发冒泡
+ */
 export function trapClickOnNonInteractiveElement(node: HTMLElement) {
   // Mobile Safari does not fire properly bubble click events on
   // non-interactive elements, which means delegated click listeners do not
@@ -131,8 +133,10 @@ function setInitialDOMProperties(
   nextProps: Object,
   isCustomComponentTag: boolean,
 ): void {
+  
   console.log('setInitialDOMProperties start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('setInitialDOMProperties')) debugger
+  
   for (const propKey in nextProps) {
     if (!nextProps.hasOwnProperty(propKey)) {
       // 如果是原型链上的属性，则跳过
@@ -223,6 +227,7 @@ export function createElement(
   
   // We create tags in the namespace of their parent container, except HTML
   // tags get no namespace.
+  // 这里一般是document
   const ownerDocument: Document = getOwnerDocumentFromRootContainer(
     rootContainerElement,
   );
@@ -257,6 +262,7 @@ export function createElement(
       // - a bug where the `select` set the first item as selected despite the `size` attribute #14239
       // See https://github.com/facebook/react/issues/13222
       // and https://github.com/facebook/react/issues/14239
+      // 处理select
       if (type === 'select') {
         const node = ((domElement: any): HTMLSelectElement);
         if (props.multiple) {
@@ -292,6 +298,7 @@ export function setInitialProperties(
   rawProps: Object,
   rootContainerElement: Element | Document,
 ): void {
+  // 判断是否是自定义标签，如tag=x-foo
   const isCustomComponentTag = isCustomComponent(tag, rawProps);
 
   // TODO: Make sure that we check isMounted before firing any of these events.
@@ -385,7 +392,7 @@ export function setInitialProperties(
   }
 
   assertValidProps(tag, props);
-
+  // 这里才是真正设置dom的props
   setInitialDOMProperties(
     tag,
     domElement,

@@ -278,6 +278,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // This is simpler for the single child case. We only need to do a
     // placement for inserting new children.
     if (shouldTrackSideEffects && newFiber.alternate === null) {
+      // newFiber.alternate为null，则是插入的
       newFiber.flags = Placement;
     }
     return newFiber;
@@ -963,8 +964,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     element: ReactElement,
     lanes: Lanes,
   ): Fiber {
+
     console.log('reconcileSingleElement')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileSingleElement')) debugger
+
     const key = element.key;
     let child = currentFirstChild;
     while (child !== null) {
@@ -1007,9 +1010,7 @@ function ChildReconciler(shouldTrackSideEffects) {
           // We intentionally fallthrough here if enableBlocksAPI is not on.
           // eslint-disable-next-lined no-fallthrough
           default: {
-            if (
-              child.elementType === element.type
-            ) {
+            if (child.elementType === element.type) {
               // type相同则表示可以复用
               // 先删除剩下的oldFiber节点
               deleteRemainingChildren(returnFiber, child.sibling);
@@ -1037,6 +1038,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     if (element.type === REACT_FRAGMENT_TYPE) {
+      // 如果是Fragment,如<>{[...]}</> or <>...</>，这真正的element为element.props.children
       const created = createFiberFromFragment(
         element.props.children,
         returnFiber.mode,
@@ -1047,6 +1049,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       return created;
     } else {
       const created = createFiberFromElement(element, returnFiber.mode, lanes);
+      // 做一些ref的判断，然后返回element.ref
       created.ref = coerceRef(returnFiber, currentFirstChild, element);
       created.return = returnFiber;
       return created;
@@ -1101,6 +1104,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     
     console.log('reconcileChildFibers in ChildReconciler start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) debugger
+
     // This function is not recursive.
     // If the top level item is an array, we treat it as a set of children,
     // not as a fragment. Nested arrays on the other hand will be treated as
@@ -1109,13 +1113,15 @@ function ChildReconciler(shouldTrackSideEffects) {
     // Handle top level unkeyed fragments as if they were arrays.
     // This leads to an ambiguity between <>{[...]}</> and <>...</>.
     // We treat the ambiguous cases above the same.
-    // Unkeyed:没有key prop，UnkeyedTopLevelFragment：<>{[...]}</> and <>...</>
+    // Unkeyed:没有key prop，UnkeyedTopLevelFragment：<>{[...]}</> or <>...</>
     const isUnkeyedTopLevelFragment =
       typeof newChild === 'object' &&
       newChild !== null &&
       newChild.type === REACT_FRAGMENT_TYPE &&
       newChild.key === null;
     if (isUnkeyedTopLevelFragment) {
+      // 如果是isUnkeyedTopLevelFragment，则newChild为<>{[...]}</> 或 <>...</>
+      // 则真正的children为newChild.props.children
       newChild = newChild.props.children;
     }
 

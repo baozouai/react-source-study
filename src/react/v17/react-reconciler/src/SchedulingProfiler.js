@@ -33,22 +33,6 @@ if (enableSchedulingProfiler) {
   }
 }
 
-export function markCommitStarted(lanes: Lanes): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark(`--commit-start-${formatLanes(lanes)}`);
-    }
-  }
-}
-
-export function markCommitStopped(): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark('--commit-stop');
-    }
-  }
-}
-
 const PossiblyWeakMap = typeof WeakMap === 'function' ? WeakMap : Map;
 
 // $FlowFixMe: Flow cannot handle polymorphic WeakMaps
@@ -80,62 +64,6 @@ export function markLayoutEffectsStarted(lanes: Lanes): void {
   if (enableSchedulingProfiler) {
     if (supportsUserTiming) {
       performance.mark(`--layout-effects-start-${formatLanes(lanes)}`);
-    }
-  }
-}
-
-export function markLayoutEffectsStopped(): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark('--layout-effects-stop');
-    }
-  }
-}
-
-export function markPassiveEffectsStarted(lanes: Lanes): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark(`--passive-effects-start-${formatLanes(lanes)}`);
-    }
-  }
-}
-
-export function markPassiveEffectsStopped(): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark('--passive-effects-stop');
-    }
-  }
-}
-
-export function markRenderStarted(lanes: Lanes): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark(`--render-start-${formatLanes(lanes)}`);
-    }
-  }
-}
-
-export function markRenderYielded(): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark('--render-yield');
-    }
-  }
-}
-
-export function markRenderStopped(): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark('--render-stop');
-    }
-  }
-}
-
-export function markRenderScheduled(lane: Lane): void {
-  if (enableSchedulingProfiler) {
-    if (supportsUserTiming) {
-      performance.mark(`--schedule-render-${formatLanes(lane)}`);
     }
   }
 }

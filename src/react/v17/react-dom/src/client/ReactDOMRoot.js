@@ -63,6 +63,7 @@ function ReactDOMRoot(container: Container, options: void | RootOptions) {
   
   console.log('ReactDomRoot: ReactDOMRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactDOMRoot')) debugger
+
   this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
 }
 
@@ -77,8 +78,10 @@ function ReactDOMBlockingRoot(
 ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function(
   children: ReactNodeList,
 ): void {
+  
   console.log('Scheduler: render start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) debugger
+  
   const root = this._internalRoot;
   // 更新的起点
   updateContainer(children, root, null, null);

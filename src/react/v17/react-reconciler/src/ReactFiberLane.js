@@ -207,25 +207,24 @@ export function schedulerPriorityToLanePriority(
   schedulerPriorityLevel: ReactPriorityLevel,
 ): LanePriority {
   switch (schedulerPriorityLevel) {
-    case ImmediateSchedulerPriority:
-      return SyncLanePriority;
-    case UserBlockingSchedulerPriority:
-      return InputContinuousLanePriority;
-    case NormalSchedulerPriority:
-    case LowSchedulerPriority:
+    case ImmediateSchedulerPriority: //  99
+      return SyncLanePriority; // 15
+    case UserBlockingSchedulerPriority: //  98
+      return InputContinuousLanePriority; // 10
+    case NormalSchedulerPriority: // 97
+    case LowSchedulerPriority: // 96
       // TODO: Handle LowSchedulerPriority, somehow. Maybe the same lane as hydration.
-      return DefaultLanePriority;
-    case IdleSchedulerPriority:
-      return IdleLanePriority;
+      return DefaultLanePriority; // 8
+    case IdleSchedulerPriority: // 95
+      return IdleLanePriority; // 2
     default:
-      return NoLanePriority;
+      return NoLanePriority; // 0
   }
 }
 
 /**
  * Scheduler调度一个React任务的时候，要通过lane的优先级计算出Scheduler能够识别的优先级
  * 该函数就是做这个的
- *
  * */
 export function lanePriorityToSchedulerPriority(
   lanePriority: LanePriority,
@@ -445,6 +444,7 @@ function computeExpirationTime(lane: Lane, currentTime: number) {
    * */
 
   // TODO: Expiration heuristic is constant per lane, so could use a map.
+  // 根据传入的lane调用getHighestPriorityLanes后会将return_highestLanePriority赋值为对应的优先级
   getHighestPriorityLanes(lane);
   const priority = return_highestLanePriority;
   // 以下两个判断会通过当前时间加上延迟时间来获得过期时间，优先级越低，对应的延迟时间就越高
@@ -526,7 +526,7 @@ export function markStarvedLanesAsExpired(
       // using the current time.
       // 发现一个没有过期时间并且待处理的lane，如果它:
       // 1.没被挂起 (lane & suspendedLanes) === NoLanes
-      // 2或没被触发(lane & suspendedLanes) === NoLanes
+      // 2或没被触发(lane & pingedLanes) === NoLanes
       // 那么将它视为CPU密集型的任务，用当前时间计算一个新的过期时间
       if (
         (lane & suspendedLanes) === NoLanes ||
@@ -680,6 +680,8 @@ export function findRetryLane(wipLanes: Lanes): Lane {
 }
 
 function getHighestPriorityLane(lanes: Lanes) {
+  // 这里用的是lowbit(n)：即非负整数n在二进制表示下“最低位的1及其后面的所有0”
+  // 比如lanes为0b111，那么0b110 & -0b110 = 0b010 = 2，而0b110的最高优先级即为右边第一个不为0的1
   return lanes & -lanes;
 }
 
@@ -838,7 +840,7 @@ export function markRootUpdated(
   const higherPriorityLanes = updateLane - 1; // Turns 0b1000 into 0b0111
   // (before) suspendedLanes 0b10100
   //                         &
-  // higherPriorityLanes     0b01111
+  // higherPriorityLanes     0b00111
   // ----------------------------------
   // (after)  suspendedLanes 0b00100
   // 目的是剔除掉suspendedLanes 和 pingedLanes中优先级低于本次更新优先级（updateLane）的lane
@@ -852,6 +854,8 @@ export function markRootUpdated(
   * 用一个数组去存储eventTimes，-1表示空位，非-1的位置与lanes中的1的位置相同
   * */
   const eventTimes = root.eventTimes;
+  // 参照上面的 [ -1, -1, -1, 44573.3452, -1, -1 ]，那么获取到的是index = 2
+  // 即updateLane中优先级最高的lane从有往左数的index（index从0开始）
   const index = laneToIndex(updateLane);
   // We can always overwrite an existing timestamp because we prefer the most
   // recent event, and we assume time is monotonically increasing.

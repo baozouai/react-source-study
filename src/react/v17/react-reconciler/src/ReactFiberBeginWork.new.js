@@ -67,15 +67,9 @@ import {
 } from './ReactFiberFlags';
 import ReactSharedInternals from 'shared/ReactSharedInternals';
 import {
-  debugRenderPhaseSideEffectsForStrictMode,
-  disableLegacyContext,
-  disableModulePatternComponents,
   enableProfilerTimer,
   enableSchedulerTracing,
   enableSuspenseServerRenderer,
-  enableFundamentalAPI,
-  warnAboutDefaultPropsOnFunctionComponents,
-  enableScopeAPI,
   enableBlocksAPI,
 } from 'shared/ReactFeatureFlags';
 import invariant from 'shared/invariant';
@@ -218,12 +212,13 @@ let didWarnAboutDefaultPropsOnFunctionComponent;
 export function reconcileChildren(
   current: Fiber | null,
   workInProgress: Fiber,
-  nextChildren: any,
+  nextChildren: any, // React.element
   renderLanes: Lanes,
 ) {
   
   console.log('reconcileChildren start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildren')) debugger
+
   if (current === null) {
     // If this is a fresh new component that hasn't been rendered yet, we
     // won't update its child set by applying minimal side-effects. Instead,
@@ -573,7 +568,11 @@ function updateProfiler(
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
 }
-
+/**
+ * 1.只有workInProgress且ref不为 null
+ * 2.前后都有但不相同
+ * 那么给workInProgress打上Ref的flags
+ */
 function markRef(current: Fiber | null, workInProgress: Fiber) {
   const ref = workInProgress.ref;
   if (
@@ -594,10 +593,10 @@ function updateFunctionComponent(
 ) {
 
   let context;
-  if (!disableLegacyContext) {
-    const unmaskedContext = getUnmaskedContext(workInProgress, Component, true);
-    context = getMaskedContext(workInProgress, unmaskedContext);
-  }
+
+  const unmaskedContext = getUnmaskedContext(workInProgress, Component, true);
+  context = getMaskedContext(workInProgress, unmaskedContext);
+
 
   let nextChildren;
   prepareToReadContext(workInProgress, renderLanes);
@@ -841,11 +840,13 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   const prevChildren = prevState !== null ? prevState.element : null;
   cloneUpdateQueue(current, workInProgress);
   processUpdateQueue(workInProgress, nextProps, null, renderLanes);
+  // processUpdateQueue运行后得到的newState会赋值给workInProgress.memoizedState
   const nextState = workInProgress.memoizedState;
   // Caution: React DevTools currently depends on this property
   // being called "element".
   const nextChildren = nextState.element;
   if (nextChildren === prevChildren) {
+    // 如果相同，则复用
     resetHydrationState();
     return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
   }
@@ -915,6 +916,7 @@ function updateHostComponent(
   const prevProps = current !== null ? current.memoizedProps : null;
 
   let nextChildren = nextProps.children;
+  // 如果child为text
   const isDirectTextChild = shouldSetTextContent(type, nextProps);
 
   if (isDirectTextChild) {
@@ -931,7 +933,7 @@ function updateHostComponent(
 
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-
+  
   markRef(current, workInProgress);
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
@@ -1104,6 +1106,7 @@ function mountIndeterminateComponent(
   
   console.log('mountIndeterminateComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountIndeterminateComponent')) debugger
+
   if (_current !== null) {
     // An indeterminate component only mounts if it suspended inside a non-
     // concurrent tree, in an inconsistent state. We want to treat it like
@@ -1116,15 +1119,15 @@ function mountIndeterminateComponent(
   }
 
   const props = workInProgress.pendingProps;
-  let context;
-  if (!disableLegacyContext) {
-    const unmaskedContext = getUnmaskedContext(
-      workInProgress,
-      Component,
-      false,
-    );
-    context = getMaskedContext(workInProgress, unmaskedContext);
-  }
+
+
+  const unmaskedContext = getUnmaskedContext(
+    workInProgress,
+    Component,
+    false,
+  );
+  const context = getMaskedContext(workInProgress, unmaskedContext);
+
 
   prepareToReadContext(workInProgress, renderLanes);
   let value;
@@ -1144,7 +1147,6 @@ function mountIndeterminateComponent(
   if (
     // Run these checks in production only if the flag is off.
     // Eventually we'll delete this branch altogether.
-    !disableModulePatternComponents &&
     typeof value === 'object' &&
     value !== null &&
     typeof value.render === 'function' &&
@@ -2385,7 +2387,7 @@ function bailoutOnAlreadyFinishedWork(
   }
 }
 
-function beginWork(
+export function beginWork(
   current: Fiber | null,
   workInProgress: Fiber,
   renderLanes: Lanes,
@@ -2393,6 +2395,7 @@ function beginWork(
   
   console.log('beginWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('beginWork')) debugger
+  
   // 获取workInProgress.lanes，可通过判断它是否为空去判断该节点是否需要更新
   const updateLanes = workInProgress.lanes;
 
@@ -2739,15 +2742,9 @@ function beginWork(
       return updateSuspenseListComponent(current, workInProgress, renderLanes);
     }
     case FundamentalComponent: {
-      if (enableFundamentalAPI) {
-        return updateFundamentalComponent(current, workInProgress, renderLanes);
-      }
       break;
     }
     case ScopeComponent: {
-      if (enableScopeAPI) {
-        return updateScopeComponent(current, workInProgress, renderLanes);
-      }
       break;
     }
     case Block: {
@@ -2773,4 +2770,4 @@ function beginWork(
   );
 }
 
-export {beginWork};
+
