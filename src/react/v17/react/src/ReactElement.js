@@ -73,7 +73,7 @@ function defineRefPropWarningGetter(props, displayName) {
  */
 const ReactElement = function(type, key, ref, self, source, owner, props) {
 
-  console.log('ReactElement start')
+  // console.log('ReactElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactElement')) debugger
 
   const element = {
@@ -163,8 +163,8 @@ export function jsx(type, config, maybeKey) {
  * See https://reactjs.org/docs/react-api.html#createelement
  */
 export function createElement(type, config, children) {
-
-  console.log('createElement start')
+  debugger
+  // console.log('createElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
 
   let propName;
@@ -191,6 +191,10 @@ export function createElement(type, config, children) {
     // Remaining properties are added to a new props object
     for (propName in config) {
       if (
+        /**
+         * hasOwnProperty.call(config, propName)的意思就是只取传给组件的prop，而不取继承而来的
+         * RESERVED_PROPS即包含key、ref、__self、__source
+         */
         hasOwnProperty.call(config, propName) &&
         !RESERVED_PROPS.hasOwnProperty(propName)
       ) {

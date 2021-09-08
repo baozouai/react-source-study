@@ -1,15 +1,9 @@
-import React from 'react'
 import ReactDOM from 'react-dom';
 import './index.css';
+
 function App() {
-  return (
-  <div className=".app">
-    1
-  </div>
-  )
+  return <div>app</div>
 }
-
-
 const root = document.getElementById('root')
 
 // Concurrent mode
