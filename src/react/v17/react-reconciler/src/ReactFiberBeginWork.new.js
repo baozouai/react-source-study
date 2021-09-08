@@ -191,7 +191,7 @@ import {
 } from './ReactFiberWorkLoop.new';
 import {unstable_wrap as Schedule_tracing_wrap} from '../../scheduler/tracing';
 import {setWorkInProgressVersion} from './ReactMutableSource.new';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 
 
 const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
@@ -216,7 +216,7 @@ export function reconcileChildren(
   renderLanes: Lanes,
 ) {
   
-  enableLog && console.log('reconcileChildren start')
+  console.log('reconcileChildren start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildren')) debugger
 
   if (current === null) {
@@ -248,7 +248,7 @@ export function reconcileChildren(
       renderLanes,
     );
   }
-  enableLog && console.log('reconcileChildren end')
+  console.log('reconcileChildren end')
 }
 
 function forceUnmountCurrentAndReconcile(
@@ -825,7 +825,7 @@ function pushHostRootContext(workInProgress) {
 
 function updateHostRoot(current, workInProgress, renderLanes) {
   
-  enableLog && console.log('updateHostRoot start')
+  console.log('updateHostRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostRoot')) debugger
   pushHostRootContext(workInProgress);
   const updateQueue = workInProgress.updateQueue;
@@ -896,7 +896,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
     reconcileChildren(current, workInProgress, nextChildren, renderLanes);
     resetHydrationState();
   }
-  enableLog && console.log('updateHostRoot end')
+  console.log('updateHostRoot end')
   return workInProgress.child;
 }
 
@@ -1104,7 +1104,7 @@ function mountIndeterminateComponent(
   renderLanes,
 ) {
   
-  enableLog && console.log('mountIndeterminateComponent start')
+  console.log('mountIndeterminateComponent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountIndeterminateComponent')) debugger
 
   if (_current !== null) {
@@ -2393,7 +2393,7 @@ export function beginWork(
   renderLanes: Lanes,
 ): Fiber | null {
   
-  enableLog && console.log('beginWork start')
+  console.log('beginWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('beginWork')) debugger
   
   // 获取workInProgress.lanes，可通过判断它是否为空去判断该节点是否需要更新

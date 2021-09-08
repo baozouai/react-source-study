@@ -19,7 +19,6 @@ import {
   enableSuspenseServerRenderer,
   enableProfilerTimer,
   enableSchedulerTracing,
-  enableLog
 } from 'shared/ReactFeatureFlags';
 import ReactSharedInternals from 'shared/ReactSharedInternals';
 import invariant from 'shared/invariant';
@@ -425,7 +424,7 @@ export function scheduleUpdateOnFiber(
   eventTime: number,
 ) {
   
-  enableLog && console.log('scheduleUpdateOnFiber start')
+  console.log('scheduleUpdateOnFiber')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('scheduleUpdateOnFiber')) debugger
 
   // 第一步，检查是否有无限更新, 例如在render函数中调用了setState
@@ -585,7 +584,7 @@ function markUpdateLaneFromFiberToRoot(
 // 通知Scheduler根据更新的优先级，决定以同步还是异步的方式调度本次更新任务
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
-  enableLog && console.log('ensureRootIsScheduled start')
+  console.log('ensureRootIsScheduled')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) debugger
   // 获取旧任务，对应task上的callback，代表当前根节点正在被调度的任务
   const existingCallbackNode = root.callbackNode;
@@ -676,7 +675,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
 // goes through Scheduler.
 function performConcurrentWorkOnRoot(root) {
 
-  enableLog && console.log('performConcurrentWorkOnRoot start')
+  console.log('performConcurrentWorkOnRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performConcurrentWorkOnRoot')) debugger
 
   // Since we know we're in a React event, we can clear the current
@@ -782,7 +781,6 @@ function performConcurrentWorkOnRoot(root) {
     // currently executed. Need to return a continuation.
     return performConcurrentWorkOnRoot.bind(null, root);
   }
-  enableLog && console.log('performConcurrentWorkOnRoot end')
   // 否则retutn null，表示任务已经完成，通知Scheduler停止调度
   return null;
 }
@@ -1177,7 +1175,7 @@ export function popRenderLanes(fiber: Fiber) {
 
 function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   // workInProgressRoot第一次在这里初始化
-  enableLog && console.log('prepareFreshStack start')
+  console.log('prepareFreshStack')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('prepareFreshStack')) debugger
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
@@ -1210,7 +1208,7 @@ function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   if (enableSchedulerTracing) {
     spawnedWorkDuringRender = null;
   }
-  enableLog && console.log('prepareFreshStack end')
+  console.log('prepareFreshStack end')
 }
 
 function handleError(root, thrownValue): void {
@@ -1434,7 +1432,7 @@ function workLoopSync() {
 
 function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
   
-  enableLog && console.log('renderRootConcurrent start')
+  console.log('renderRootConcurrent')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootConcurrent')) debugger
 
   const prevExecutionContext = executionContext;
@@ -1482,7 +1480,7 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
     // workInProgress 不为null，说明是被时间片打断的
     // return RootIncomplete说明还没完成任务
     // Still work remaining.
-    enableLog && console.log('renderRootConcurrent end')
+
     return RootIncomplete;
   } else {
     // 否则说明任务完成了
@@ -1493,7 +1491,7 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
     // Set this to null to indicate there's no in-progress render.
     workInProgressRoot = null;
     workInProgressRootRenderLanes = NoLanes;
-    enableLog && console.log('renderRootConcurrent end')
+
     // Return the final exit status.
     return workInProgressRootExitStatus;
   }
@@ -1502,7 +1500,7 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 /** @noinline */
 function workLoopConcurrent() {
 
-  enableLog && console.log('workLoopConcurrent start')
+  console.log('workLoopConcurrent start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopConcurrent')) debugger
 
   // 调用shouldYield判断如果超出时间片限制，那么结束循环
@@ -1510,12 +1508,12 @@ function workLoopConcurrent() {
   while (workInProgress !== null && !shouldYield()) {
     performUnitOfWork(workInProgress);
   }
-  enableLog && console.log('workLoopConcurrent end')
+  console.log('workLoopConcurrent end')
 }
 
 function performUnitOfWork(unitOfWork: Fiber): void {
   
-  enableLog && console.log('performUnitOfWork start')
+  console.log('performUnitOfWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performUnitOfWork')) debugger
 
   // The current, flushed, state of this fiber is the alternate. Ideally
@@ -1546,7 +1544,7 @@ function performUnitOfWork(unitOfWork: Fiber): void {
   }
 
   ReactCurrentOwner.current = null;
-  enableLog && console.log('performUnitOfWork end')
+  console.log('performUnitOfWork end')
 }
 
 function completeUnitOfWork(unitOfWork: Fiber): void {
@@ -1555,7 +1553,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   // sibling. If there are no more siblings, return to the parent fiber.
   let completedWork = unitOfWork;
   
-  enableLog && console.log('completeUnitOfWork start')
+  console.log('completeUnitOfWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeUnitOfWork')) debugger
 
   do {
@@ -1662,12 +1660,12 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   if (workInProgressRootExitStatus === RootIncomplete) {
     workInProgressRootExitStatus = RootCompleted;
   }
-  enableLog && console.log('completeUnitOfWork end')
+  console.log('completeUnitOfWork end')
 }
 // commit阶段的起点 
 function commitRoot(root) {
   
-  enableLog && console.log('commitRoot start')
+  console.log('commitRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRoot')) debugger
   
   const renderPriorityLevel = getCurrentPriorityLevel();
@@ -1676,7 +1674,7 @@ function commitRoot(root) {
     ImmediateSchedulerPriority,
     commitRootImpl.bind(null, root, renderPriorityLevel),
   );
-  enableLog && console.log('commitRoot end')
+  console.log('commitRoot end')
   return null;
 }
 
@@ -1685,7 +1683,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   // 所以在本次更新开始前，需要先将之前的useEffect都执行掉，以保证本次更新调度的
   // useEffect都是本次更新产生的
 
-  enableLog && console.log('commitRootImpl start')
+  console.log('commitRootImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitRootImpl')) debugger
 
   do {
@@ -1980,13 +1978,13 @@ function commitRootImpl(root, renderPriorityLevel) {
   // If layout work was scheduled, flush it now.
   flushSyncCallbackQueue();
 
-  enableLog && console.log('commitRootImpl end')
+  console.log('commitRootImpl end')
   return null;
 }
 
 function commitBeforeMutationEffects(firstChild: Fiber) {
 
-  enableLog && console.log('commitBeforeMutationEffects start')
+  console.log('commitBeforeMutationEffects start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffects')) debugger
 
   let fiber = firstChild;
@@ -2012,12 +2010,12 @@ function commitBeforeMutationEffects(firstChild: Fiber) {
 
     fiber = fiber.sibling;
   }
-  enableLog && console.log('commitBeforeMutationEffects end')
+  console.log('commitBeforeMutationEffects end')
 }
 
 function commitBeforeMutationEffectsImpl(fiber: Fiber) {
 
-  enableLog && console.log('commitBeforeMutationEffectsImpl start')
+  console.log('commitBeforeMutationEffectsImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationEffectsImpl')) debugger
 
   const current = fiber.alternate;
@@ -2053,7 +2051,7 @@ function commitBeforeMutationEffectsImpl(fiber: Fiber) {
       });
     }
   }
-  enableLog && console.log('commitBeforeMutationEffectsImpl end')
+  console.log('commitBeforeMutationEffectsImpl end')
 }
 
 function commitBeforeMutationEffectsDeletions(deletions: Array<Fiber>) {
@@ -2078,7 +2076,7 @@ function commitMutationEffects(
   renderPriorityLevel: ReactPriorityLevel,
 ) {
 
-  enableLog && console.log('commitMutationEffects start')
+  console.log('commitMutationEffects start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffects')) debugger
 
   let fiber = firstChild;
@@ -2111,7 +2109,7 @@ function commitMutationEffects(
 
     fiber = fiber.sibling;
   }
-  enableLog && console.log('commitMutationEffects end')
+  console.log('commitMutationEffects end')
 }
 
 function commitMutationEffectsImpl(
@@ -2119,7 +2117,7 @@ function commitMutationEffectsImpl(
   root: FiberRoot,
   renderPriorityLevel,
 ) {
-  enableLog && console.log('commitMutationEffectsImpl start')
+  console.log('commitMutationEffectsImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitMutationEffectsImpl')) debugger
 
   const flags = fiber.flags;
@@ -2185,7 +2183,7 @@ function commitMutationEffectsImpl(
       break;
     }
   }
-  enableLog && console.log('commitMutationEffectsImpl end')
+  console.log('commitMutationEffectsImpl end')
 }
 
 function commitMutationEffectsDeletions(
@@ -2223,7 +2221,7 @@ export function schedulePassiveEffectCallback() {
 
 // 返回副作用是否被清空的标志
 export function flushPassiveEffects(): boolean {
-  enableLog && console.log('flushPassiveEffects start')
+  console.log('flushPassiveEffects start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffects')) debugger
   // Returns whether passive effects were flushed.
   /**
@@ -2238,17 +2236,18 @@ export function flushPassiveEffects(): boolean {
 
     const priority = runWithPriority(priorityLevel, flushPassiveEffectsImpl);
     
-    enableLog && console.log('flushPassiveEffects end')
+    console.log('flushPassiveEffects end')
     return priority
 
   }
-  enableLog && console.log('flushPassiveEffects end')
+  console.log('flushPassiveEffects end')
   return false;
 }
 
 function flushPassiveMountEffects(root, firstChild: Fiber): void {
   let fiber = firstChild;
   while (fiber !== null) {
+    let prevProfilerOnStack = null;
 
 
     const primarySubtreeFlags = fiber.subtreeFlags & PassiveMask;
@@ -2337,12 +2336,12 @@ function flushPassiveUnmountEffectsInsideOfDeletedTree(
 
 function flushPassiveEffectsImpl() {
   
-  enableLog && console.log('flushPassiveEffectsImpl start')
+  console.log('flushPassiveEffectsImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffectsImpl')) debugger
   
   // 先校验，如果root上没有 Passive efectTag的节点，则直接return
   if (rootWithPendingPassiveEffects === null) {
-    enableLog && console.log('flushPassiveEffectsImpl end')
+    console.log('flushPassiveEffectsImpl end')
     return false;
   }
 
@@ -2386,7 +2385,7 @@ function flushPassiveEffectsImpl() {
   // exceeds the limit, we'll fire a warning.
   nestedPassiveUpdateCount =
     rootWithPendingPassiveEffects === null ? 0 : nestedPassiveUpdateCount + 1;
-  enableLog && console.log('flushPassiveEffectsImpl end')
+  console.log('flushPassiveEffectsImpl end')
   return true;
 }
 

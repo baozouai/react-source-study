@@ -6,7 +6,6 @@
  */
 
 import {enableIsInputPending} from '../SchedulerFeatureFlags';
-import { enableLog } from 'shared/ReactFeatureFlags';
 
 export let requestHostCallback;
 export let cancelHostCallback;
@@ -188,7 +187,7 @@ if (
   // 这个过程中会涉及任务的中断和恢复、任务完成状态的判断
   const performWorkUntilDeadline = () => {
     
-    enableLog && console.log('performWorkUntilDeadline start')
+    console.log('performWorkUntilDeadline start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performWorkUntilDeadline')) debugger
 
     if (scheduledHostCallback !== null) {
@@ -233,7 +232,7 @@ if (
     // Yielding to the browser will give it a chance to paint, so we can
     // reset this.
     needsPaint = false;
-    enableLog && console.log('performWorkUntilDeadline end')
+    console.log('performWorkUntilDeadline end')
   };
 
   const channel = new MessageChannel();
@@ -242,7 +241,7 @@ if (
 
   requestHostCallback = function(callback) {
     
-    enableLog && console.log('requestHostCallback start')
+    console.log('requestHostCallback')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('requestHostCallback')) debugger
     
     scheduledHostCallback = callback;

@@ -10,6 +10,7 @@
 import type {DOMEventName} from './DOMEventNames';
 import {
   type EventSystemFlags,
+  SHOULD_NOT_DEFER_CLICK_FOR_FB_SUPPORT_MODE,
   IS_LEGACY_FB_SUPPORT_MODE,
   SHOULD_NOT_PROCESS_POLYFILL_EVENT_PLUGINS,
 } from './EventSystemFlags';
@@ -20,7 +21,7 @@ import type {
 } from './ReactSyntheticEventType';
 import type {Fiber} from 'react-reconciler/src/ReactInternalTypes';
 
-import { allNativeEvents} from './EventRegistry';
+import {registrationNameDependencies, allNativeEvents} from './EventRegistry';
 import {
   IS_CAPTURE_PHASE,
   IS_EVENT_HANDLE_NON_MANAGED_NODE,
@@ -62,7 +63,7 @@ import * as ChangeEventPlugin from './plugins/ChangeEventPlugin';
 import * as EnterLeaveEventPlugin from './plugins/EnterLeaveEventPlugin';
 import * as SelectEventPlugin from './plugins/SelectEventPlugin';
 import * as SimpleEventPlugin from './plugins/SimpleEventPlugin';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 type DispatchListener = {
   instance: null | Fiber,
   listener: Function,
@@ -228,7 +229,7 @@ function processDispatchQueueItemsInOrder(
   inCapturePhase: boolean,
 ): void {
 
-  enableLog && console.log('processDispatchQueueItemsInOrder start')
+  console.log('processDispatchQueueItemsInOrder start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processDispatchQueueItemsInOrder')) debugger
 
   let previousInstance;
@@ -256,7 +257,7 @@ function processDispatchQueueItemsInOrder(
       previousInstance = instance;
     }
   }
-  enableLog && console.log('processDispatchQueueItemsInOrder end')
+  console.log('processDispatchQueueItemsInOrder end')
 }
 
 export function processDispatchQueue(
@@ -265,7 +266,7 @@ export function processDispatchQueue(
 ): void {
 
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processDispatchQueue')) {
-    enableLog && console.log('processDispatchQueue start')
+    console.log('processDispatchQueue start')
     debugger
   }
 
@@ -312,7 +313,7 @@ export function listenToNonDelegatedEvent(
   domEventName: DOMEventName,
   targetElement: Element,
 ): void {
-  enableLog && console.log('listenToNonDelegatedEvent start')
+  console.log('listenToNonDelegatedEvent start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNonDelegatedEvent')) debugger
   const isCapturePhaseListener = false;
   const listenerSet = getEventListenerSet(targetElement);
@@ -329,7 +330,7 @@ export function listenToNonDelegatedEvent(
     );
     listenerSet.add(listenerSetKey);
   }
-  enableLog && console.log('listenToNonDelegatedEvent end')
+  console.log('listenToNonDelegatedEvent end')
 }
 
 const listeningMarker =
@@ -340,7 +341,7 @@ const listeningMarker =
 
 export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   
-  enableLog && console.log('listenToAllSupportedEvents start')
+  console.log('listenToAllSupportedEvents start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToAllSupportedEvents')) debugger
   if (rootContainerElement[listeningMarker]) {
     // 第一次的是false
@@ -368,7 +369,7 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
       null,
     );
   });
-  enableLog && console.log('listenToAllSupportedEvents end')
+  console.log('listenToAllSupportedEvents end')
 }
 
 export function listenToNativeEvent(
@@ -379,7 +380,7 @@ export function listenToNativeEvent(
   eventSystemFlags?: EventSystemFlags = 0,
 ): void {
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNativeEvent')) && domEventName === 'click') {
-    enableLog && console.log('listenToNativeEvent start')
+    console.log('listenToNativeEvent start')
     debugger
   }
   let target = rootContainerElement;
@@ -439,7 +440,8 @@ export function listenToNativeEvent(
     listenerSet.add(listenerSetKey);
   }
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('listenToNativeEvent')) && domEventName === 'click') {
-    enableLog && console.log('listenToNativeEvent end')
+    console.log('listenToNativeEvent end')
+    debugger
   }
 }
 
@@ -458,7 +460,7 @@ function addTrappedEventListener(
   isDeferredListenerForLegacyFBSupport?: boolean,
 ) {
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('addTrappedEventListener')) && domEventName === 'click') {
-    enableLog && console.log('addTrappedEventListener start')
+    console.log('addTrappedEventListener start')
     debugger
   }
   // 根据事件优先级创建事件监听器wrapper(bind)
@@ -532,7 +534,8 @@ function addTrappedEventListener(
     }
   }
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('addTrappedEventListener')) && domEventName === 'click') {
-    enableLog && console.log('addTrappedEventListener end')
+    console.log('addTrappedEventListener end')
+    debugger
   }
 }
 
@@ -573,7 +576,7 @@ export function dispatchEventForPluginEventSystem(
 ): void {
 
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventForPluginEventSystem') && domEventName === 'click') {
-    enableLog && console.log('dispatchEventForPluginEventSystem start')
+    console.log('dispatchEventForPluginEventSystem start')
     debugger
   }
 
@@ -666,7 +669,7 @@ export function dispatchEventForPluginEventSystem(
     ),
   );
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEventForPluginEventSystem') && domEventName === 'click') {
-    enableLog && console.log('dispatchEventForPluginEventSystem end')
+    console.log('dispatchEventForPluginEventSystem end')
   }
 }
 
@@ -691,7 +694,7 @@ export function accumulateSinglePhaseListeners(
 ): Array<DispatchListener> {
 
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('accumulateSinglePhaseListeners') && reactName === 'onClick') {
-    enableLog && console.log('accumulateSinglePhaseListeners start')
+    console.log('accumulateSinglePhaseListeners start')
     debugger
   }
 
@@ -731,7 +734,7 @@ export function accumulateSinglePhaseListeners(
     instance = instance.return;
   }
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('accumulateSinglePhaseListeners') && reactName === 'onClick') {
-    enableLog && console.log('accumulateSinglePhaseListeners end')
+    console.log('accumulateSinglePhaseListeners start')
   }
   return listeners;
 }

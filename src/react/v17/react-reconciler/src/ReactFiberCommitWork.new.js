@@ -75,6 +75,10 @@ import {onCommitUnmount} from './ReactFiberDevToolsHook.new';
 import {resolveDefaultProps} from './ReactFiberLazyComponent.new';
 import {
   getCommitTime,
+  recordLayoutEffectDuration,
+  startLayoutEffectTimer,
+  recordPassiveEffectDuration,
+  startPassiveEffectTimer,
 } from './ReactProfilerTimer.new';
 import {ProfileMode} from './ReactTypeOfMode';
 import {commitUpdateQueue} from './ReactUpdateQueue.new';
@@ -101,9 +105,12 @@ import {
   hideTextInstance,
   unhideInstance,
   unhideTextInstance,
+  unmountFundamentalComponent,
+  updateFundamentalComponent,
   commitHydratedContainer,
   commitHydratedSuspenseInstance,
   clearContainer,
+  prepareScopeUpdate,
 } from './ReactFiberHostConfig';
 import {
   captureCommitPhaseError,
@@ -117,7 +124,10 @@ import {
   Layout as HookLayout,
   Passive as HookPassive,
 } from './ReactHookEffectTags';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
+
+// Used to avoid traversing the return path to find the nearest Profiler ancestor during commit.
+let nearestProfilerOnStack: Fiber | null = null;
 
 
 const PossiblyWeakSet = typeof WeakSet === 'function' ? WeakSet : Set;
@@ -179,7 +189,7 @@ function commitBeforeMutationLifeCycles(
   finishedWork: Fiber,
 ): void {
 
-  enableLog && console.log('commitBeforeMutationLifeCycles start')
+  console.log('commitBeforeMutationLifeCycles start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitBeforeMutationLifeCycles')) debugger
 
   switch (finishedWork.tag) {
@@ -210,7 +220,7 @@ function commitBeforeMutationLifeCycles(
           instance.__reactInternalSnapshotBeforeUpdate = snapshot;
         }
       }
-      enableLog && console.log('commitBeforeMutationLifeCycles end')
+      console.log('commitBeforeMutationLifeCycles end')
 
       return;
     }
@@ -219,7 +229,7 @@ function commitBeforeMutationLifeCycles(
         const root = finishedWork.stateNode;
         clearContainer(root.containerInfo);
       }
-      enableLog && console.log('commitBeforeMutationLifeCycles end')
+      console.log('commitBeforeMutationLifeCycles end')
 
       return;
     }
@@ -227,7 +237,7 @@ function commitBeforeMutationLifeCycles(
     case HostText: // 6
     case HostPortal: // 4
     case IncompleteClassComponent: // 17
-      enableLog && console.log('commitBeforeMutationLifeCycles end')
+      console.log('commitBeforeMutationLifeCycles end')
 
       // Nothing to do for these component types
       return;
@@ -245,7 +255,7 @@ function commitHookEffectListUnmount(
   nearestMountedAncestor: Fiber | null,
 ) {
 
-  enableLog && console.log('commitHookEffectListUnmount start')
+  console.log('commitHookEffectListUnmount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListUnmount')) debugger
 
   const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
@@ -266,7 +276,7 @@ function commitHookEffectListUnmount(
       effect = effect.next;
     } while (effect !== firstEffect);
   }
-  enableLog && console.log('commitHookEffectListUnmount end')
+  console.log('commitHookEffectListUnmount end')
 }
 /**
  * @description: 处理useEffect
@@ -276,7 +286,7 @@ function commitHookEffectListUnmount(
  */
 function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
   
-  enableLog && console.log('commitHookEffectListMount start')
+  console.log('commitHookEffectListMount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitHookEffectListMount')) debugger
 
   const updateQueue: FunctionComponentUpdateQueue | null = finishedWork.updateQueue;
@@ -294,7 +304,7 @@ function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
       effect = effect.next;
     } while (effect !== firstEffect);
   }
-  enableLog && console.log('commitHookEffectListMount end')
+  console.log('commitHookEffectListMount end')
 }
 
 
@@ -302,7 +312,7 @@ function recursivelyCommitLayoutEffects(
   finishedWork: Fiber,
   finishedRoot: FiberRoot,
 ) {
-  enableLog && console.log('recursivelyCommitLayoutEffects start')
+  console.log('recursivelyCommitLayoutEffects start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('recursivelyCommitLayoutEffects')) debugger
 
   const { flags, tag } = finishedWork;
@@ -429,7 +439,7 @@ function recursivelyCommitLayoutEffects(
       break;
     }
   }
-  enableLog && console.log('recursivelyCommitLayoutEffects end')
+  console.log('recursivelyCommitLayoutEffects end')
 }
 
 function commitLayoutEffectsForProfiler(
@@ -867,7 +877,7 @@ function isHostParent(fiber: Fiber): boolean {
  */
 function getHostSibling(fiber: Fiber): ?Instance {
 
-  enableLog && console.log('getHostSibling start')
+  console.log('getHostSibling start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getHostSibling')) debugger
 
   // We're going to search forward into the tree until we find a sibling host
@@ -922,7 +932,7 @@ function getHostSibling(fiber: Fiber): ?Instance {
 
 function commitPlacement(finishedWork: Fiber): void {
 
-  enableLog && console.log('commitPlacement start')
+  console.log('commitPlacement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPlacement')) debugger
 
 
@@ -978,7 +988,7 @@ function commitPlacement(finishedWork: Fiber): void {
   } else {
     insertOrAppendPlacementNode(finishedWork, before, parent);
   }
-  enableLog && console.log('commitPlacement end')
+  console.log('commitPlacement end')
 }
 
 function insertOrAppendPlacementNodeIntoContainer(
@@ -987,7 +997,7 @@ function insertOrAppendPlacementNodeIntoContainer(
   parent: Container,
 ): void {
 
-  enableLog && console.log('insertOrAppendPlacementNodeIntoContainer start')
+  console.log('insertOrAppendPlacementNodeIntoContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('insertOrAppendPlacementNodeIntoContainer')) debugger
 
   const { tag } = node;
@@ -1022,7 +1032,7 @@ function insertOrAppendPlacementNodeIntoContainer(
       }
     }
   }
-  enableLog && console.log('insertOrAppendPlacementNodeIntoContainer end')
+  console.log('insertOrAppendPlacementNodeIntoContainer end')
 }
 
 function insertOrAppendPlacementNode(
@@ -1031,7 +1041,7 @@ function insertOrAppendPlacementNode(
   parent: Instance,
 ): void {
 
-  enableLog && console.log('insertOrAppendPlacementNode start')
+  console.log('insertOrAppendPlacementNode start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('insertOrAppendPlacementNode')) debugger
 
   const {tag} = node;
@@ -1066,7 +1076,7 @@ function insertOrAppendPlacementNode(
       }
     }
   }
-  enableLog && console.log('insertOrAppendPlacementNode end')
+  console.log('insertOrAppendPlacementNode end')
 }
 
 function unmountHostComponents(
@@ -1240,7 +1250,7 @@ function commitDeletion(
 }
 
 function commitWork(current: Fiber | null, finishedWork: Fiber): void {
-  enableLog && console.log('commitWork start')
+  console.log('commitWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitWork')) debugger
   if (!supportsMutation) { // supportsMutation === true
     switch (finishedWork.tag) {
@@ -1259,7 +1269,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           finishedWork,
           finishedWork.return,
         );
-        enableLog && console.log('commitWork end')
+        console.log('commitWork end')
         return;
       }
       case Profiler: {
@@ -1268,12 +1278,12 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       case SuspenseComponent: {
         commitSuspenseComponent(finishedWork);
         attachSuspenseRetryListeners(finishedWork);
-        enableLog && console.log('commitWork end')
+        console.log('commitWork end')
         return;
       }
       case SuspenseListComponent: {
         attachSuspenseRetryListeners(finishedWork);
-        enableLog && console.log('commitWork end')
+        console.log('commitWork end')
         return;
       }
       case HostRoot: {
@@ -1289,13 +1299,13 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       }
       case OffscreenComponent:
       case LegacyHiddenComponent: {
-        enableLog && console.log('commitWork end')
+        console.log('commitWork end')
         return;
       }
     }
 
     commitContainer(finishedWork);
-    enableLog && console.log('commitWork end')
+    console.log('commitWork end')
     return;
   }
 
@@ -1315,11 +1325,11 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           finishedWork,
           finishedWork.return,
         );
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case ClassComponent: {
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case HostComponent: {
@@ -1346,7 +1356,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           );
         }
       }
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case HostText: {
@@ -1363,7 +1373,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       const oldText: string =
         current !== null ? current.memoizedProps : newText;
       commitTextUpdate(textInstance, oldText, newText);
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case HostRoot: {
@@ -1375,26 +1385,26 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
           commitHydratedContainer(root.containerInfo);
         }
       }
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case Profiler: {
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case SuspenseComponent: {
       commitSuspenseComponent(finishedWork);
       attachSuspenseRetryListeners(finishedWork);
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case SuspenseListComponent: {
       attachSuspenseRetryListeners(finishedWork);
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case IncompleteClassComponent: {
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
     case FundamentalComponent: {
@@ -1408,7 +1418,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
       const newState: OffscreenState | null = finishedWork.memoizedState;
       const isHidden = newState !== null;
       hideOrUnhideAllChildren(finishedWork, isHidden);
-      enableLog && console.log('commitWork end')
+      console.log('commitWork end')
       return;
     }
   }
@@ -1516,7 +1526,7 @@ function commitResetTextContent(current: Fiber): void {
 }
 
 function commitPassiveUnmount(finishedWork: Fiber): void {
-  enableLog && console.log('commitPassiveUnmount start')
+  console.log('commitPassiveUnmount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmount')) debugger
   switch (finishedWork.tag) {
     case FunctionComponent:
@@ -1531,14 +1541,14 @@ function commitPassiveUnmount(finishedWork: Fiber): void {
       break;
     }
   }
-  enableLog && console.log('commitPassiveUnmount end')
+  console.log('commitPassiveUnmount end')
 }
 
 function commitPassiveUnmountInsideDeletedTree(
   current: Fiber,
   nearestMountedAncestor: Fiber | null,
 ): void {
-  enableLog && console.log('commitPassiveUnmountInsideDeletedTree start')
+  console.log('commitPassiveUnmountInsideDeletedTree start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmountInsideDeletedTree')) debugger
   switch (current.tag) {
     case FunctionComponent:
@@ -1553,14 +1563,14 @@ function commitPassiveUnmountInsideDeletedTree(
       break;
     }
   }
-  enableLog && console.log('commitPassiveUnmountInsideDeletedTree end')
+  console.log('commitPassiveUnmountInsideDeletedTree end')
 }
 
 function commitPassiveMount(
   finishedRoot: FiberRoot,
   finishedWork: Fiber,
 ): void {
-  enableLog && console.log('commitPassiveMount start')
+  console.log('commitPassiveMount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveMount')) debugger
   switch (finishedWork.tag) {
     case FunctionComponent:
@@ -1574,7 +1584,7 @@ function commitPassiveMount(
       break;
     }
   }
-  enableLog && console.log('commitPassiveMount end')
+  console.log('commitPassiveMount end')
 }
 
 export {

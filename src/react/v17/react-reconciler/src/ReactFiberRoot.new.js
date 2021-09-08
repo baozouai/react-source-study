@@ -20,7 +20,6 @@ import {
 } from './ReactFiberLane';
 import {
   enableSchedulerTracing,
-  enableLog
 } from 'shared/ReactFeatureFlags';
 import {unstable_getThreadID} from '../../scheduler/tracing';
 import {initializeUpdateQueue} from './ReactUpdateQueue.new';
@@ -82,7 +81,7 @@ export function createFiberRoot(
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): FiberRoot {
 
-  enableLog && console.log('ReactFiberRoot: createFiberRoot')
+  console.log('ReactFiberRoot: createFiberRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberRoot')) debugger
 
   // 创建fiberRootNode

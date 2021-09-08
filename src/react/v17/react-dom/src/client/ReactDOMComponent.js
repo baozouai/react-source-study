@@ -63,7 +63,7 @@ import {
   mediaEventTypes,
   listenToNonDelegatedEvent,
 } from '../events/DOMPluginEventSystem';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 
 const DANGEROUSLY_SET_INNER_HTML = 'dangerouslySetInnerHTML';
 const SUPPRESS_CONTENT_EDITABLE_WARNING = 'suppressContentEditableWarning';
@@ -109,7 +109,7 @@ function setInitialDOMProperties(
   isCustomComponentTag: boolean,
 ): void {
   
-  enableLog && console.log('setInitialDOMProperties start')
+  console.log('setInitialDOMProperties start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('setInitialDOMProperties')) debugger
   
   for (const propKey in nextProps) {
@@ -194,7 +194,7 @@ export function createElement(
 ): Element {
   let isCustomComponentTag;
 
-  enableLog && console.log('ReactDomComponent: createElement')
+  console.log('ReactDomComponent: createElement')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
   
   // We create tags in the namespace of their parent container, except HTML
@@ -395,7 +395,7 @@ export function diffProperties(
   rootContainerElement: Element | Document,
 ): null | Array<mixed> {
 
-  enableLog && console.log('diffProperties start')
+  console.log('diffProperties start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('diffProperties')) debugger
   // updatePayload为[key1, value1, key2, value2,...]
   let updatePayload: null | Array<any> = null;
@@ -612,7 +612,7 @@ export function diffProperties(
 
     (updatePayload = updatePayload || []).push(STYLE, styleUpdates);
   }
-  enableLog && console.log('diffProperties end')
+  console.log('diffProperties end')
   return updatePayload;
 }
 

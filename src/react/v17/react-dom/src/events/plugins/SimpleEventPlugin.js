@@ -45,7 +45,7 @@ import {IS_EVENT_HANDLE_NON_MANAGED_NODE} from '../EventSystemFlags';
 
 import getEventCharCode from '../getEventCharCode';
 import {IS_CAPTURE_PHASE} from '../EventSystemFlags';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 
 function extractEvents(
   dispatchQueue: DispatchQueue,
@@ -58,7 +58,7 @@ function extractEvents(
 ): void {
   
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('extractEvents')) && domEventName === 'click') {
-    enableLog && console.log('extractEvents start')
+    console.log('extractEvents start')
     debugger
   }
   // 获取domEventName对应的ReactEventName，如click => onClick

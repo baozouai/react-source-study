@@ -50,7 +50,7 @@ import {
   flushDiscreteUpdatesIfNeeded,
   discreteUpdates,
 } from './ReactDOMUpdateBatching';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 
 const {
   unstable_UserBlockingPriority: UserBlockingPriority,
@@ -76,7 +76,7 @@ export function createEventListenerWrapper(
   eventSystemFlags: EventSystemFlags,
 ): Function {
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapper')) && domEventName === 'click') {
-    enableLog && console.log('createEventListenerWrapper start')
+    console.log('createEventListenerWrapper start')
     debugger
   }
 
@@ -95,7 +95,7 @@ export function createEventListenerWrapperWithPriority(
 ): Function {
 
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') {
-    enableLog && console.log('createEventListenerWrapperWithPriority start')
+    console.log('createEventListenerWrapperWithPriority start')
     debugger
   }
   // 根据dom事件名获取时间优先级
@@ -117,7 +117,7 @@ export function createEventListenerWrapperWithPriority(
       break;
   }
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') {
-    enableLog && console.log('createEventListenerWrapperWithPriority end')
+    console.log('createEventListenerWrapperWithPriority end')
   }
   return listenerWrapper.bind(
     null,
@@ -181,7 +181,7 @@ export function dispatchEvent(
 ): void {
 
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEvent') && domEventName === 'click') {
-    enableLog && console.log('dispatchEvent start')
+    console.log('dispatchEvent start')
     debugger
   }
 
@@ -267,7 +267,7 @@ export function dispatchEvent(
     targetContainer,
   );
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchEvent') && domEventName === 'click') {
-    enableLog && console.log('dispatchEvent end')
+    console.log('dispatchEvent end')
   }
 }
 
