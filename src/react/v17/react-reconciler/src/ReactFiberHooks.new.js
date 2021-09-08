@@ -74,7 +74,6 @@ import {
   setWorkInProgressVersion,
 } from './ReactMutableSource.new';
 import {markStateUpdateScheduled} from './SchedulingProfiler';
-import { enableLog } from 'shared/ReactFeatureFlags';
 
 const {ReactCurrentDispatcher, ReactCurrentBatchConfig} = ReactSharedInternals;
 
@@ -211,7 +210,7 @@ export function renderWithHooks<Props, SecondArg>(
   nextRenderLanes: Lanes,
 ): any {
   
-  enableLog && console.log('ReactFiberHooks.new: renderWithHooks start')
+  console.log('ReactFiberHooks.new: renderWithHooks')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) debugger
   
   renderLanes = nextRenderLanes;
@@ -908,7 +907,7 @@ function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
 
-  enableLog && console.log('mountState start')
+  console.log('mountState start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) debugger
 
   const hook = mountWorkInProgressHook();
@@ -1352,7 +1351,7 @@ function dispatchAction<S, A>(
   action: A,
 ) {
 
-  enableLog && console.log('dispatchAction start')
+  console.log('dispatchAction start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) debugger
 
   const eventTime = requestEventTime();
@@ -1428,7 +1427,7 @@ function dispatchAction<S, A>(
     }
     // 模拟React开始调度更新
     scheduleUpdateOnFiber(fiber, lane, eventTime);
-    enableLog && console.log('dispatchAction end')
+    console.log('dispatchAction end')
   }
 
 

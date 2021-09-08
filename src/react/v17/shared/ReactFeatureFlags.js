@@ -137,5 +137,3 @@ export const enableDiscreteEventFlushingChange = false;
 export const enableEagerRootListeners = true;
 
 export const enableDoubleInvokingEffects = false;
-// 控制是否log
-export const enableLog = false;

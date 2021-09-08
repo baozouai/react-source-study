@@ -35,7 +35,7 @@ import {
   ConcurrentRoot,
   LegacyRoot,
 } from 'react-reconciler/src/ReactRootTags';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 export type RootType = {
   render(children: ReactNodeList): void,
   unmount(): void,
@@ -56,7 +56,7 @@ export type RootOptions = {
 
 function ReactDOMRoot(container: Container, options: void | RootOptions) {
   
-  enableLog && console.log('ReactDomRoot: ReactDOMRoot')
+  console.log('ReactDomRoot: ReactDOMRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactDOMRoot')) debugger
 
   this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
@@ -74,7 +74,7 @@ ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function
   children: ReactNodeList,
 ): void {
   
-  enableLog && console.log('Scheduler: render start')
+  console.log('Scheduler: render start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('render')) debugger
   
   const root = this._internalRoot;
@@ -97,7 +97,7 @@ function createRootImpl(
   options: void | RootOptions,
 ) {
   
-  enableLog && console.log('ReactDomRoot: createRootImpl')
+  console.log('ReactDomRoot: createRootImpl')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createRootImpl')) debugger
   // Tag is either LegacyRoot or Concurrent Root
   const hydrate = options != null && options.hydrate === true;
@@ -132,7 +132,7 @@ export function createRoot(
   options?: RootOptions,
 ): RootType {
   
-  enableLog && console.log('ReactDomRoot: createRoot')
+  console.log('ReactDomRoot: createRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createRoot')) debugger
   invariant(
     isValidContainer(container),

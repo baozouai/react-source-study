@@ -18,7 +18,6 @@ import type {OpaqueIDType} from 'react-reconciler/src/ReactFiberHostConfig';
 import invariant from 'shared/invariant';
 
 import ReactCurrentDispatcher from './ReactCurrentDispatcher';
-import { enableLog } from 'shared/ReactFeatureFlags';
 
 type BasicStateAction<S> = (S => S) | S;
 type Dispatch<A> = A => void;
@@ -49,11 +48,11 @@ export function useContext<T>(
 export function useState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  enableLog && console.log('useState start')
+  console.log('useState start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useState')) debugger
   const dispatcher = resolveDispatcher();
   const dispatcherUseState = dispatcher.useState(initialState);
-  enableLog && console.log('useState end')
+  console.log('useState end')
   return dispatcherUseState
 }
 

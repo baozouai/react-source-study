@@ -47,9 +47,7 @@ const resolveModule = (resolveFn, filePath) => {
 
   return resolveFn(`${filePath}.js`);
 };
-const SRC_INDEX_PATH = process.env.SRC_INDEX_PATH || 'index'
-console.log(typeof SRC_INDEX_PATH)
-const isJSXRuntime = SRC_INDEX_PATH && SRC_INDEX_PATH.indexOf('jsx-runtime') !== -1
+
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
@@ -57,7 +55,7 @@ module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, `src/${SRC_INDEX_PATH}`),
+  appIndexJs: resolveModule(resolveApp, 'src/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),
@@ -67,7 +65,6 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrlOrPath,
-  isJSXRuntime,
 };
 
 

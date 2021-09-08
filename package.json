@@ -67,9 +67,7 @@
     "dev:17": "cross-env REACT_VERSION=v17 node scripts/start.js",
     "dev": "npm run dev:17",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
-    "runtime": "cross-env SRC_INDEX_PATH=index-jsx-runtime npm run dev",
-    "feact": "cross-env SRC_INDEX_PATH=index-feact-jsx-runtime npm run dev"
+    "test": "node scripts/test.js"
   },
   "eslintConfig": {
     "extends": "react-app"

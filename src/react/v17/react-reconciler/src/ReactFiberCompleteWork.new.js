@@ -120,7 +120,6 @@ import {
   enableSuspenseServerRenderer,
   enableBlocksAPI,
   enableProfilerTimer,
-  enableLog
 } from 'shared/ReactFeatureFlags';
 import {
   markSpawnedWork,
@@ -185,7 +184,7 @@ const appendAllChildren = function(
   // We only have the top Fiber that was created but we need recurse down its
   // children to find all the terminal nodes.
   
-  enableLog && console.log('appendAllChildren')
+  console.log('appendAllChildren')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('appendAllChildren')) debugger
 
   let node = workInProgress.child;
@@ -235,8 +234,8 @@ const updateHostComponent = function(
   rootContainerInstance: Container,
 ) {
   
-  enableLog && console.log('updateHostComponent start')
-if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostComponent')) debugger
+  console.log('FiberNode')
+if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) debugger
   // If we have an alternate, that means this is an update and we need to
   // schedule a side-effect to do the updates.
   const oldProps = current.memoizedProps;
@@ -361,7 +360,7 @@ function cutOffTailIfNeeded(
 
 function bubbleProperties(completedWork: Fiber) {
 
-  enableLog && console.log('bubbleProperties')
+  console.log('bubbleProperties')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('bubbleProperties')) debugger
 
   const didBailout =
@@ -481,7 +480,7 @@ function completeWork(
   renderLanes: Lanes,
 ): Fiber | null {
 
-  enableLog && console.log('completeWork start')
+  console.log('completeWork')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('completeWork')) debugger
 
   const newProps = workInProgress.pendingProps;
