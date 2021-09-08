@@ -63,6 +63,7 @@ import {HostComponent, HostText} from 'react-reconciler/src/ReactWorkTags';
 import {
   listenToAllSupportedEvents,
 } from '../events/DOMPluginEventSystem';
+import { enableLog } from 'shared/ReactFeatureFlags';
 
 export type Type = string;
 export type Props = {
@@ -224,7 +225,7 @@ export function createInstance(
   internalInstanceHandle: Object,
 ): Instance {
   
-  console.log('ReactChildHostConfig: createInstance')
+  enableLog && console.log('ReactChildHostConfig: createInstance')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createInstance')) debugger
 
   const parentNamespace = (hostContext: HostContextProd);
@@ -270,7 +271,7 @@ export function prepareUpdate(
   rootContainerInstance: Container,
   hostContext: HostContext,
 ): null | Array<mixed> {
-  console.log('ReactChildHostConfig start')
+  enableLog && console.log('ReactChildHostConfig start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactChildHostConfig')) debugger
   return diffProperties(
     domElement,
@@ -381,7 +382,7 @@ export function appendChildToContainer(
   container: Container,
   child: Instance | TextInstance,
 ): void {
-  console.log('appendChildToContainer start')
+  enableLog && console.log('appendChildToContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('appendChildToContainer')) debugger
   let parentNode;
   // COMMENT_NODE === 8;
@@ -408,7 +409,7 @@ export function appendChildToContainer(
     // TODO: This cast may not be sound for SVG, MathML or custom elements.
     trapClickOnNonInteractiveElement(((parentNode: any): HTMLElement));
   }
-  console.log('appendChildToContainer end')
+  enableLog && console.log('appendChildToContainer end')
 }
 
 export function insertBefore(
@@ -547,7 +548,7 @@ export function unhideTextInstance(
 
 export function clearContainer(container: Container): void {
   
-  console.log('clearContainer start')
+  enableLog && console.log('clearContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('clearContainer')) debugger
   
   if (container.nodeType === ELEMENT_NODE) { // ELEMENT_NODE === 1

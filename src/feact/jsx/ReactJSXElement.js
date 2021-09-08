@@ -78,7 +78,7 @@ const ReactElement = function(type, key, ref, self, source, owner, props) {
  * @param {string} key
  */
 export function jsx(type, config, maybeKey) {
-  // 这是是react/jsx-runtime调用的
+   // 这是是feact/jsx-runtime调用的
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('jsx')) debugger
   let propName;
 

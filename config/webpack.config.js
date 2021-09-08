@@ -147,6 +147,7 @@ module.exports = function(webpackEnv) {
     'scheduler': path.resolve(__dirname, `../src/react/${REACT_VERSION}/scheduler`),
 
     'react-reconciler': path.resolve(__dirname, `../src/react/${REACT_VERSION}/react-reconciler`),
+    'feact': path.resolve(__dirname, `../src/feact`),
   }
   if (REACT_VERSION === 'none') {
     alias = {}
@@ -349,9 +350,9 @@ module.exports = function(webpackEnv) {
             ),
             plugins: [
               [require.resolve('@babel/plugin-transform-flow-strip-types')],
-              ['@babel/plugin-transform-react-jsx',{runtime:'automatic'}]
+              paths.isJSXRuntime && ['@babel/plugin-transform-react-jsx',{runtime:'automatic', importSource: paths.appIndexJs.indexOf('feact') !== -1 ? 'feact': 'react'}]
               // 配置忽略flow类型检测
-            ],
+            ].filter(Boolean),
           },
 /*          use: [
             {

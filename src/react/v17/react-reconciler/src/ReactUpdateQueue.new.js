@@ -94,7 +94,7 @@ import {Callback, ShouldCapture, DidCapture} from './ReactFiberFlags';
 
 import { markSkippedUpdateLanes } from './ReactFiberWorkLoop.new';
 import invariant from 'shared/invariant';
-
+import { enableLog } from 'shared/ReactFeatureFlags';
 
 export type Update<State> = {
   // TODO: Temporary field. Will remove this by storing a map of
@@ -135,7 +135,7 @@ export let resetCurrentlyProcessingQueue;
 
 export function initializeUpdateQueue<State>(fiber: Fiber): void {
   
-  console.log('initializeUpdateQueue start')
+  enableLog && console.log('initializeUpdateQueue start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('initializeUpdateQueue')) debugger
 
   const queue: UpdateQueue<State> = {
@@ -199,7 +199,7 @@ export function createUpdate(eventTime: number, lane: Lane): Update<*> {
 
 export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
   
-  console.log('enqueueUpdate start')
+  enableLog && console.log('enqueueUpdate start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('enqueueUpdate')) debugger
 
   const updateQueue = fiber.updateQueue;
@@ -310,7 +310,7 @@ function getStateFromUpdate<State>(
   instance: any,
 ): any {
 
-  console.log('getStateFromUpdate')
+  enableLog && console.log('getStateFromUpdate start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('getStateFromUpdate')) debugger
 
   switch (update.tag) {
@@ -378,7 +378,7 @@ export function processUpdateQueue<State>(
   instance: any,
   renderLanes: Lanes,
 ): void {
-  console.log('processUpdateQueue start')
+  enableLog && console.log('processUpdateQueue start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processUpdateQueue')) debugger
   // This is always non-null on a ClassComponent or HostRoot
   const queue: UpdateQueue<State> = (workInProgress.updateQueue: any);
@@ -615,7 +615,7 @@ export function processUpdateQueue<State>(
     workInProgress.memoizedState = newState;
   }
 
-  console.log('processUpdateQueue end')
+  enableLog && console.log('processUpdateQueue end')
 }
 
 function callCallback(callback, context) {

@@ -1,15 +1,12 @@
-import React from 'react'
 import ReactDOM from 'react-dom';
 import './index.css';
+
 function App() {
-  return (
-  <div className=".app">
-    1
+  return <div className=".app"> 
+    <span>span1</span>
+    <span>span2</span>
   </div>
-  )
 }
-
-
 const root = document.getElementById('root')
 
 // Concurrent mode

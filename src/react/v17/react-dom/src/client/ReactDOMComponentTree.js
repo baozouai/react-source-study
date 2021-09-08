@@ -31,7 +31,7 @@ import {
 import {getParentSuspenseInstance} from './ReactDOMHostConfig';
 
 import invariant from 'shared/invariant';
-import {enableScopeAPI} from 'shared/ReactFeatureFlags';
+import {enableScopeAPI, enableLog} from 'shared/ReactFeatureFlags';
 
 const randomKey = Math.random()
   .toString(36)
@@ -48,7 +48,7 @@ export function precacheFiberNode(
   node: Instance | TextInstance | SuspenseInstance | ReactScopeInstance,
 ): void {
 
-  console.log('ReactDomComponentTree: createElement')
+  enableLog && console.log('ReactDomComponentTree: createElement')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
   
   (node: any)[internalInstanceKey] = hostInst;
@@ -56,7 +56,7 @@ export function precacheFiberNode(
 
 export function markContainerAsRoot(hostRoot: Fiber, node: Container): void {
   
-  console.log('ReactDomComponentTree: markContainerAsRoot')
+  enableLog && console.log('ReactDomComponentTree: markContainerAsRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('markContainerAsRoot')) debugger
   node[internalContainerInstanceKey] = hostRoot;
 }
@@ -201,7 +201,7 @@ export function updateFiberProps(
   props: Props,
 ): void {
  
-  console.log('ReactDomComponentTree: updateFiberProps')
+  enableLog && console.log('ReactDomComponentTree: updateFiberProps')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateFiberProps')) debugger
   (node: any)[internalPropsKey] = props;
 }
