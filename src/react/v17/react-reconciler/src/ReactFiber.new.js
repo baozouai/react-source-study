@@ -26,6 +26,7 @@ import invariant from 'shared/invariant';
 import {
   enableProfilerTimer,
   enableBlocksAPI,
+  enableLog,
 } from 'shared/ReactFeatureFlags';
 import {NoFlags, Placement, StaticMask} from './ReactFiberFlags';
 import {ConcurrentRoot, BlockingRoot} from './ReactRootTags';
@@ -131,7 +132,7 @@ function FiberNode(
   /** 模式，如ConcurrentRoot模式 */ 
   this.mode = mode;
   
-  console.log('FiberNode')
+  enableLog && console.log('FiberNode')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) debugger
   // Effects
   this.flags = NoFlags;
@@ -191,11 +192,11 @@ const createFiber = function(
   mode: TypeOfMode,
 ): Fiber {
  
-  console.log('createFiber start')
+  enableLog && console.log('createFiber start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiber')) debugger
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
   const fiberNode = new FiberNode(tag, pendingProps, key, mode);
-  console.log('createFiber end')
+  enableLog && console.log('createFiber end')
   return fiberNode
 };
 // 判断是不是class组件
@@ -239,7 +240,7 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
   
-  console.log('createWorkInProgress start')
+  enableLog && console.log('createWorkInProgress start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createWorkInProgress')) debugger
   
   if (workInProgress === null) {
@@ -312,7 +313,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     workInProgress.selfBaseDuration = current.selfBaseDuration;
     workInProgress.treeBaseDuration = current.treeBaseDuration;
   }
-  console.log('createWorkInProgress end')
+  enableLog && console.log('createWorkInProgress end')
   return workInProgress;
 }
 
@@ -390,7 +391,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 
 export function createHostRootFiber(tag: RootTag): Fiber {
   
-  console.log('createHostRootFiber start')
+  enableLog && console.log('createHostRootFiber start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createHostRootFiber')) debugger
 
   let mode;
@@ -413,7 +414,7 @@ export function createHostRootFiber(tag: RootTag): Fiber {
   }
 
   const newFiber = createFiber(HostRoot, null, null, mode);
-  console.log('createHostRootFiber end')
+  enableLog && console.log('createHostRootFiber end')
   return newFiber
 }
 
@@ -426,7 +427,7 @@ export function createFiberFromTypeAndProps(
   lanes: Lanes,
 ): Fiber {
   
-  console.log('createFiberFromTypeAndProps start')
+  enableLog && console.log('createFiberFromTypeAndProps start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromTypeAndProps')) debugger
 
   let fiberTag = IndeterminateComponent;
@@ -509,7 +510,7 @@ export function createFiberFromTypeAndProps(
   fiber.type = resolvedType;
   fiber.lanes = lanes;
 
-  console.log('createFiberFromTypeAndProps end')
+  enableLog && console.log('createFiberFromTypeAndProps end')
 
   return fiber;
 }
@@ -520,7 +521,7 @@ export function createFiberFromElement(
   lanes: Lanes,
 ): Fiber {
   
-  console.log('createFiberFromElement start')
+  enableLog && console.log('createFiberFromElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createFiberFromElement')) debugger
 
   let owner = null;
@@ -537,7 +538,7 @@ export function createFiberFromElement(
     mode,
     lanes,
   );
-  console.log('createFiberFromElement end')
+  enableLog && console.log('createFiberFromElement end')
   return fiber;
 }
 

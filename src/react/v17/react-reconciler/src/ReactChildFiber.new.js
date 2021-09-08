@@ -49,7 +49,7 @@ import {
   createFiberFromPortal,
 } from './ReactFiber.new';
 import {emptyRefsObject} from './ReactFiberClassComponent.new';
-
+import { enableLog } from 'shared/ReactFeatureFlags';
 
 
 
@@ -412,7 +412,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
-    console.log('createChild start')
+    enableLog && console.log('createChild start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createChild')) debugger
     
     if (typeof newChild === 'string' || typeof newChild === 'number') {
@@ -425,7 +425,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         lanes,
       );
       created.return = returnFiber;
-      console.log('createChild end')
+      enableLog && console.log('createChild end')
       return created;
     }
 
@@ -439,7 +439,7 @@ function ChildReconciler(shouldTrackSideEffects) {
           );
           created.ref = coerceRef(returnFiber, null, newChild);
           created.return = returnFiber;
-          console.log('createChild end')
+          enableLog && console.log('createChild end')
           return created;
         }
         case REACT_PORTAL_TYPE: {
@@ -449,7 +449,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             lanes,
           );
           created.return = returnFiber;
-          console.log('createChild end')
+          enableLog && console.log('createChild end')
           return created;
         }
         case REACT_LAZY_TYPE: {
@@ -457,7 +457,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             const payload = newChild._payload;
             const init = newChild._init;
             const created = createChild(returnFiber, init(payload), lanes);
-            console.log('createChild end')
+            enableLog && console.log('createChild end')
             return created
           }
         }
@@ -471,13 +471,13 @@ function ChildReconciler(shouldTrackSideEffects) {
           null,
         );
         created.return = returnFiber;
-        console.log('createChild end')
+        enableLog && console.log('createChild end')
         return created;
       }
 
       throwOnInvalidObjectType(returnFiber, newChild);
     }
-    console.log('createChild end')
+    enableLog && console.log('createChild end')
     // 对应null、undefined、false,都返回null
     return null;
   }
@@ -489,7 +489,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
-    console.log('updateSlot')
+    enableLog && console.log('updateSlot start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateSlot')) debugger
     // Update the fiber if the keys match, otherwise return null.
 
@@ -648,7 +648,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // If you change this code, also update reconcileChildrenIterator() which
     // uses the same algorithm.
 
-    console.log('reconcileChildrenArray start')
+    enableLog && console.log('reconcileChildrenArray start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildrenArray')) debugger
 
     let resultingFirstChild: Fiber | null = null;
@@ -787,7 +787,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       // to add them to the deletion list.
       existingChildren.forEach(child => deleteChild(returnFiber, child));
     }
-    console.log('reconcileChildrenArray end')
+    enableLog && console.log('reconcileChildrenArray end')
     return resultingFirstChild;
   }
 
@@ -964,7 +964,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber {
 
-    console.log('reconcileSingleElement')
+    enableLog && console.log('reconcileSingleElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileSingleElement')) debugger
 
     const key = element.key;
@@ -1101,7 +1101,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber | null {
     
-    console.log('reconcileChildFibers in ChildReconciler start')
+    enableLog && console.log('reconcileChildFibers in ChildReconciler start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('reconcileChildFibers')) debugger
 
     // This function is not recursive.
@@ -1239,7 +1239,7 @@ export function cloneChildFibers(
   workInProgress: Fiber,
 ): void {
   
-  console.log('cloneChildFibers')
+  enableLog && console.log('cloneChildFibers start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('cloneChildFibers')) debugger
   invariant(
     current === null || workInProgress.child === current.child,

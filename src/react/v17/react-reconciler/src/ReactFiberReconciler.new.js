@@ -73,7 +73,7 @@ import {
   getCurrentUpdateLanePriority,
   setCurrentUpdateLanePriority,
 } from './ReactFiberLane';
-
+import { enableLog } from 'shared/ReactFeatureFlags';
 
 export {registerMutableSourceForHydration} from './ReactMutableSource.new';
 export {createPortal} from './ReactPortal';
@@ -164,7 +164,7 @@ export function createContainer(
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
   
-  console.log('createContainer start')
+  enableLog && console.log('createContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createContainer')) debugger
 
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
@@ -177,7 +177,7 @@ export function updateContainer(
   callback: ?Function,
 ): Lane {
  
-  console.log('updateContainer start')
+  enableLog && console.log('updateContainer start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateContainer')) debugger
 
   const current = container.current;

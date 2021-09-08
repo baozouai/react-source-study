@@ -6,7 +6,8 @@
  */
 
 import invariant from 'shared/invariant';
-import {REACT_ELEMENT_TYPE} from 'shared/ReactSymbols';
+import {REACT_ELEMENT_TYPE, } from 'shared/ReactSymbols';
+import {enableLog, } from 'shared/ReactFeatureFlags';
 
 import ReactCurrentOwner from './ReactCurrentOwner';
 
@@ -73,7 +74,7 @@ function defineRefPropWarningGetter(props, displayName) {
  */
 const ReactElement = function(type, key, ref, self, source, owner, props) {
 
-  console.log('ReactElement start')
+  enableLog && console.log('ReactElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ReactElement')) debugger
 
   const element = {
@@ -163,8 +164,7 @@ export function jsx(type, config, maybeKey) {
  * See https://reactjs.org/docs/react-api.html#createelement
  */
 export function createElement(type, config, children) {
-
-  console.log('createElement start')
+  enableLog && console.log('createElement start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createElement')) debugger
 
   let propName;
