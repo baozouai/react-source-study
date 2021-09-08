@@ -9,7 +9,7 @@ import getActiveElement from './getActiveElement';
 
 import {getOffsets, setOffsets} from './ReactDOMSelection';
 import {ELEMENT_NODE, TEXT_NODE} from '../shared/HTMLNodeType';
-
+import { enableLog } from 'shared/ReactFeatureFlags';
 function isTextNode(node) {
   return node && node.nodeType === TEXT_NODE;
 }
@@ -113,7 +113,7 @@ export function getSelectionInformation() {
  * nodes and place them back in, resulting in focus being lost.
  */
 export function restoreSelection(priorSelectionInformation) {
-  console.log('restoreSelection start')
+  enableLog && console.log('restoreSelection start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('restoreSelection')) debugger
   const curFocusedElem = getActiveElementDeep();
   const priorFocusedElem = priorSelectionInformation.focusedElem;
@@ -149,7 +149,7 @@ export function restoreSelection(priorSelectionInformation) {
       info.element.scrollTop = info.top;
     }
   }
-  console.log('restoreSelection end')
+  enableLog && console.log('restoreSelection end')
 }
 
 /**

@@ -37,7 +37,6 @@ function assertValidProps(tag: string, props: ?Object) {
         'for more information.',
     );
   }
-  debugger
   invariant(
     props.style == null || typeof props.style === 'object',
     'The `style` prop expects a mapping from style properties to values, ' +

@@ -13,12 +13,11 @@ import type {Fiber, FiberRoot, ReactPriorityLevel} from './ReactInternalTypes';
 import type {ReactNodeList} from 'shared/ReactTypes';
 
 import {DidCapture} from './ReactFiberFlags';
-
+import { enableLog } from 'shared/ReactFeatureFlags';
 declare var __REACT_DEVTOOLS_GLOBAL_HOOK__: Object | void;
 
 let rendererID = null;
 let injectedHook = null;
-let hasLoggedError = false;
 
 export const isDevToolsPresent =
   typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined';
@@ -60,7 +59,7 @@ export function onCommitRoot(
   root: FiberRoot,
   priorityLevel: ReactPriorityLevel,
 ) {
-  console.log('onCommitRoot start')
+  enableLog && console.log('onCommitRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('onCommitRoot')) debugger
   if (injectedHook && typeof injectedHook.onCommitFiberRoot === 'function') {
     try {
@@ -80,7 +79,7 @@ export function onCommitRoot(
 
     }
   }
-  console.log('onCommitRoot end')
+  enableLog && console.log('onCommitRoot end')
 }
 
 export function onCommitUnmount(fiber: Fiber) {

@@ -43,6 +43,7 @@ import {
   stopLoggingProfilingEvents,
   startLoggingProfilingEvents,
 } from './SchedulerProfiling';
+import { enableLog } from 'shared/ReactFeatureFlags';
 
 // Max 31 bit integer. The max integer size in V8 for 32-bit systems.
 // Math.pow(2, 30) - 1
@@ -128,7 +129,7 @@ function handleTimeout(currentTime) {
 
 function flushWork(hasTimeRemaining, initialTime) {
   
-  console.log('Scheduler: flushWork')
+  enableLog && console.log('Scheduler: flushWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushWork')) debugger
 
   if (enableProfiling) {
@@ -174,7 +175,7 @@ function flushWork(hasTimeRemaining, initialTime) {
 }
 // workLoop是通过判断任务函数的返回值去识别任务的完成状态的,true表示完成，false没完成
 function workLoop(hasTimeRemaining, initialTime) {
-  console.log('Scheduler: workLoop')
+  enableLog && console.log('Scheduler: workLoop')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) debugger
   let currentTime = initialTime;
   // 开始执行前检查一下timerQueue中的过期任务，放到taskQueue中
@@ -325,7 +326,7 @@ function unstable_wrapCallback(callback) {
 
 function unstable_scheduleCallback(priorityLevel, callback, options) {
   
-  console.log('Scheduler: unstable_scheduleCallback')
+  enableLog && console.log('Scheduler: unstable_scheduleCallback start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('unstable_scheduleCallback')) debugger
 
   // 获取当前时间，它是计算任务开始时间、过期时间和判断任务是否过期的依据
