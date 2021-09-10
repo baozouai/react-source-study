@@ -103,7 +103,7 @@ function getClientEnvironment(publicUrl) {
     "__UMD__": true,
     __NEW_RECONCILER__: true,
     '__LOG_NAMES__': JSON.stringify([
-      'createRoot',
+      // 'createRoot',
       // 'ReactDOMRoot',
       // 'createRootImpl',
       // 'createContainer',
@@ -114,8 +114,8 @@ function getClientEnvironment(publicUrl) {
       // 'initializeUpdateQueue',
       // 'markContainerAsRoot',
       // 'listenToAllSupportedEvents',
-      'jsx',
-      'render',
+      // 'jsx',
+      // 'render',
       // 'updateContainer',
       // 'enqueueUpdate',
       // 'scheduleUpdateOnFiber',
@@ -179,7 +179,7 @@ function getClientEnvironment(publicUrl) {
       // 'bubbleProperties',
       // 'dispatchDiscreteEvent',
       // 'createEventListenerWrapperWithPriority',
-      // 'updateWorkInProgressHook'
+      'updateWorkInProgressHook'
     ]),
   };
 

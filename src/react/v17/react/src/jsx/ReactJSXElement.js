@@ -78,7 +78,6 @@ const ReactElement = function(type, key, ref, self, source, owner, props) {
  * @param {string} key
  */
 export function jsx(type, config, maybeKey) {
-  debugger
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('jsx')) debugger
   let propName;
 

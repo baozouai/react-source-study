@@ -52,4 +52,4 @@ function App() {
 
 }
 
-export default EventDemo;
+export default Hooks;

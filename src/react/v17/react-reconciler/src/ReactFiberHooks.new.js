@@ -160,17 +160,6 @@ let didScheduleRenderPhaseUpdateDuringThisPass: boolean = false;
 
 const RE_RENDER_LIMIT = 25;
 
-// In DEV, this is the name of the currently executing primitive hook
-let currentHookNameInDev: ?HookType = null;
-
-// In DEV, this list ensures that hooks are called in the same order between renders.
-// The list stores the order of hooks used during the initial render (mount).
-// Subsequent renders (updates) reference this list.
-
-// In DEV, this tracks whether currently rendering component needs to ignore
-// the dependencies for Hooks that need them (e.g. useEffect or useMemo).
-// When true, such Hooks will always be "remounted". Only used during hot reload.
-let ignorePreviousDependencies: boolean = false;
 
 
 
@@ -378,29 +367,64 @@ function updateWorkInProgressHook(): Hook {
   // clone, or a work-in-progress hook from a previous render pass that we can
   // use as a base. When we reach the end of the base list, we must switch to
   // the dispatcher used for mounts.
-
-  console.log('updateWorkInProgressHook')
+  enableLog && console.log('updateWorkInProgressHook start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateWorkInProgressHook')) debugger
 
+  /**
+   * currentlyRenderingFiber指向调用updateWorkInProgressHook的函数组件对应的workInProgress(Fiber)
+   */
+
+  /* 这里是针对旧hook的判断 start */
   let nextCurrentHook: null | Hook;
+  /**
+   * 在renderWithHooks中，刚进入该函数currentHook为null，
+   * 之后会调用的let children = Component(props, secondArg)，即调用函数组件，
+   * 说明刚进入Component函数组件是currentHook为null，当调用完Component(props, secondArg)，
+   * currentHook也会置为null，总结一句话就是：
+   * 在调用Component(props, secondArg)前后currentHook都为null
+   */
   if (currentHook === null) {
+    // currentHook为null，说明函数组件这次更新第一次调用updateWorkInProgressHook
     const current = currentlyRenderingFiber.alternate;
     if (current !== null) {
+      // 如果函数组件对应Fiber有current，则current.memoizedState指向更新前的第一个hook
       nextCurrentHook = current.memoizedState;
     } else {
       nextCurrentHook = null;
     }
   } else {
+    // 不为null，说明函数组件已经调用了不只一次updateWorkInProgressHook，直接取next
     nextCurrentHook = currentHook.next;
   }
+  /* 这里是针对旧hook的判断 end */
 
+  /* 这里是针对新hook的判断 start */
   let nextWorkInProgressHook: null | Hook;
   if (workInProgressHook === null) {
+    /**
+     *  workInProgressHook为null，说明函数组件这次更新第一次调用updateWorkInProgressHook
+     *  这里注意：workInProgress.memoizedState在调用renderWithHooks入口就被置为null了,
+     *  但是这里currentlyRenderingFiber.memoizedState不一定为null!!!
+     *  原因是如果在render的时候又调用了setState，组件继续更新，
+     *  那么这里的currentlyRenderingFiber.memoizedState就不为null，
+     *  否则正常情况这里的currentlyRenderingFiber.memoizedState为null
+     */
     nextWorkInProgressHook = currentlyRenderingFiber.memoizedState;
   } else {
+    /**
+     * 不为null，说明函数组件已经调用了不只一次updateWorkInProgressHook，直接取next
+     * 正常情况下这里workInProgressHook.next为null，
+     * 但是如果在render的时候又触发了
+     */
     nextWorkInProgressHook = workInProgressHook.next;
   }
-
+  /* 这里是针对新hook的判断 end */
+  
+  /**
+   * 按照上面的分析，正常情况我们不会在render的时候调用setState，
+   * 所以这里nextWorkInProgressHook一般都为null，也就是说一般都会走else分支。
+   * 可如果在render的时候调用了setState，那么这里的nextWorkInProgressHook就不为null
+   */
   if (nextWorkInProgressHook !== null) {
     // There's already a work-in-progress. Reuse it.
     workInProgressHook = nextWorkInProgressHook;
@@ -409,7 +433,9 @@ function updateWorkInProgressHook(): Hook {
     currentHook = nextCurrentHook;
   } else {
     // Clone from the current hook.
-
+    /**
+     * 这里是一般流程都会走的，就是会复用就的hook
+     */
     invariant(
       nextCurrentHook !== null,
       'Rendered more hooks than during the previous render.',
@@ -425,12 +451,16 @@ function updateWorkInProgressHook(): Hook {
 
       next: null,
     };
-
+    /**
+     * 如果workInProgressHook为null，意味着是第一次调用updateWorkInProgressHook
+     */
     if (workInProgressHook === null) {
       // This is the first hook in the list.
+      // memoizedState指向第一个hook
       currentlyRenderingFiber.memoizedState = workInProgressHook = newHook;
     } else {
       // Append to the end of the list.
+      // 否则前一个hook的next指向新生成的hook，连接后workInProgressHook移动到newHook
       workInProgressHook = workInProgressHook.next = newHook;
     }
   }

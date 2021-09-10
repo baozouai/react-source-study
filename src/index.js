@@ -1,9 +1,7 @@
 import ReactDOM from 'react-dom';
+import App from './App'
 import './index.css';
 
-function App() {
-  return <div>app</div>
-}
 const root = document.getElementById('root')
 
 // Concurrent mode
