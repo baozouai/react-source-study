@@ -99,6 +99,7 @@ function createRootImpl(
   
   enableLog && console.log('ReactDomRoot: createRootImpl')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createRootImpl')) debugger
+  
   // Tag is either LegacyRoot or Concurrent Root
   const hydrate = options != null && options.hydrate === true;
   const hydrationCallbacks =

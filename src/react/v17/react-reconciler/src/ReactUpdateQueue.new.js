@@ -378,8 +378,10 @@ export function processUpdateQueue<State>(
   instance: any,
   renderLanes: Lanes,
 ): void {
+
   enableLog && console.log('processUpdateQueue start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('processUpdateQueue')) debugger
+
   // This is always non-null on a ClassComponent or HostRoot
   const queue: UpdateQueue<State> = (workInProgress.updateQueue: any);
 
@@ -534,7 +536,7 @@ export function processUpdateQueue<State>(
 
         // Process this update.
         // 在这里面有可能触发新的update，挂载到queue.shared.pending
-        // 所以下面又queue.shared.pending !== null的判断
+        // 所以下面有queue.shared.pending !== null的判断
         newState = getStateFromUpdate(
           workInProgress,
           queue,
@@ -609,8 +611,7 @@ export function processUpdateQueue<State>(
     // shouldComponentUpdate is tricky; but we'll have to account for
     // that regardless.
     markSkippedUpdateLanes(newLanes);
-    // 将newLanes赋值给workInProgress.lanes，
-    // 就是将被跳过的update的lane放到fiber.lanes
+    // 将newLanes赋值给workInProgress.lanes，就是将被跳过的update的lane放到fiber.lanes
     workInProgress.lanes = newLanes;
     workInProgress.memoizedState = newState;
   }

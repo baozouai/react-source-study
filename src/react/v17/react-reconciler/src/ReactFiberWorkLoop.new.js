@@ -418,7 +418,7 @@ function requestRetryLane(fiber: Fiber) {
   }
   return findRetryLane(currentEventWipLanes);
 }
-// React的更新入口
+/** React的更新入口 */ 
 export function scheduleUpdateOnFiber(
   fiber: Fiber,
   lane: Lane,
@@ -535,11 +535,11 @@ export function scheduleUpdateOnFiber(
   // together more than necessary.
   mostRecentlyUpdatedRoot = root;
 }
-// 从触发状态更新的fiber通过一直往上找return得到rootFiber
 // This is split into a separate function so we can mark a fiber with pending
 // work without treating it as a typical update that originates from an event;
 // e.g. retrying a Suspense boundary isn't an update, but it does schedule work
 // on a fiber.
+/** 从触发状态更新的fiber通过一直往上找return得到rootFiber，找的过程都会将lane收集到每个parent.childLanes上 */
 function markUpdateLaneFromFiberToRoot(
   sourceFiber: Fiber,
   lane: Lane,
@@ -582,11 +582,12 @@ function markUpdateLaneFromFiberToRoot(
 // of the existing task is the same as the priority of the next level that the
 // root has work on. This function is called on every update, and right before
 // exiting a task.
-// 通知Scheduler根据更新的优先级，决定以同步还是异步的方式调度本次更新任务
+/** 通知Scheduler根据更新的优先级，决定以同步还是异步的方式调度本次更新任务 */ 
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
   enableLog && console.log('ensureRootIsScheduled start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) debugger
+
   // 获取旧任务，对应task上的callback，代表当前根节点正在被调度的任务
   const existingCallbackNode = root.callbackNode;
 
@@ -694,6 +695,7 @@ function performConcurrentWorkOnRoot(root) {
   // in case they schedule additional work.
   // 这里的root.callbackNode是在ensureRootIsScheduled的最后赋值的
   const originalCallbackNode = root.callbackNode;
+  // 1. 刷新pending状态的effects, 有可能某些effect会取消本次任务
   const didFlushPassiveEffects = flushPassiveEffects();
   // 如果清空了副作用
   if (didFlushPassiveEffects) {
@@ -713,6 +715,7 @@ function performConcurrentWorkOnRoot(root) {
 
   // Determine the next expiration time to work on, using the fields stored
   // on the root.
+  // 2. 获取本次渲染的优先级
   let lanes = getNextLanes(
     root,
     root === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes,
@@ -723,6 +726,7 @@ function performConcurrentWorkOnRoot(root) {
   }
   // 去执行更新任务的工作循环，一旦超出时间片，则会退出renderRootConcurrent
   // 去执行下面的逻辑
+  // 3. 构造fiber树
   let exitStatus = renderRootConcurrent(root, lanes);
 
   if (
@@ -737,8 +741,11 @@ function performConcurrentWorkOnRoot(root) {
     // lanes is a superset of the lanes we started rendering with.
     //
     // So we'll throw out the current work and restart.
+    // 如果在render过程中产生了新的update, 且新update的优先级与最初render的优先级有交集
+    // 那么最初render无效, 丢弃最初render的结果, 等待下一次调度
     prepareFreshStack(root, NoLanes);
   } else if (exitStatus !== RootIncomplete) {
+    // 4. 异常处理: 有可能fiber构造过程中出现异常
     if (exitStatus === RootErrored) {
       executionContext |= RetryAfterError;
 
@@ -772,6 +779,7 @@ function performConcurrentWorkOnRoot(root) {
     const finishedWork: Fiber = (root.current.alternate: any);
     root.finishedWork = finishedWork;
     root.finishedLanes = lanes;
+    // 5. 输出: 渲染fiber树
     finishConcurrentRender(root, exitStatus, lanes);
   }
   // 调用ensureRootIsScheduled去检查有无过期任务，是否需要调度过期任务
@@ -1179,6 +1187,7 @@ function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   // workInProgressRoot第一次在这里初始化
   enableLog && console.log('prepareFreshStack start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('prepareFreshStack')) debugger
+  
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
 
@@ -1368,6 +1377,7 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
   
   console.log('renderRootSync')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootSync')) debugger
+  
   const prevExecutionContext = executionContext;
   executionContext |= RenderContext;
   const prevDispatcher = pushDispatcher();
@@ -1664,7 +1674,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   }
   enableLog && console.log('completeUnitOfWork end')
 }
-// commit阶段的起点 
+/** commit阶段的起点 */  
 function commitRoot(root) {
   
   enableLog && console.log('commitRoot start')
@@ -1733,6 +1743,8 @@ function commitRootImpl(root, renderPriorityLevel) {
   let remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
   /**
    * 将root.pendingLanes去掉remaingLanes(叫做noLongerPendingLanes），
+   * 即noLongerPendingLanes = root.pendingLanes & ~remainingLanes，
+   * 之后root.pendingLanes = remainingLanes
    * 将noLongerPendingLanes对应eventTimes、expirationTimes中的index位的值置为NoTimestamp
    */
   markRootFinished(root, remainingLanes);
@@ -1796,9 +1808,8 @@ function commitRootImpl(root, renderPriorityLevel) {
     // of the effect list for each phase: all mutation effects come before all
     // layout effects, and so on.
     /**
-     * 第一阶段为：before mutation，（执行DOM操作前）
-     * 会获取根节点上的state
-     * 会调用getSnapshotBeforeUpdate
+     * 第一阶段为：before mutation，（执行DOM操作前），before mutation直接翻译是变化前，即dom变化前
+     * 会获取根节点上的state,调用getSnapshotBeforeUpdate
      */
     // The first phase a "before mutation" phase. We use this phase to read the
     // state of the host tree right before we mutate it. This is where
@@ -1818,7 +1829,7 @@ function commitRootImpl(root, renderPriorityLevel) {
       recordCommitTime();
     }
     /**
-     * 第二阶段：mutation阶段（执行DOM操作）
+     * 第二阶段：mutation阶段（执行DOM操作），mutation直接翻译是裂变，即页面发生改变
      */
     // The next phase is the mutation phase, where we mutate the host tree.
     commitMutationEffects(finishedWork, root, renderPriorityLevel);

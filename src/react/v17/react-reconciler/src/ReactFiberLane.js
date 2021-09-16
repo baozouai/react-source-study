@@ -801,7 +801,7 @@ export function higherLanePriority(
 export function createLaneMap<T>(initial: T): LaneMap<T> {
   return new Array(TotalLanes).fill(initial);
 }
-
+/** 在root上标记更新，将update的lane放到root.pendingLanes */
 export function markRootUpdated(
   root: FiberRoot,
   updateLane: Lane,

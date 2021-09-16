@@ -173,10 +173,12 @@ function flushWork(hasTimeRemaining, initialTime) {
     }
   }
 }
-// workLoop是通过判断任务函数的返回值去识别任务的完成状态的,true表示完成，false没完成
+/** workLoop是通过判断任务函数的返回值去识别任务的完成状态的,true表示完成，false没完成 */ 
 function workLoop(hasTimeRemaining, initialTime) {
+  
   enableLog && console.log('Scheduler: workLoop')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoop')) debugger
+  
   let currentTime = initialTime;
   // 开始执行前检查一下timerQueue中的过期任务，放到taskQueue中
   advanceTimers(currentTime);

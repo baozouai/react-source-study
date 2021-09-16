@@ -169,7 +169,7 @@ export function createContainer(
 
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
-// 更新的起点
+/** 更新的起点 */ 
 export function updateContainer(
   element: ReactNodeList,
   container: OpaqueRoot,
