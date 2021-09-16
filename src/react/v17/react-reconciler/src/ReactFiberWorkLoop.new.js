@@ -476,6 +476,7 @@ export function scheduleUpdateOnFiber(
       // Check if we're inside unbatchedUpdates
       (executionContext & LegacyUnbatchedContext) !== NoContext &&
       // Check if we're not already rendering
+      // 判断是否不在render过程中
       (executionContext & (RenderContext | CommitContext)) === NoContext
     ) {
       // 如果是本次更新是同步的(lane === SyncLane)，并且当前还未渲染，意味着主线程空闲，并没有React的

@@ -101,7 +101,7 @@ export function getCurrentPriorityLevel(): ReactPriorityLevel {
       invariant(false, 'Unknown priority level.');
   }
 }
-
+/** 根据React优先级获取到对应的Scheduler的优先级 */
 function reactPriorityToSchedulerPriority(reactPriorityLevel) {
   switch (reactPriorityLevel) {
     case ImmediatePriority: // 99
