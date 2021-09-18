@@ -164,6 +164,7 @@ function flushWork(hasTimeRemaining, initialTime) {
       return workLoop(hasTimeRemaining, initialTime);
     }
   } finally {
+    // 运行完后会还原全局标记
     currentTask = null;
     currentPriorityLevel = previousPriorityLevel;
     isPerformingWork = false;
@@ -232,7 +233,7 @@ function workLoop(hasTimeRemaining, initialTime) {
       }
       advanceTimers(currentTime);
     } else {
-      // 任务的callback不是函数 ，则弹出
+      // 任务的callback不是函数，说明被取消了（unstable_cancelCallback(task)会将任务的callback置为nul)，则弹出
       pop(taskQueue);
     }
     // 从taskQueue中继续获取任务，如果上一个任务未完成，那么它将不会
@@ -325,7 +326,7 @@ function unstable_wrapCallback(callback) {
     }
   };
 }
-
+/** 最终会根据传入的优先级、任务callback返回新创建的newTask */
 function unstable_scheduleCallback(priorityLevel, callback, options) {
   
   enableLog && console.log('Scheduler: unstable_scheduleCallback start')

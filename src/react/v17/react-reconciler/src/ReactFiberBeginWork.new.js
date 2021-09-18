@@ -24,9 +24,6 @@ import type {
   OffscreenProps,
   OffscreenState,
 } from './ReactFiberOffscreenComponent';
-
-
-
 import {
   IndeterminateComponent,
   FunctionComponent,
@@ -827,6 +824,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   
   enableLog && console.log('updateHostRoot start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostRoot')) debugger
+
   pushHostRootContext(workInProgress);
   const updateQueue = workInProgress.updateQueue;
   invariant(
@@ -844,6 +842,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   const nextState = workInProgress.memoizedState;
   // Caution: React DevTools currently depends on this property
   // being called "element".
+  // 对应HostRoot，其memoizedState.element就是ReactElement
   const nextChildren = nextState.element;
   if (nextChildren === prevChildren) {
     // 如果相同，则复用
@@ -852,6 +851,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   }
   const root: FiberRoot = workInProgress.stateNode;
   if (root.hydrate && enterHydrationState(workInProgress)) {
+    // 服务端渲染相关
     // If we don't have any current children this might be the first pass.
     // We always try to hydrate. If this isn't a hydration pass there won't
     // be any children to hydrate which is effectively the same thing as
@@ -893,13 +893,14 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   } else {
     // Otherwise reset hydration state in case we aborted and resumed another
     // root.
+    /**  reconcilerChildren会根据nextChildren(是ReactElement)生成Fiber子节点 */
     reconcileChildren(current, workInProgress, nextChildren, renderLanes);
     resetHydrationState();
   }
   enableLog && console.log('updateHostRoot end')
   return workInProgress.child;
 }
-
+/** 更新dom组件 */
 function updateHostComponent(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -910,13 +911,13 @@ function updateHostComponent(
   if (current === null) {
     tryToClaimNextHydratableInstance(workInProgress);
   }
-
+  // 对应HostComponent来说，type就是tagName，如div，p等
   const type = workInProgress.type;
   const nextProps = workInProgress.pendingProps;
   const prevProps = current !== null ? current.memoizedProps : null;
 
   let nextChildren = nextProps.children;
-  // 如果child为text
+  // 如果子节点只有一个且为text节点
   const isDirectTextChild = shouldSetTextContent(type, nextProps);
 
   if (isDirectTextChild) {
@@ -935,6 +936,7 @@ function updateHostComponent(
   workInProgress.flags |= PerformedWork;
   
   markRef(current, workInProgress);
+  /**  reconcilerChildren会根据nextChildren(是ReactElement)生成Fiber子节点 */
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
 }

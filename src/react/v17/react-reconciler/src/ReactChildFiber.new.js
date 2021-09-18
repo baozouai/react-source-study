@@ -227,7 +227,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
     
-    console.log('useFiber')
+    enableLog && console.log('useFiber')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('useFiber')) debugger
     
     const clone = createWorkInProgress(fiber, pendingProps);
@@ -242,7 +242,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newIndex: number,
   ): number {
     
-    console.log('placeChild')
+    enableLog && console.log('placeChild')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('placeChild')) debugger
 
     newFiber.index = newIndex;
@@ -314,7 +314,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     lanes: Lanes,
   ): Fiber {
     
-    console.log('updateElement')
+    enableLog && console.log('updateElement')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateElement')) debugger
     
     if (current !== null) {

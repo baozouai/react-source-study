@@ -128,10 +128,10 @@ import {
   schedulerPriorityToLanePriority,
   lanePriorityToSchedulerPriority,
 } from './ReactFiberLane';
-import {requestCurrentTransition, NoTransition} from './ReactFiberTransition';
-import {beginWork } from './ReactFiberBeginWork.new';
-import {completeWork} from './ReactFiberCompleteWork.new';
-import {unwindWork, unwindInterruptedWork} from './ReactFiberUnwindWork.new';
+import { requestCurrentTransition, NoTransition } from './ReactFiberTransition';
+import { beginWork } from './ReactFiberBeginWork.new';
+import { completeWork } from './ReactFiberCompleteWork.new';
+import { unwindWork, unwindInterruptedWork } from './ReactFiberUnwindWork.new';
 import {
   throwException,
   createRootErrorUpdate,
@@ -146,7 +146,6 @@ import {
   commitPassiveUnmountInsideDeletedTree as commitPassiveUnmountInsideDeletedTreeOnFiber,
   commitPassiveMount as commitPassiveMountOnFiber,
   commitDetachRef,
-  commitAttachRef,
   commitResetTextContent,
   isSuspenseBoundaryBeingHidden,
   recursivelyCommitLayoutEffects,
@@ -204,6 +203,7 @@ const RootSuspendedWithDelay = 4;
 const RootCompleted = 5;
 
 // Describes where we are in the React execution stack
+/** 当前React的执行栈(执行上下文) */
 let executionContext: ExecutionContext = NoContext;
 // The root we're working on
 let workInProgressRoot: FiberRoot | null = null;
@@ -224,6 +224,7 @@ export let subtreeRenderLanes: Lanes = NoLanes;
 const subtreeRenderLanesCursor: StackCursor<Lanes> = createCursor(NoLanes);
 
 // Whether to root completed, errored, suspended, etc.
+/** fiber构造完后, root节点的状态: completed, errored, suspended等 */
 let workInProgressRootExitStatus: RootExitStatus = RootIncomplete;
 // A fatal error, if one is thrown
 let workInProgressRootFatalError: mixed = null;
@@ -231,11 +232,14 @@ let workInProgressRootFatalError: mixed = null;
 // slightly different than `renderLanes` because `renderLanes` can change as you
 // enter and exit an Offscreen tree. This value is the combination of all render
 // lanes for the entire render phase.
+/** "Included"的意思是整个render期间所使用到的所有lanes */
 let workInProgressRootIncludedLanes: Lanes = NoLanes;
 // The work left over by components that were visited during this render. Only
 // includes unprocessed updates, not work in bailed out children.
+/** 在render期间被跳过(由于优先级不够)的lanes: 只包括未处理的updates, 不包括被复用的fiber节点 */
 let workInProgressRootSkippedLanes: Lanes = NoLanes;
 // Lanes that were updated (in an interleaved event) during this render.
+/** 在render期间被修改过的lanes */
 let workInProgressRootUpdatedLanes: Lanes = NoLanes;
 // Lanes that were pinged (in an interleaved event) during this render.
 let workInProgressRootPingedLanes: Lanes = NoLanes;
@@ -332,6 +336,7 @@ export function requestUpdateLane(fiber: Fiber): Lane {
   // Special cases
   const mode = fiber.mode;
   if ((mode & BlockingMode) === NoMode) {
+    // 同步lane
     return (SyncLane: Lane);
   } else if ((mode & ConcurrentMode) === NoMode) {
     return getCurrentPriorityLevel() === ImmediateSchedulerPriority
@@ -359,6 +364,7 @@ export function requestUpdateLane(fiber: Fiber): Lane {
 
   const isTransition = requestCurrentTransition() !== NoTransition;
   if (isTransition) {
+    // 处于suspense过程中
     if (currentEventPendingLanes !== NoLanes) {
       currentEventPendingLanes =
         mostRecentlyUpdatedRoot !== null
@@ -627,7 +633,11 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   if (existingCallbackNode !== null) {
     // 获取旧任务的优先级
     const existingCallbackPriority = root.callbackPriority;
-    // 如果新旧任务的优先级相同，则无需调度
+    // 如果新旧任务的优先级相同，则无需调度，如多次调用setState：
+    // onClick = () => {
+    // setState(1);
+    // setState(2);
+    //} 
     if (existingCallbackPriority === newCallbackPriority) {
       // The priority hasn't changed. We can reuse the existing task. Exit.
       return;
@@ -1183,7 +1193,9 @@ export function popRenderLanes(fiber: Fiber) {
   subtreeRenderLanes = subtreeRenderLanesCursor.current;
   popFromStack(subtreeRenderLanesCursor, fiber);
 }
-
+/**
+刷新栈帧: 重置 FiberRoot上的全局属性 和 `fiber树构造`循环过程中的全局变量
+*/
 function prepareFreshStack(root: FiberRoot, lanes: Lanes) {
   // workInProgressRoot第一次在这里初始化
   enableLog && console.log('prepareFreshStack start')
@@ -1376,7 +1388,7 @@ export function renderHasNotSuspendedYet(): boolean {
 
 function renderRootSync(root: FiberRoot, lanes: Lanes) {
   
-  console.log('renderRootSync')
+  enableLog && console.log('renderRootSync')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderRootSync')) debugger
   
   const prevExecutionContext = executionContext;
@@ -1430,13 +1442,13 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
 /** @noinline */
 function workLoopSync() {
   
-  console.log('workLoopSync')
+  enableLog && console.log('workLoopSync')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) debugger
 
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
 
-    console.log('workLoopSync in while')
+    enableLog && console.log('workLoopSync in while')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('workLoopSync')) debugger
 
     performUnitOfWork(workInProgress);
@@ -1454,7 +1466,7 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 
   // If the root or lanes have changed, throw out the existing stack
   // and prepare a fresh one. Otherwise we'll continue where we left off.
-  // root或者lane改变
+  // root或者lane改变，都会调用prepareFreshStack刷新栈帧, 丢弃上一次渲染进度
   if (workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes) {
     resetRenderTimer();
     // prepareFreshStack里面会通过workInProgress = createWorkInProgress(root.current, null)创建workInProgress
@@ -1553,6 +1565,10 @@ function performUnitOfWork(unitOfWork: Fiber): void {
     // If this doesn't spawn new work, complete the current work.
     completeUnitOfWork(unitOfWork);
   } else {
+    /**
+     * 否则workInProgress指向next，然后结束函数，之后上面的workLoopConcurrent
+     * 判断到workInProgress不为空，且未超出时间片限制，会继续调用performUnitOfWork
+     */
     workInProgress = next;
   }
 
@@ -1594,6 +1610,10 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       }
 
       if (next !== null) {
+        /**
+         * 如果有子节点，则将workInProgress指向该子节点，然后退出completeUnitOfWork，
+         * 回到performUnitOfWork，performUnitOfWork会回到workLoop(Sync)Concurrent
+         */
         // Completing this fiber spawned new work. Work on that next.
         workInProgress = next;
         return;
@@ -1669,7 +1689,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
   } while (completedWork !== null);
 
   // We've reached the root.
-  // 已经到达根节点
+  // 已经到达根节点，则设置wip根节点退出的状态为已完成
   if (workInProgressRootExitStatus === RootIncomplete) {
     workInProgressRootExitStatus = RootCompleted;
   }

@@ -7,16 +7,28 @@
 
 import {enableIsInputPending} from '../SchedulerFeatureFlags';
 import { enableLog } from 'shared/ReactFeatureFlags';
-
+/** 请求回调，通过port.postMessage触发，回调是performWorkUntilDeadline */
 export let requestHostCallback;
+/** 取消回调，scheduledHostCallback = null */
 export let cancelHostCallback;
+/**
+ * requestHostTimeout = function(callback, ms) {
+    taskTimeoutID = setTimeout(() => {
+      callback(getCurrentTime());
+    }, ms);
+  };
+ */
 export let requestHostTimeout;
+/** clearTimeout(taskTimeoutID) */
 export let cancelHostTimeout;
+/** 是否应该让出线程，判断当前时间是否大于deadline */
 export let shouldYieldToHost;
+/** needsPaint = true */
 export let requestPaint;
+/** 获取当前时间 */
 export let getCurrentTime;
 export let forceFrameRate;
-
+// performce.now是否是函数
 const hasPerformanceNow =
   typeof performance === 'object' && typeof performance.now === 'function';
 
@@ -184,13 +196,18 @@ if (
       yieldInterval = 5;
     }
   };
-  // performWorkUntilDeadline内部会执行掉scheduledHostCallback，最后taskQueue被清空
-  // 这个过程中会涉及任务的中断和恢复、任务完成状态的判断
+  /** 
+   * performWorkUntilDeadline内部会执行掉scheduledHostCallback，最后taskQueue被清空,
+   * 这个过程中会涉及任务的中断和恢复、任务完成状态的判断
+  */
   const performWorkUntilDeadline = () => {
     
     enableLog && console.log('performWorkUntilDeadline start')
     if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performWorkUntilDeadline')) debugger
-
+    /**
+     * requestHostCallback接收的callback会赋值给scheduledHostCallback,
+     * 之后通过port1.postMessage触发，port2监听到执行回调performWorkUntilDeadline
+     */
     if (scheduledHostCallback !== null) {
       const currentTime = getCurrentTime();
       // Yield after `yieldInterval` ms, regardless of where we are in the vsync

@@ -371,7 +371,10 @@ function getStateFromUpdate<State>(
   }
   return prevState;
 }
-
+/** 
+ * 遍历updateQueue.shared.pending, 提取有足够优先级的update对象, 
+ * 计算出最终的状态 workInProgress.memoizedState
+ *  */
 export function processUpdateQueue<State>(
   workInProgress: Fiber,
   props: any,

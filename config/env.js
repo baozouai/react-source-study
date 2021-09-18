@@ -175,7 +175,6 @@ function getClientEnvironment(publicUrl) {
       // 'createInstance',
       // 'createElement',
       // 'updateFiberProps',
-      // 'hadNoMutationsEffects',
       // 'bubbleProperties',
       // 'dispatchDiscreteEvent',
       // 'createEventListenerWrapperWithPriority',

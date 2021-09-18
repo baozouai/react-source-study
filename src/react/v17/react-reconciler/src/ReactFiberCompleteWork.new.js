@@ -153,27 +153,6 @@ function markRef(workInProgress: Fiber) {
   workInProgress.flags |= Ref;
 }
 
-function hadNoMutationsEffects(current: null | Fiber, completedWork: Fiber) {
-  const didBailout = current !== null && current.child === completedWork.child;
-  if (didBailout) {
-    return true;
-  }
-
-  let child = completedWork.child;
-  while (child !== null) {
-    if ((child.flags & MutationMask) !== NoFlags) {
-      return false;
-    }
-    if ((child.subtreeFlags & MutationMask) !== NoFlags) {
-      return false;
-    }
-    child = child.sibling;
-  }
-  return true;
-}
-
-
-
   // Mutation mode
 
 const appendAllChildren = function(
@@ -510,6 +489,7 @@ function completeWork(
       popHostContainer(workInProgress);
       popTopLevelLegacyContextObject(workInProgress);
       resetMutableSourceWorkInProgressVersions();
+      // fiberRoot即root
       const fiberRoot = (workInProgress.stateNode: FiberRoot);
       if (fiberRoot.pendingContext) {
         fiberRoot.context = fiberRoot.pendingContext;
