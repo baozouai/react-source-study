@@ -15,6 +15,7 @@ import {enableSchedulingProfiler} from 'shared/ReactFeatureFlags';
 import ReactVersion from 'shared/ReactVersion';
 import getComponentName from 'shared/getComponentName';
 
+
 /**
  * If performance exists and supports the subset of the User Timing API that we
  * require.
@@ -25,7 +26,70 @@ const supportsUserTiming =
 function formatLanes(laneOrLanes: Lane | Lanes): string {
   return ((laneOrLanes: any): number).toString();
 }
+export function markCommitStarted(lanes: Lanes): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark(`--commit-start-${formatLanes(lanes)}`);
+    }
+  }
+}
+export function markCommitStopped(): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark('--commit-stop');
+    }
+  }
+}
+export function markPassiveEffectsStarted(lanes: Lanes): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark(`--passive-effects-start-${formatLanes(lanes)}`);
+    }
+  }
+}
+export function markPassiveEffectsStopped(): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark('--passive-effects-stop');
+    }
+  }
+}
 
+export function markRenderStarted(lanes: Lanes): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark(`--render-start-${formatLanes(lanes)}`);
+    }
+  }
+}
+export function markRenderStopped(): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark('--render-stop');
+    }
+  }
+}
+export function markRenderYielded(): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark('--render-yield');
+    }
+  }
+}
+export function markRenderScheduled(lane: Lane): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark(`--schedule-render-${formatLanes(lane)}`);
+    }
+  }
+}
+export function markLayoutEffectsStopped(): void {
+  if (enableSchedulingProfiler) {
+    if (supportsUserTiming) {
+      performance.mark('--layout-effects-stop');
+    }
+  }
+}
 // Create a mark on React initialization
 if (enableSchedulingProfiler) {
   if (supportsUserTiming) {

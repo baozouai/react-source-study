@@ -19,7 +19,6 @@ const workInProgressSources: Array<MutableSource<any>> = [];
 
 let rendererSigil;
 
-
 export function markSourceAsDirty(mutableSource: MutableSource<any>): void {
   workInProgressSources.push(mutableSource);
 }

@@ -16,7 +16,7 @@ import type {
   Container,
   HostContext,
 } from './ReactFiberHostConfig';
-import type {SuspenseState} from './ReactFiberSuspenseComponent.new';
+import type {SuspenseState} from './ReactFiberSuspenseComponent.old';
 
 import {
   HostComponent,
@@ -24,13 +24,13 @@ import {
   HostRoot,
   SuspenseComponent,
 } from './ReactWorkTags';
-import {Deletion, Hydrating, Placement} from './ReactFiberFlags';
+import {Deletion, Placement, Hydrating} from './ReactFiberFlags';
 import invariant from 'shared/invariant';
 
 import {
   createFiberFromHostInstanceForDeletion,
   createFiberFromDehydratedFragment,
-} from './ReactFiber.new';
+} from './ReactFiber.old';
 import {
   shouldSetTextContent,
   supportsHydration,
@@ -43,6 +43,16 @@ import {
   hydrateTextInstance,
   hydrateSuspenseInstance,
   getNextHydratableInstanceAfterSuspenseInstance,
+  didNotMatchHydratedContainerTextInstance,
+  didNotMatchHydratedTextInstance,
+  didNotHydrateContainerInstance,
+  didNotHydrateInstance,
+  didNotFindHydratableContainerInstance,
+  didNotFindHydratableContainerTextInstance,
+  didNotFindHydratableContainerSuspenseInstance,
+  didNotFindHydratableInstance,
+  didNotFindHydratableTextInstance,
+  didNotFindHydratableSuspenseInstance,
 } from './ReactFiberHostConfig';
 import {enableSuspenseServerRenderer} from 'shared/ReactFeatureFlags';
 import {OffscreenLane} from './ReactFiberLane';
@@ -84,24 +94,26 @@ function deleteHydratableInstance(
   instance: HydratableInstance,
 ) {
 
-
   const childToDelete = createFiberFromHostInstanceForDeletion();
   childToDelete.stateNode = instance;
   childToDelete.return = returnFiber;
+  childToDelete.flags = Deletion;
 
-  const deletions = returnFiber.deletions;
-  if (deletions === null) {
-    returnFiber.deletions = [childToDelete];
-    // TODO (effects) Rename this to better reflect its new usage (e.g. ChildDeletions)
-    returnFiber.flags |= Deletion;
+  // This might seem like it belongs on progressedFirstDeletion. However,
+  // these children are not part of the reconciliation list of children.
+  // Even if we abort and rereconcile the children, that will try to hydrate
+  // again and the nodes are still in the host tree so these will be
+  // recreated.
+  if (returnFiber.lastEffect !== null) {
+    returnFiber.lastEffect.nextEffect = childToDelete;
+    returnFiber.lastEffect = childToDelete;
   } else {
-    deletions.push(childToDelete);
+    returnFiber.firstEffect = returnFiber.lastEffect = childToDelete;
   }
 }
 
 function insertNonHydratedInstance(returnFiber: Fiber, fiber: Fiber) {
   fiber.flags = (fiber.flags & ~Hydrating) | Placement;
-
 }
 
 function tryHydrate(fiber, nextInstance) {
@@ -237,7 +249,6 @@ function prepareToHydrateHostTextInstance(fiber: Fiber): boolean {
   const textInstance: TextInstance = fiber.stateNode;
   const textContent: string = fiber.memoizedProps;
   const shouldUpdate = hydrateTextInstance(textInstance, textContent, fiber);
-
   return shouldUpdate;
 }
 

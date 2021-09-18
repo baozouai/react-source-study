@@ -23,23 +23,28 @@ import ReactSharedInternals from 'shared/ReactSharedInternals';
 import {
   enableSchedulingProfiler,
   enableNewReconciler,
+  decoupleUpdatePriorityFromScheduler,
 } from 'shared/ReactFeatureFlags';
 
 import {NoMode, BlockingMode} from './ReactTypeOfMode';
 import {
   NoLane,
   NoLanes,
+  InputContinuousLanePriority,
   isSubsetOfLanes,
   mergeLanes,
   removeLanes,
   markRootEntangled,
   markRootMutableRead,
+  getCurrentUpdateLanePriority,
+  setCurrentUpdateLanePriority,
+  higherLanePriority,
+  DefaultLanePriority,
 } from './ReactFiberLane';
-import {readContext} from './ReactFiberNewContext.new';
+import {readContext} from './ReactFiberNewContext.old';
 import {
   Update as UpdateEffect,
   Passive as PassiveEffect,
-  PassiveStatic as PassiveStaticEffect,
 } from './ReactFiberFlags';
 import {
   HasEffect as HookHasEffect,
@@ -52,47 +57,49 @@ import {
   requestUpdateLane,
   requestEventTime,
   markSkippedUpdateLanes,
-} from './ReactFiberWorkLoop.new';
+} from './ReactFiberWorkLoop.old';
 
 import invariant from 'shared/invariant';
+
 import is from 'shared/objectIs';
-import {markWorkInProgressReceivedUpdate} from './ReactFiberBeginWork.new';
+import {markWorkInProgressReceivedUpdate} from './ReactFiberBeginWork.old';
 import {
   UserBlockingPriority,
   NormalPriority,
   runWithPriority,
   getCurrentPriorityLevel,
-} from './SchedulerWithReactIntegration.new';
-import {getIsHydrating} from './ReactFiberHydrationContext.new';
+} from './SchedulerWithReactIntegration.old';
+import {getIsHydrating} from './ReactFiberHydrationContext.old';
 import {
   makeClientId,
+
   makeOpaqueHydratingObject,
 } from './ReactFiberHostConfig';
 import {
   getWorkInProgressVersion,
   markSourceAsDirty,
   setWorkInProgressVersion,
-} from './ReactMutableSource.new';
+
+} from './ReactMutableSource.old';
 import {markStateUpdateScheduled} from './SchedulingProfiler';
-import { enableLog } from 'shared/ReactFeatureFlags';
 
 const {ReactCurrentDispatcher, ReactCurrentBatchConfig} = ReactSharedInternals;
 
-type Update<S, A> = {
+type Update<S, A> = {|
   lane: Lane,
   action: A,
   eagerReducer: ((S, A) => S) | null,
   eagerState: S | null,
   next: Update<S, A>,
   priority?: ReactPriorityLevel,
-};
+|};
 
-type UpdateQueue<S, A> = {
+type UpdateQueue<S, A> = {|
   pending: Update<S, A> | null,
   dispatch: (A => mixed) | null,
   lastRenderedReducer: ((S, A) => S) | null,
   lastRenderedState: S | null,
-};
+|};
 
 export type HookType =
   | 'useState'
@@ -110,25 +117,26 @@ export type HookType =
   | 'useMutableSource'
   | 'useOpaqueIdentifier';
 
+let didWarnAboutMismatchedHooksForComponent;
+let didWarnAboutUseOpaqueIdentifier;
 
-
-export type Hook = {
+export type Hook = {|
   memoizedState: any,
   baseState: any,
   baseQueue: Update<any, any> | null,
   queue: UpdateQueue<any, any> | null,
   next: Hook | null,
-};
+|};
 
-export type Effect = {
+export type Effect = {|
   tag: HookFlags,
   create: () => (() => void) | void,
   destroy: (() => void) | void,
   deps: Array<mixed> | null,
   next: Effect,
-};
+|};
 
-export type FunctionComponentUpdateQueue = {lastEffect: Effect | null};
+export type FunctionComponentUpdateQueue = {|lastEffect: Effect | null|};
 
 type BasicStateAction<S> = (S => S) | S;
 
@@ -160,11 +168,24 @@ let didScheduleRenderPhaseUpdateDuringThisPass: boolean = false;
 
 const RE_RENDER_LIMIT = 25;
 
+// In DEV, this is the name of the currently executing primitive hook
+let currentHookNameInDev: ?HookType = null;
 
+// In DEV, this list ensures that hooks are called in the same order between renders.
+// The list stores the order of hooks used during the initial render (mount).
+// Subsequent renders (updates) reference this list.
+let hookTypesDev: Array<HookType> | null = null;
+let hookTypesUpdateIndexDev: number = -1;
+
+// In DEV, this tracks whether currently rendering component needs to ignore
+// the dependencies for Hooks that need them (e.g. useEffect or useMemo).
+// When true, such Hooks will always be "remounted". Only used during hot reload.
+let ignorePreviousDependencies: boolean = false;
 
 
 function throwInvalidHookError() {
-  throw new Error(
+  invariant(
+    false,
     'Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for' +
       ' one of the following reasons:\n' +
       '1. You might have mismatching versions of React and the renderer (such as React DOM)\n' +
@@ -179,9 +200,11 @@ function areHookInputsEqual(
   prevDeps: Array<mixed> | null,
 ) {
 
+
   if (prevDeps === null) {
     return false;
   }
+
   for (let i = 0; i < prevDeps.length && i < nextDeps.length; i++) {
     if (is(nextDeps[i], prevDeps[i])) {
       continue;
@@ -199,12 +222,9 @@ export function renderWithHooks<Props, SecondArg>(
   secondArg: SecondArg,
   nextRenderLanes: Lanes,
 ): any {
-  
-  enableLog && console.log('ReactFiberHooks.new: renderWithHooks start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) debugger
-  
   renderLanes = nextRenderLanes;
   currentlyRenderingFiber = workInProgress;
+
 
   workInProgress.memoizedState = null;
   workInProgress.updateQueue = null;
@@ -253,7 +273,6 @@ export function renderWithHooks<Props, SecondArg>(
 
       workInProgress.updateQueue = null;
 
-
       ReactCurrentDispatcher.current = HooksDispatcherOnRerender;
 
       children = Component(props, secondArg);
@@ -262,25 +281,20 @@ export function renderWithHooks<Props, SecondArg>(
 
   // We can assume the previous dispatcher is always this one, since we set it
   // at the beginning of the render phase and there's no re-entrancy.
-  /**
-   * Component(props, secondArg)运行后，ReactCurrentDispatcher.current指向ContextOnlyDispatcher
-   * 那么如果再函数中使用了hook，比如useEffect(() => {useState(0);})，
-   * 则ContextOnlyDispatcher.useState指向throwInvalidHookError，会抛出错误
-   */
-  
   ReactCurrentDispatcher.current = ContextOnlyDispatcher;
+
 
   // This check uses currentHook so that it works the same in DEV and prod bundles.
   // hookTypesDev could catch more cases (e.g. context) but only in DEV bundles.
-  // 到了这里currentHook不是最后一个hook，则意味是运行少了，有可能一些hook上面有return语句满足条件
   const didRenderTooFewHooks =
     currentHook !== null && currentHook.next !== null;
-  // 上面的children = Component(props, secondArg);运行后，下面的就重置掉
+
   renderLanes = NoLanes;
   currentlyRenderingFiber = (null: any);
 
   currentHook = null;
   workInProgressHook = null;
+
 
   didScheduleRenderPhaseUpdate = false;
 
@@ -299,9 +313,7 @@ export function bailoutHooks(
   lanes: Lanes,
 ) {
   workInProgress.updateQueue = current.updateQueue;
-
   workInProgress.flags &= ~(PassiveEffect | UpdateEffect);
-
   current.lanes = removeLanes(current.lanes, lanes);
 }
 
@@ -336,7 +348,6 @@ export function resetHooksAfterThrow(): void {
   currentHook = null;
   workInProgressHook = null;
 
-
   didScheduleRenderPhaseUpdateDuringThisPass = false;
 }
 
@@ -367,64 +378,25 @@ function updateWorkInProgressHook(): Hook {
   // clone, or a work-in-progress hook from a previous render pass that we can
   // use as a base. When we reach the end of the base list, we must switch to
   // the dispatcher used for mounts.
-  enableLog && console.log('updateWorkInProgressHook start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateWorkInProgressHook')) debugger
-
-  /**
-   * currentlyRenderingFiber指向调用updateWorkInProgressHook的函数组件对应的workInProgress(Fiber)
-   */
-
-  /* 这里是针对旧hook的判断 start */
   let nextCurrentHook: null | Hook;
-  /**
-   * 在renderWithHooks中，刚进入该函数currentHook为null，
-   * 之后会调用的let children = Component(props, secondArg)，即调用函数组件，
-   * 说明刚进入Component函数组件是currentHook为null，当调用完Component(props, secondArg)，
-   * currentHook也会置为null，总结一句话就是：
-   * 在调用Component(props, secondArg)前后currentHook都为null
-   */
   if (currentHook === null) {
-    // currentHook为null，说明函数组件这次更新第一次调用updateWorkInProgressHook
     const current = currentlyRenderingFiber.alternate;
     if (current !== null) {
-      // 如果函数组件对应Fiber有current，则current.memoizedState指向更新前的第一个hook
       nextCurrentHook = current.memoizedState;
     } else {
       nextCurrentHook = null;
     }
   } else {
-    // 不为null，说明函数组件已经调用了不只一次updateWorkInProgressHook，直接取next
     nextCurrentHook = currentHook.next;
   }
-  /* 这里是针对旧hook的判断 end */
 
-  /* 这里是针对新hook的判断 start */
   let nextWorkInProgressHook: null | Hook;
   if (workInProgressHook === null) {
-    /**
-     *  workInProgressHook为null，说明函数组件这次更新第一次调用updateWorkInProgressHook
-     *  这里注意：workInProgress.memoizedState在调用renderWithHooks入口就被置为null了,
-     *  但是这里currentlyRenderingFiber.memoizedState不一定为null!!!
-     *  原因是如果在render的时候又调用了setState，组件继续更新，
-     *  那么这里的currentlyRenderingFiber.memoizedState就不为null，
-     *  否则正常情况这里的currentlyRenderingFiber.memoizedState为null
-     */
     nextWorkInProgressHook = currentlyRenderingFiber.memoizedState;
   } else {
-    /**
-     * 不为null，说明函数组件已经调用了不只一次updateWorkInProgressHook，直接取next
-     * 正常情况下这里workInProgressHook.next为null，
-     * 但是如果在render的时候又触发了
-     */
     nextWorkInProgressHook = workInProgressHook.next;
   }
-  /* 这里是针对新hook的判断 end */
-  
-  /**
-   * 按照上面的分析，正常情况我们不会在render的时候调用setState，
-   * 所以这里nextWorkInProgressHook一般都为null，也就是说一般都会走else分支。
-   * 可如果在render的时候调用了setState，那么这里的nextWorkInProgressHook就不为null
-   */
+
   if (nextWorkInProgressHook !== null) {
     // There's already a work-in-progress. Reuse it.
     workInProgressHook = nextWorkInProgressHook;
@@ -433,9 +405,7 @@ function updateWorkInProgressHook(): Hook {
     currentHook = nextCurrentHook;
   } else {
     // Clone from the current hook.
-    /**
-     * 这里是一般流程都会走的，就是会复用就的hook
-     */
+
     invariant(
       nextCurrentHook !== null,
       'Rendered more hooks than during the previous render.',
@@ -451,16 +421,12 @@ function updateWorkInProgressHook(): Hook {
 
       next: null,
     };
-    /**
-     * 如果workInProgressHook为null，意味着是第一次调用updateWorkInProgressHook
-     */
+
     if (workInProgressHook === null) {
       // This is the first hook in the list.
-      // memoizedState指向第一个hook
       currentlyRenderingFiber.memoizedState = workInProgressHook = newHook;
     } else {
       // Append to the end of the list.
-      // 否则前一个hook的next指向新生成的hook，连接后workInProgressHook移动到newHook
       workInProgressHook = workInProgressHook.next = newHook;
     }
   }
@@ -536,7 +502,6 @@ function updateReducer<S, I, A>(
       baseQueue.next = pendingFirst;
       pendingQueue.next = baseFirst;
     }
-
     current.baseQueue = baseQueue = pendingQueue;
     queue.pending = null;
   }
@@ -684,21 +649,20 @@ function rerenderReducer<S, I, A>(
   return [newState, dispatch];
 }
 
-type MutableSourceMemoizedState<Source, Snapshot> = {
+type MutableSourceMemoizedState<Source, Snapshot> = {|
   refs: {
     getSnapshot: MutableSourceGetSnapshotFn<Source, Snapshot>,
     setSnapshot: Snapshot => void,
   },
   source: MutableSource<any>,
   subscribe: MutableSourceSubscribeFn<Source, Snapshot>,
-};
+|};
 
 function readFromUnsubcribedMutableSource<Source, Snapshot>(
   root: FiberRoot,
   source: MutableSource<Source>,
   getSnapshot: MutableSourceGetSnapshotFn<Source, Snapshot>,
 ): Snapshot {
-
 
   const getVersion = source._getVersion;
   const version = getVersion(source._source);
@@ -744,7 +708,6 @@ function readFromUnsubcribedMutableSource<Source, Snapshot>(
 
   if (isSafeToReadFromSource) {
     const snapshot = getSnapshot(source._source);
-
     return snapshot;
   } else {
     // This handles the special case of a mutable source being shared between renderers.
@@ -864,7 +827,6 @@ function useMutableSource<Source, Snapshot>(
     };
 
     const unsubscribe = subscribe(source._source, handleChange);
-
     return unsubscribe;
   }, [source, subscribe]);
 
@@ -937,10 +899,6 @@ function updateMutableSource<Source, Snapshot>(
 function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-
-  enableLog && console.log('mountState start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('mountState')) debugger
-
   const hook = mountWorkInProgressHook();
   if (typeof initialState === 'function') {
     // $FlowFixMe: Flow doesn't like mixed types
@@ -966,14 +924,13 @@ function mountState<S>(
 function updateState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-
-  return updateReducer(basicStateReducer, initialState);
+  return updateReducer(basicStateReducer, (initialState: any));
 }
 
 function rerenderState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
-  return rerenderReducer(basicStateReducer, initialState);
+  return rerenderReducer(basicStateReducer, (initialState: any));
 }
 
 function pushEffect(tag, create, destroy, deps) {
@@ -983,12 +940,12 @@ function pushEffect(tag, create, destroy, deps) {
     destroy,
     deps,
     // Circular
-    next: null,
+    next: (null: any),
   };
   let componentUpdateQueue: null | FunctionComponentUpdateQueue = (currentlyRenderingFiber.updateQueue: any);
   if (componentUpdateQueue === null) {
     componentUpdateQueue = createFunctionComponentUpdateQueue();
-    currentlyRenderingFiber.updateQueue = componentUpdateQueue;
+    currentlyRenderingFiber.updateQueue = (componentUpdateQueue: any);
     componentUpdateQueue.lastEffect = effect.next = effect;
   } else {
     const lastEffect = componentUpdateQueue.lastEffect;
@@ -1004,21 +961,19 @@ function pushEffect(tag, create, destroy, deps) {
   return effect;
 }
 
-function mountRef<T>(initialValue: T): {current: T} {
+function mountRef<T>(initialValue: T): {|current: T|} {
   const hook = mountWorkInProgressHook();
   const ref = {current: initialValue};
-
   hook.memoizedState = ref;
   return ref;
 }
 
-function updateRef<T>(initialValue: T): {current: T} {
+function updateRef<T>(initialValue: T): {|current: T|} {
   const hook = updateWorkInProgressHook();
   return hook.memoizedState;
 }
 
 function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
-
   const hook = mountWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   currentlyRenderingFiber.flags |= fiberFlags;
@@ -1031,7 +986,6 @@ function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
 }
 
 function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
-
   const hook = updateWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   let destroy = undefined;
@@ -1062,31 +1016,31 @@ function mountEffect(
   create: () => (() => void) | void,
   deps: Array<mixed> | void | null,
 ): void {
-
   return mountEffectImpl(
-    PassiveEffect | PassiveStaticEffect,
+    UpdateEffect | PassiveEffect,
     HookPassive,
     create,
     deps,
   );
-
 }
 
 function updateEffect(
   create: () => (() => void) | void,
   deps: Array<mixed> | void | null,
 ): void {
-
-  return updateEffectImpl(PassiveEffect, HookPassive, create, deps);
+  return updateEffectImpl(
+    UpdateEffect | PassiveEffect,
+    HookPassive,
+    create,
+    deps,
+  );
 }
 
 function mountLayoutEffect(
   create: () => (() => void) | void,
   deps: Array<mixed> | void | null,
 ): void {
-
   return mountEffectImpl(UpdateEffect, HookLayout, create, deps);
-
 }
 
 function updateLayoutEffect(
@@ -1098,7 +1052,7 @@ function updateLayoutEffect(
 
 function imperativeHandleEffect<T>(
   create: () => T,
-  ref: {current: T | null} | ((inst: T | null) => mixed) | null | void,
+  ref: {|current: T | null|} | ((inst: T | null) => mixed) | null | void,
 ) {
   if (typeof ref === 'function') {
     const refCallback = ref;
@@ -1118,7 +1072,7 @@ function imperativeHandleEffect<T>(
 }
 
 function mountImperativeHandle<T>(
-  ref: {current: T | null} | ((inst: T | null) => mixed) | null | void,
+  ref: {|current: T | null|} | ((inst: T | null) => mixed) | null | void,
   create: () => T,
   deps: Array<mixed> | void | null,
 ): void {
@@ -1127,22 +1081,19 @@ function mountImperativeHandle<T>(
   const effectDeps =
     deps !== null && deps !== undefined ? deps.concat([ref]) : null;
 
-
   return mountEffectImpl(
     UpdateEffect,
     HookLayout,
     imperativeHandleEffect.bind(null, create, ref),
     effectDeps,
   );
-
 }
 
 function updateImperativeHandle<T>(
-  ref: {current: T | null} | ((inst: T | null) => mixed) | null | void,
+  ref: {|current: T | null|} | ((inst: T | null) => mixed) | null | void,
   create: () => T,
   deps: Array<mixed> | void | null,
 ): void {
-
 
   // TODO: If deps are provided, should we skip comparing the ref itself?
   const effectDeps =
@@ -1263,28 +1214,66 @@ function rerenderDeferredValue<T>(value: T): T {
 
 function startTransition(setPending, callback) {
   const priorityLevel = getCurrentPriorityLevel();
-  runWithPriority(
-    priorityLevel < UserBlockingPriority
-      ? UserBlockingPriority
-      : priorityLevel,
-    () => {
-      setPending(true);
-    },
-  );
+  if (decoupleUpdatePriorityFromScheduler) {
+    const previousLanePriority = getCurrentUpdateLanePriority();
+    setCurrentUpdateLanePriority(
+      higherLanePriority(previousLanePriority, InputContinuousLanePriority),
+    );
 
-  runWithPriority(
-    priorityLevel > NormalPriority ? NormalPriority : priorityLevel,
-    () => {
-      const prevTransition = ReactCurrentBatchConfig.transition;
-      ReactCurrentBatchConfig.transition = 1;
-      try {
-        setPending(false);
-        callback();
-      } finally {
-        ReactCurrentBatchConfig.transition = prevTransition;
-      }
-    },
-  );
+    runWithPriority(
+      priorityLevel < UserBlockingPriority
+        ? UserBlockingPriority
+        : priorityLevel,
+      () => {
+        setPending(true);
+      },
+    );
+
+    // TODO: Can remove this. Was only necessary because we used to give
+    // different behavior to transitions without a config object. Now they are
+    // all treated the same.
+    setCurrentUpdateLanePriority(DefaultLanePriority);
+
+    runWithPriority(
+      priorityLevel > NormalPriority ? NormalPriority : priorityLevel,
+      () => {
+        const prevTransition = ReactCurrentBatchConfig.transition;
+        ReactCurrentBatchConfig.transition = 1;
+        try {
+          setPending(false);
+          callback();
+        } finally {
+          if (decoupleUpdatePriorityFromScheduler) {
+            setCurrentUpdateLanePriority(previousLanePriority);
+          }
+          ReactCurrentBatchConfig.transition = prevTransition;
+        }
+      },
+    );
+  } else {
+    runWithPriority(
+      priorityLevel < UserBlockingPriority
+        ? UserBlockingPriority
+        : priorityLevel,
+      () => {
+        setPending(true);
+      },
+    );
+
+    runWithPriority(
+      priorityLevel > NormalPriority ? NormalPriority : priorityLevel,
+      () => {
+        const prevTransition = ReactCurrentBatchConfig.transition;
+        ReactCurrentBatchConfig.transition = 1;
+        try {
+          setPending(false);
+          callback();
+        } finally {
+          ReactCurrentBatchConfig.transition = prevTransition;
+        }
+      },
+    );
+  }
 }
 
 function mountTransition(): [(() => void) => void, boolean] {
@@ -1311,9 +1300,6 @@ function rerenderTransition(): [(() => void) => void, boolean] {
 }
 
 
-function warnOnOpaqueIdentifierAccessInDEV(fiber) {
-
-}
 
 function mountOpaqueIdentifier(): OpaqueIDType | void {
   const makeId = makeClientId;
@@ -1342,9 +1328,7 @@ function mountOpaqueIdentifier(): OpaqueIDType | void {
     const setId = mountState(id)[1];
 
     if ((currentlyRenderingFiber.mode & BlockingMode) === NoMode) {
-
-      currentlyRenderingFiber.flags |= PassiveEffect | PassiveStaticEffect;
-
+      currentlyRenderingFiber.flags |= UpdateEffect | PassiveEffect;
       pushEffect(
         HookHasEffect | HookPassive,
         () => {
@@ -1378,9 +1362,6 @@ function dispatchAction<S, A>(
   action: A,
 ) {
 
-  enableLog && console.log('dispatchAction start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) debugger
-
   const eventTime = requestEventTime();
   const lane = requestUpdateLane(fiber);
 
@@ -1391,7 +1372,7 @@ function dispatchAction<S, A>(
     eagerState: null,
     next: (null: any),
   };
-  // update拼接成环形单向链表
+
   // Append the update to the end of the list.
   const pending = queue.pending;
   if (pending === null) {
@@ -1408,7 +1389,6 @@ function dispatchAction<S, A>(
     fiber === currentlyRenderingFiber ||
     (alternate !== null && alternate === currentlyRenderingFiber)
   ) {
-    // render阶段触发了更新，将didScheduleRenderPhaseUpdate设为true
     // This is a render phase update. Stash it in a lazily-created map of
     // queue -> linked list of updates. After this render pass, we'll restart
     // and apply the stashed updates on top of the work-in-progress hook.
@@ -1418,15 +1398,12 @@ function dispatchAction<S, A>(
       fiber.lanes === NoLanes &&
       (alternate === null || alternate.lanes === NoLanes)
     ) {
-      // fiber.lanes === NoLanes意味着fiber上不存在update，
-      // 那么上面的update就是第一个update
       // The queue is currently empty, which means we can eagerly compute the
       // next state before entering the render phase. If the new state is the
       // same as the current state, we may be able to bail out entirely.
       const lastRenderedReducer = queue.lastRenderedReducer;
       if (lastRenderedReducer !== null) {
         let prevDispatcher;
-
         try {
           const currentState: S = (queue.lastRenderedState: any);
           const eagerState = lastRenderedReducer(currentState, action);
@@ -1434,10 +1411,8 @@ function dispatchAction<S, A>(
           // it, on the update object. If the reducer hasn't changed by the
           // time we enter the render phase, then the eager state can be used
           // without calling the reducer again.
-          // 暂存到update上
           update.eagerReducer = lastRenderedReducer;
           update.eagerState = eagerState;
-          // 如果计算出的state与该hook之前保存的state一致，那么完全不需要开启一次调度
           if (is(eagerState, currentState)) {
             // Fast path. We can bail out without scheduling React to re-render.
             // It's still possible that we'll need to rebase this update later,
@@ -1447,16 +1422,11 @@ function dispatchAction<S, A>(
           }
         } catch (error) {
           // Suppress the error. It will throw again in the render phase.
-        } finally {
-
-        }
+        } 
       }
     }
-    // 模拟React开始调度更新
     scheduleUpdateOnFiber(fiber, lane, eventTime);
-    enableLog && console.log('dispatchAction end')
   }
-
 
   if (enableSchedulingProfiler) {
     markStateUpdateScheduled(fiber, lane);

@@ -9,11 +9,11 @@
 
 import type {ReactContext} from 'shared/ReactTypes';
 import type {Fiber, ContextDependency} from './ReactInternalTypes';
-import type {StackCursor} from './ReactFiberStack.new';
+import type {StackCursor} from './ReactFiberStack.old';
 import type {Lanes} from './ReactFiberLane';
 
 import {isPrimaryRenderer} from './ReactFiberHostConfig';
-import {createCursor, push, pop} from './ReactFiberStack.new';
+import {createCursor, push, pop} from './ReactFiberStack.old';
 import {MAX_SIGNED_31_BIT_INT} from './MaxInts';
 import {
   ContextProvider,
@@ -31,14 +31,13 @@ import {
 
 import invariant from 'shared/invariant';
 import is from 'shared/objectIs';
-import {createUpdate, enqueueUpdate, ForceUpdate} from './ReactUpdateQueue.new';
-import {markWorkInProgressReceivedUpdate} from './ReactFiberBeginWork.new';
+import {createUpdate, enqueueUpdate, ForceUpdate} from './ReactUpdateQueue.old';
+import {markWorkInProgressReceivedUpdate} from './ReactFiberBeginWork.old';
 import {enableSuspenseServerRenderer} from 'shared/ReactFeatureFlags';
 
 const valueCursor: StackCursor<mixed> = createCursor(null);
 
 let rendererSigil;
-
 
 let currentlyRenderingFiber: Fiber | null = null;
 let lastContextDependency: ContextDependency<mixed> | null = null;
@@ -52,9 +51,7 @@ export function resetContextDependencies(): void {
   currentlyRenderingFiber = null;
   lastContextDependency = null;
   lastContextWithAllBitsObserved = null;
-
 }
-
 
 export function pushProvider<T>(providerFiber: Fiber, nextValue: T): void {
   const context: ReactContext<T> = providerFiber.type._context;
@@ -63,12 +60,10 @@ export function pushProvider<T>(providerFiber: Fiber, nextValue: T): void {
     push(valueCursor, context._currentValue, providerFiber);
 
     context._currentValue = nextValue;
-
   } else {
     push(valueCursor, context._currentValue2, providerFiber);
 
     context._currentValue2 = nextValue;
-
   }
 }
 
@@ -143,8 +138,10 @@ export function propagateContextChange(
   }
   while (fiber !== null) {
     let nextFiber;
+
     // Visit this fiber.
     const list = fiber.dependencies;
+    console.log('list', list);
     if (list !== null) {
       nextFiber = fiber.child;
 
@@ -270,7 +267,6 @@ export function readContext<T>(
   context: ReactContext<T>,
   observedBits: void | number | boolean,
 ): T {
-
 
   if (lastContextWithAllBitsObserved === context) {
     // Nothing to do. We already observe everything in this context.
