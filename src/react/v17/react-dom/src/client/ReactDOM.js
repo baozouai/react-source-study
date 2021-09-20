@@ -28,7 +28,7 @@ import {
   flushDiscreteUpdates,
   flushSync,
   flushControlled,
-  injectIntoDevTools,
+
   flushPassiveEffects,
   IsThisRendererActing,
   attemptSynchronousHydration,
@@ -174,12 +174,6 @@ export {
   runWithPriority as unstable_runWithPriority,
 };
 
-const foundDevTools = injectIntoDevTools({
-  findFiberByHostInstance: getClosestInstanceFromNode,
-  bundleType: 0,
-  version: ReactVersion,
-  rendererPackageName: 'react-dom',
-});
 
 
 export const unstable_isNewReconciler = enableNewReconciler;

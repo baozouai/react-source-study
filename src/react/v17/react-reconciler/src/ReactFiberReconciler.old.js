@@ -11,13 +11,16 @@ import type {Fiber, SuspenseHydrationCallbacks} from './ReactInternalTypes';
 import type {FiberRoot} from './ReactInternalTypes';
 import type {RootTag} from './ReactRootTags';
 import type {
+  Instance,
+  TextInstance,
   Container,
   PublicInstance,
 } from './ReactFiberHostConfig';
+
 import {FundamentalComponent} from './ReactWorkTags';
 import type {ReactNodeList} from 'shared/ReactTypes';
 import type {Lane, LanePriority} from './ReactFiberLane';
-import type {SuspenseState} from './ReactFiberSuspenseComponent.new';
+import type {SuspenseState} from './ReactFiberSuspenseComponent.old';
 
 import {
   findCurrentHostFiber,
@@ -32,14 +35,17 @@ import {
 } from './ReactWorkTags';
 
 import invariant from 'shared/invariant';
+import {enableSchedulingProfiler} from 'shared/ReactFeatureFlags';
+
 import {getPublicInstance} from './ReactFiberHostConfig';
 import {
   findCurrentUnmaskedContext,
   processChildContext,
   emptyContextObject,
   isContextProvider as isLegacyContextProvider,
-} from './ReactFiberContext.new';
-import {createFiberRoot} from './ReactFiberRoot.new';
+} from './ReactFiberContext.old';
+import {createFiberRoot} from './ReactFiberRoot.old';
+
 import {
   requestEventTime,
   requestUpdateLane,
@@ -56,8 +62,8 @@ import {
   flushPassiveEffects,
   IsThisRendererActing,
   act,
-} from './ReactFiberWorkLoop.new';
-import {createUpdate, enqueueUpdate} from './ReactUpdateQueue.new';
+} from './ReactFiberWorkLoop.old';
+import {createUpdate, enqueueUpdate} from './ReactUpdateQueue.old';
 
 import {
   SyncLane,
@@ -68,7 +74,8 @@ import {
   getCurrentUpdateLanePriority,
   setCurrentUpdateLanePriority,
 } from './ReactFiberLane';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
+import {markRenderScheduled} from './SchedulingProfiler';
 
 export {registerMutableSourceForHydration} from './ReactMutableSource.new';
 export {createPortal} from './ReactPortal';
@@ -87,7 +94,19 @@ export {
 
 type OpaqueRoot = FiberRoot;
 
+// 0 is PROD, 1 is DEV.
+// Might add PROFILE later.
+type BundleType = 0 | 1;
 
+type DevToolsConfig = {|
+  bundleType: BundleType,
+  version: string,
+  rendererPackageName: string,
+  // Note: this actually *does* depend on Fiber internal fields.
+  // Used by "inspect clicked DOM element" in React DevTools.
+  findFiberByHostInstance?: (instance: Instance | TextInstance) => Fiber | null,
+  rendererConfig?: RendererInspectionConfig,
+|};
 
 
 
@@ -135,7 +154,6 @@ function findHostInstanceWithWarning(
   component: Object,
   methodName: string,
 ): PublicInstance | null {
-
   return findHostInstance(component);
 }
 
@@ -145,28 +163,23 @@ export function createContainer(
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
-  
-  enableLog && console.log('createContainer start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('createContainer')) debugger
-
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
-/** 更新的起点 */ 
+
 export function updateContainer(
   element: ReactNodeList,
   container: OpaqueRoot,
   parentComponent: ?React$Component<any, any>,
   callback: ?Function,
 ): Lane {
- 
-  enableLog && console.log('updateContainer start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateContainer')) debugger
 
   const current = container.current;
-  // 获取事件开始时间，一般是performance.now()
   const eventTime = requestEventTime();
-  // 获取更新优先级
   const lane = requestUpdateLane(current);
+
+  if (enableSchedulingProfiler) {
+    markRenderScheduled(lane);
+  }
 
   const context = getContextForSubtree(parentComponent);
   if (container.context === null) {
@@ -175,21 +188,17 @@ export function updateContainer(
     container.pendingContext = context;
   }
 
-  // 创建更新任务
   const update = createUpdate(eventTime, lane);
   // Caution: React DevTools currently depends on this property
   // being called "element".
-  // 对于container，其update的payload就是React.element
-  update.payload = { element };
-  // 对于ReactDom.createRoot(Concurrent模式)的render来说，callback为null
-  // 对于ReactDom.render来说，callback为ReactDom.render的第三个参数
+  update.payload = {element};
+
   callback = callback === undefined ? null : callback;
   if (callback !== null) {
     update.callback = callback;
   }
-  // 往updateQueue加入update
+
   enqueueUpdate(current, update);
-  // 调度更新
   scheduleUpdateOnFiber(current, lane, eventTime);
 
   return lane;
@@ -339,5 +348,6 @@ let shouldSuspendImpl = fiber => false;
 export function shouldSuspend(fiber: Fiber): boolean {
   return shouldSuspendImpl(fiber);
 }
+
 
 

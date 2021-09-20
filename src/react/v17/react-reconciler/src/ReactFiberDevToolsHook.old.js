@@ -13,11 +13,12 @@ import type {Fiber, FiberRoot, ReactPriorityLevel} from './ReactInternalTypes';
 import type {ReactNodeList} from 'shared/ReactTypes';
 
 import {DidCapture} from './ReactFiberFlags';
-import { enableLog } from 'shared/ReactFeatureFlags';
+
 declare var __REACT_DEVTOOLS_GLOBAL_HOOK__: Object | void;
 
 let rendererID = null;
 let injectedHook = null;
+let hasLoggedError = false;
 
 export const isDevToolsPresent =
   typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined';
@@ -35,7 +36,6 @@ export function injectInternals(internals: Object): boolean {
     return true;
   }
   if (!hook.supportsFiber) {
-
     // DevTools exists, even though it doesn't support Fiber.
     return true;
   }
@@ -45,23 +45,18 @@ export function injectInternals(internals: Object): boolean {
     injectedHook = hook;
   } catch (err) {
     // Catch all errors because it is unsafe to throw during initialization.
-
   }
   // DevTools exists
   return true;
 }
 
 
-
 export function onCommitRoot(
   root: FiberRoot,
   priorityLevel: ReactPriorityLevel,
 ) {
-  enableLog && console.log('onCommitRoot start')
-  if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('onCommitRoot')) debugger
   if (injectedHook && typeof injectedHook.onCommitFiberRoot === 'function') {
     try {
-      // DidCapture === 0b0000000000,0100,0000;
       const didError = (root.current.flags & DidCapture) === DidCapture;
       if (enableProfilerTimer) {
         injectedHook.onCommitFiberRoot(
@@ -74,10 +69,8 @@ export function onCommitRoot(
         injectedHook.onCommitFiberRoot(rendererID, root, undefined, didError);
       }
     } catch (err) {
-
     }
   }
-  enableLog && console.log('onCommitRoot end')
 }
 
 export function onCommitUnmount(fiber: Fiber) {
@@ -85,7 +78,6 @@ export function onCommitUnmount(fiber: Fiber) {
     try {
       injectedHook.onCommitFiberUnmount(rendererID, fiber);
     } catch (err) {
-
     }
   }
 }

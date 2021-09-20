@@ -9,7 +9,7 @@
 
 import type {Fiber} from './ReactInternalTypes';
 
-export type StackCursor<T> = {current: T};
+export type StackCursor<T> = {|current: T|};
 
 const valueStack: Array<any> = [];
 
@@ -28,27 +28,23 @@ function isEmpty(): boolean {
 }
 
 function pop<T>(cursor: StackCursor<T>, fiber: Fiber): void {
-  if (index < 0) {
-
-    return;
-  }
-
-
 
   cursor.current = valueStack[index];
 
   valueStack[index] = null;
-
 
   index--;
 }
 
 function push<T>(cursor: StackCursor<T>, value: T, fiber: Fiber): void {
   index++;
-
+  /*
+  * [ { theme: 'red' }, false ]
+  *
+  * [ emptyContext, contextValue ]
+  *
+  * */
   valueStack[index] = cursor.current;
-
-
 
   cursor.current = value;
 }
