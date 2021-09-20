@@ -200,11 +200,6 @@ function checkShouldComponentUpdate(
   return true;
 }
 
-function checkClassInstance(workInProgress: Fiber, ctor: any, newProps: any) {
-  const instance = workInProgress.stateNode;
-
-}
-
 function adoptClassInstance(workInProgress: Fiber, instance: any): void {
   instance.updater = classComponentUpdater;
   workInProgress.stateNode = instance;

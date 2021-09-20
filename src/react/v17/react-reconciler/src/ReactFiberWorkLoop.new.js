@@ -129,7 +129,7 @@ import {
   lanePriorityToSchedulerPriority,
 } from './ReactFiberLane';
 import { requestCurrentTransition, NoTransition } from './ReactFiberTransition';
-import { beginWork } from './ReactFiberBeginWork.new';
+import {beginWork} from './ReactFiberBeginWork.new';
 import { completeWork } from './ReactFiberCompleteWork.new';
 import { unwindWork, unwindInterruptedWork } from './ReactFiberUnwindWork.new';
 import {
@@ -519,7 +519,7 @@ export function scheduleUpdateOnFiber(
       (executionContext & DiscreteEventContext) !== NoContext && // DiscreteEventContext = 0b0000100;
       // Only updates at user-blocking priority or greater are considered
       // discrete, even inside a discrete event.
-      // UserBlockingPriority = 98), ImmediatePriority = 99
+      // UserBlockingPriority = 98, ImmediatePriority = 99
       [UserBlockingSchedulerPriority, ImmediateSchedulerPriority].includes(priorityLevel) 
     ) {
       // This is the result of a discrete event. Track the lowest priority
@@ -1829,8 +1829,14 @@ function commitRootImpl(root, renderPriorityLevel) {
     // of the effect list for each phase: all mutation effects come before all
     // layout effects, and so on.
     /**
-     * 第一阶段为：before mutation，（执行DOM操作前），before mutation直接翻译是变化前，即dom变化前
-     * 会获取根节点上的state,调用getSnapshotBeforeUpdate
+     * 第一阶段为：before mutation，（执行DOM操作前），before mutation直接翻译是变化前，
+     * 会在commitBeforeMutationEffectsImpl里面处理带有Snapshot,Passive标记的fiber节点，
+     * 即如果带有Snapshot，则在dom变化前会获取根节点上的state,调用getSnapshotBeforeUpdate，
+     * 带有Passive，则会调用flushPassiveEffects,如下
+     * scheduleCallback(NormalSchedulerPriority, () => {
+     *  flushPassiveEffects();
+     *  return null;
+     * })
      */
     // The first phase a "before mutation" phase. We use this phase to read the
     // state of the host tree right before we mutate it. This is where
@@ -1850,7 +1856,8 @@ function commitRootImpl(root, renderPriorityLevel) {
       recordCommitTime();
     }
     /**
-     * 第二阶段：mutation阶段（执行DOM操作），mutation直接翻译是裂变，即页面发生改变
+     * 第二阶段：mutation阶段（执行DOM操作），mutation直接翻译是裂变，即页面发生改变，这个阶段dom更新了，
+     * 会处理带有Placement, Update, Deletion, Hydrating, ContentReset, Ref等flag的fiber
      */
     // The next phase is the mutation phase, where we mutate the host tree.
     commitMutationEffects(finishedWork, root, renderPriorityLevel);
@@ -1869,11 +1876,12 @@ function commitRootImpl(root, renderPriorityLevel) {
     // 1.这一步必须在mutation阶段后，为了在组件在调用componentWillUnmount时current树依然存在
     // 2.这一步又必须在layout节点之前，因为componentDidMount/Update要获取的是当前finishedWork的状态
     root.current = finishedWork;
-    // 第三阶段：layout阶段，也是最后阶段
     // The next phase is the layout phase, where we call effects that read
     // the host tree after it's been mutated. The idiomatic use case for this is
     // layout, but class component lifecycles also fire here for legacy reasons.
-
+    /**
+     * 第三阶段：layout阶段，dom变更后， 会处理带有Update | Callback | Ref等flag的fiber
+     */
     try {
       recursivelyCommitLayoutEffects(finishedWork, root);
     } catch (error) {
@@ -1995,7 +2003,8 @@ function commitRootImpl(root, renderPriorityLevel) {
   * 每次commit阶段完成后，再执行一遍ensureRootIsScheduled，
   * 保证root上任何的pendingLanes都能被处理,即确保是否还有任务需要被调度。
   * 例如，高优先级插队的更新完成后，commit完成后，还会再执行一遍，保证之前跳过的低优先级任务
-  * 重新调度
+  * 重新调度，或者上面的Layout节点调用recursivelyCommitLayoutEffects里面在ComponentDid(Mount)Update
+  * 里面又调用了setState之类的，那下面就要再检测一下，有则再次发起调度
   * */
   // Always call this before exiting `commitRoot`, to ensure that any
   // additional work on this root is scheduled.
@@ -2010,6 +2019,8 @@ function commitRootImpl(root, renderPriorityLevel) {
 
 
   // If layout work was scheduled, flush it now.
+  // 检测同步任务：有则主动调用flushSyncCallbackQueue(无需再次等待scheduler调度), 
+  // 再次进入fiber树构造循环
   flushSyncCallbackQueue();
 
   enableLog && console.log('commitRootImpl end')
@@ -2130,6 +2141,7 @@ function commitMutationEffects(
     if (fiber.child !== null) {
       const mutationFlags = fiber.subtreeFlags & MutationMask;
       if (mutationFlags !== NoFlags) {
+        // subtreeFlags属于Placement | Update | Deletion | ContentReset | Ref | Hydrating中一个
         commitMutationEffects(fiber.child, root, renderPriorityLevel);
       }
     }
@@ -2212,6 +2224,12 @@ function commitMutationEffectsImpl(
       break;
     }
     case Update: {
+      /**
+       * 更新， useEffect,useLayoutEffect都会设置Update标记,
+       * 不过这里只会处理useLayoutEffect，
+       * 因为commitWork里面调用的commitHookEffectListUnmount传入的
+       * 第一个参数是HookLayout | HookHasEffect
+       */
       const current = fiber.alternate;
       commitWork(current, fiber);
       break;
@@ -2372,6 +2390,10 @@ function flushPassiveEffectsImpl() {
   enableLog && console.log('flushPassiveEffectsImpl start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('flushPassiveEffectsImpl')) debugger
   
+  /** rootWithPendingPassiveEffects是 在commitRootImpl中
+   * 通过判断 if (rootDoesHavePassiveEffects)，true的话则将
+   * rootWithPendingPassiveEffects赋值为在commitRootImpl中传入的root
+   * */
   // 先校验，如果root上没有 Passive efectTag的节点，则直接return
   if (rootWithPendingPassiveEffects === null) {
     enableLog && console.log('flushPassiveEffectsImpl end')
@@ -2380,6 +2402,7 @@ function flushPassiveEffectsImpl() {
 
   const root = rootWithPendingPassiveEffects;
   const lanes = pendingPassiveEffectsLanes;
+  // 上面已经拿到了，则将全局变量重置
   rootWithPendingPassiveEffects = null;
   pendingPassiveEffectsLanes = NoLanes;
 
@@ -2399,6 +2422,7 @@ function flushPassiveEffectsImpl() {
   // e.g. a destroy function in one component may unintentionally override a ref
   // value set by a create function in another component.
   // Layout effects have the same constraint.
+  // 先处理unMount，好了后再处理Mount的effect
   flushPassiveUnmountEffects(root.current);
   flushPassiveMountEffects(root, root.current);
 

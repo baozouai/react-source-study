@@ -190,7 +190,7 @@ function areHookInputsEqual(
   }
   return true;
 }
-
+/** 返回ReactElement */
 export function renderWithHooks<Props, SecondArg>(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -202,14 +202,14 @@ export function renderWithHooks<Props, SecondArg>(
   
   enableLog && console.log('ReactFiberHooks.new: renderWithHooks start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('renderWithHooks')) debugger
-  
+  /** 设置一些全局变量 start */
   renderLanes = nextRenderLanes;
   currentlyRenderingFiber = workInProgress;
 
   workInProgress.memoizedState = null;
   workInProgress.updateQueue = null;
   workInProgress.lanes = NoLanes;
-
+  /** 设置一些全局变量 end */
   // The following should have already been reset
   // currentHook = null;
   // workInProgressHook = null;
@@ -229,7 +229,7 @@ export function renderWithHooks<Props, SecondArg>(
       ? HooksDispatcherOnMount
       : HooksDispatcherOnUpdate;
 
-
+  // 在这里开始调用函数组件，里面可能用到hook，children为ReactElement
   let children = Component(props, secondArg);
 
   // Check if there was a render phase update
@@ -276,6 +276,7 @@ export function renderWithHooks<Props, SecondArg>(
   const didRenderTooFewHooks =
     currentHook !== null && currentHook.next !== null;
   // 上面的children = Component(props, secondArg);运行后，下面的就重置掉
+  /** 重置一些全局变量 start */
   renderLanes = NoLanes;
   currentlyRenderingFiber = (null: any);
 
@@ -283,7 +284,7 @@ export function renderWithHooks<Props, SecondArg>(
   workInProgressHook = null;
 
   didScheduleRenderPhaseUpdate = false;
-
+  /** 重置一些全局变量 end */
   invariant(
     !didRenderTooFewHooks,
     'Rendered fewer hooks than expected. This may be caused by an accidental ' +
@@ -516,7 +517,7 @@ function updateReducer<S, I, A>(
     queue !== null,
     'Should have a queue. This is likely a bug in React. Please file an issue.',
   );
-
+  // 每次调用都会把queue.lastRenderedReducer指向最新的reducer
   queue.lastRenderedReducer = reducer;
 
   const current: Hook = (currentHook: any);
@@ -526,33 +527,43 @@ function updateReducer<S, I, A>(
 
   // The last pending update that hasn't been processed yet.
   const pendingQueue = queue.pending;
+  // 这里对产生的update进行备份，备份到current.baseQueue上，因为产生的更新可能因为优先级
+  // 不足则被跳过，但跳过归跳过，之后还是要恢复重做，且要保证update产生的顺序，这就是要备份的原因
   if (pendingQueue !== null) {
+    // pendingQueue不为空则意味着有update
     // We have new updates that haven't been processed yet.
     // We'll add them to the base queue.
     if (baseQueue !== null) {
+      // 由于这些新的update还未处理，则暂存到current的baseQueue上
       // Merge the pending queue and the base queue.
       const baseFirst = baseQueue.next;
       const pendingFirst = pendingQueue.next;
       baseQueue.next = pendingFirst;
       pendingQueue.next = baseFirst;
     }
-
+    // 上面拼接后，将current.baseQueue指向pendingQueue
     current.baseQueue = baseQueue = pendingQueue;
+    // 然后wipHook.queue.pending就可以清空了，因为上面备份了
     queue.pending = null;
   }
 
   if (baseQueue !== null) {
+    // 处理baseQueue
     // We have a queue to process.
+    // 第一个update
     const first = baseQueue.next;
     let newState = current.baseState;
-
+    // 以下三个newBase仅在有update被跳过时，才有值
     let newBaseState = null;
+    // newBaseQueueFirst和newBaseQueueLast组成newBaseQueue
     let newBaseQueueFirst = null;
     let newBaseQueueLast = null;
     let update = first;
     do {
+      // 获取更新优先级
       const updateLane = update.lane;
       if (!isSubsetOfLanes(renderLanes, updateLane)) {
+        // 如果不在渲染优先级里，则要跳过
         // Priority is insufficient. Skip this update. If this is the first
         // skipped update, the previous update/state is the new base
         // update/state.
@@ -564,9 +575,13 @@ function updateReducer<S, I, A>(
           next: (null: any),
         };
         if (newBaseQueueLast === null) {
+          // newBaseQueueLast为空代表这个update是第一个被跳过的，
+          // 那么作为newBaseQueueLast的第一个
           newBaseQueueFirst = newBaseQueueLast = clone;
+          // newBaseState赋值为被跳过update的前一个update产生的newState
           newBaseState = newState;
         } else {
+          // 否则拼接后newBaseQueue后面
           newBaseQueueLast = newBaseQueueLast.next = clone;
         }
         // Update the remaining priority in the queue.
@@ -576,11 +591,13 @@ function updateReducer<S, I, A>(
           currentlyRenderingFiber.lanes,
           updateLane,
         );
+        // 因为被跳过，所以这里要标记被跳过的更新优先级
         markSkippedUpdateLanes(updateLane);
       } else {
         // This update does have sufficient priority.
 
         if (newBaseQueueLast !== null) {
+          // 这里newBaseQueueLast不为空，则意味着之前已经有优先级不足的update被跳过了
           const clone: Update<S, A> = {
             // This update is going to be committed so we never want uncommit
             // it. Using NoLane works because 0 is a subset of all bitmasks, so
@@ -591,30 +608,42 @@ function updateReducer<S, I, A>(
             eagerState: update.eagerState,
             next: (null: any),
           };
+          // 第一个被跳过的update到之后的update都放入newBaseQueue
           newBaseQueueLast = newBaseQueueLast.next = clone;
         }
 
         // Process this update.
         if (update.eagerReducer === reducer) {
+          /**在dispatchAction里面已经计算了eagerState，那么就不用再计算一次了，
+           * 这也是一种性能优化，因为有可能计算的state比较耗时
+           * dispatchAction里面相关代码如下：
+           * update.eagerReducer = lastRenderedReducer;
+           * update.eagerState = eagerState;
+           */
           // If this update was processed eagerly, and its reducer matches the
           // current reducer, we can use the eagerly computed state.
           newState = ((update.eagerState: any): S);
         } else {
+          // 否则计算newState
           const action = update.action;
           newState = reducer(newState, action);
         }
       }
+      // 移动到下一个update
       update = update.next;
     } while (update !== null && update !== first);
 
     if (newBaseQueueLast === null) {
+      // newBaseQueueLast为空意味着没有update被跳过，那么newBaseState就等于newState
       newBaseState = newState;
     } else {
+      // 不为空，则拼接为单向环形链表
       newBaseQueueLast.next = (newBaseQueueFirst: any);
     }
 
     // Mark that the fiber performed work, but only if the new state is
     // different from the current state.
+    // 最终计算出的newState如果和上次的state不同，则要标记didReceiveUpdate = true
     if (!is(newState, hook.memoizedState)) {
       markWorkInProgressReceivedUpdate();
     }
@@ -975,7 +1004,7 @@ function rerenderState<S>(
 ): [S, Dispatch<BasicStateAction<S>>] {
   return rerenderReducer(basicStateReducer, initialState);
 }
-
+/** 创建一个effect，连接到fiber.updateQueue末尾上，返回该effect */
 function pushEffect(tag, create, destroy, deps) {
   const effect: Effect = {
     tag,
@@ -985,7 +1014,9 @@ function pushEffect(tag, create, destroy, deps) {
     // Circular
     next: null,
   };
+  // useEffect创建的effect都放在fiber.updateQueue上
   let componentUpdateQueue: null | FunctionComponentUpdateQueue = (currentlyRenderingFiber.updateQueue: any);
+  // 以下是连接成单向环形链表
   if (componentUpdateQueue === null) {
     componentUpdateQueue = createFunctionComponentUpdateQueue();
     currentlyRenderingFiber.updateQueue = componentUpdateQueue;
@@ -1041,7 +1072,9 @@ function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
     destroy = prevEffect.destroy;
     if (nextDeps !== null) {
       const prevDeps = prevEffect.deps;
+      // 如果前后deps相同，则不走下面，这是判断依赖是否变化的关键
       if (areHookInputsEqual(nextDeps, prevDeps)) {
+        // 不变的话，注意这里的tag不含HookHasEffect
         pushEffect(hookFlags, create, destroy, nextDeps);
         return;
       }
@@ -1049,7 +1082,7 @@ function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
   }
 
   currentlyRenderingFiber.flags |= fiberFlags;
-
+  // 这里前后依赖变化了，所以要加上HookHasEffect
   hook.memoizedState = pushEffect(
     HookHasEffect | hookFlags,
     create,
@@ -1377,13 +1410,15 @@ function dispatchAction<S, A>(
   queue: UpdateQueue<S, A>,
   action: A,
 ) {
+  // 获取点击开始时间
+  const eventTime = requestEventTime();
 
   enableLog && console.log('dispatchAction start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('dispatchAction')) debugger
-
-  const eventTime = requestEventTime();
+  
+  // 获取更新优先级
   const lane = requestUpdateLane(fiber);
-
+  // 创建一个update
   const update: Update<S, A> = {
     lane,
     action,
@@ -1408,7 +1443,10 @@ function dispatchAction<S, A>(
     fiber === currentlyRenderingFiber ||
     (alternate !== null && alternate === currentlyRenderingFiber)
   ) {
-    // render阶段触发了更新，将didScheduleRenderPhaseUpdate设为true
+    /**
+     * 因为只有在render的时候触发更新，上面的fiber或fiber.alternate才等于currentlyRenderingFiber,
+     * 将didScheduleRenderPhaseUpdate设为true
+     */
     // This is a render phase update. Stash it in a lazily-created map of
     // queue -> linked list of updates. After this render pass, we'll restart
     // and apply the stashed updates on top of the work-in-progress hook.
@@ -1419,13 +1457,13 @@ function dispatchAction<S, A>(
       (alternate === null || alternate.lanes === NoLanes)
     ) {
       // fiber.lanes === NoLanes意味着fiber上不存在update，
-      // 那么上面的update就是第一个update
+      // 那么上面的update就是queue.pending第一个update
       // The queue is currently empty, which means we can eagerly compute the
       // next state before entering the render phase. If the new state is the
       // same as the current state, we may be able to bail out entirely.
+      /** 以下是性能优化部分，具体在if (is(eagerState, currentState))里面判断是否需要开启一次调度 */
       const lastRenderedReducer = queue.lastRenderedReducer;
       if (lastRenderedReducer !== null) {
-        let prevDispatcher;
 
         try {
           const currentState: S = (queue.lastRenderedState: any);
@@ -1434,7 +1472,8 @@ function dispatchAction<S, A>(
           // it, on the update object. If the reducer hasn't changed by the
           // time we enter the render phase, then the eager state can be used
           // without calling the reducer again.
-          // 暂存到update上
+          // 暂存到update上,如果在render阶段updateReducer中判断到reducer==update.eagerReducer,
+          // 则可以直接使用无需再次计算，优化性能
           update.eagerReducer = lastRenderedReducer;
           update.eagerState = eagerState;
           // 如果计算出的state与该hook之前保存的state一致，那么完全不需要开启一次调度
@@ -1447,8 +1486,6 @@ function dispatchAction<S, A>(
           }
         } catch (error) {
           // Suppress the error. It will throw again in the render phase.
-        } finally {
-
         }
       }
     }

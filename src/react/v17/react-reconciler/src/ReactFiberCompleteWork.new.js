@@ -349,7 +349,6 @@ function bubbleProperties(completedWork: Fiber) {
     
   let newChildLanes = NoLanes;
   let subtreeFlags = NoFlags;
-
   if (!didBailout) {
     // Bubble up the earliest expiration time.
     if (enableProfilerTimer && (completedWork.mode & ProfileMode) !== NoMode) {

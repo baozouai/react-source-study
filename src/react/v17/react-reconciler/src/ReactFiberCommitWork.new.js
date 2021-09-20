@@ -76,7 +76,7 @@ import {resolveDefaultProps} from './ReactFiberLazyComponent.new';
 import {
   getCommitTime,
 } from './ReactProfilerTimer.new';
-import {ProfileMode} from './ReactTypeOfMode';
+
 import {commitUpdateQueue} from './ReactUpdateQueue.new';
 import {
   getPublicInstance,
@@ -238,7 +238,7 @@ function commitBeforeMutationLifeCycles(
       'likely caused by a bug in React. Please file an issue.',
   );
 }
-// 该方法会遍历effectList，执行所有useLayoutEffect hook的销毁函数
+/** 该方法会遍历effectList，执行所有useLayoutEffect hook的销毁函数 */
 function commitHookEffectListUnmount(
   flags: HookFlags,
   finishedWork: Fiber,
@@ -269,10 +269,9 @@ function commitHookEffectListUnmount(
   enableLog && console.log('commitHookEffectListUnmount end')
 }
 /**
- * @description: 处理useEffect
+ * @description: 根据flag来判断要处理useEffect还是useLayoutEffect
  * @param {*} flags
  * @param {*} finishedWork
- * @return {*}
  */
 function commitHookEffectListMount(flags: HookFlags, finishedWork: Fiber) {
   
@@ -308,7 +307,6 @@ function recursivelyCommitLayoutEffects(
   const { flags, tag } = finishedWork;
   switch (tag) {
     case Profiler: {
-      let prevProfilerOnStack = null;
 
       let child = finishedWork.child;
       while (child !== null) {
@@ -374,6 +372,7 @@ function recursivelyCommitLayoutEffects(
             // HasEffect === 0b001;
             // Layout === 0b010;
             // HookLayout | HookHasEffect === 0b011
+            // 这里会处理useLayoutEffect，调用其回调函数，返回结果赋值给effect.destroy
             commitHookEffectListMount(
               HookLayout | HookHasEffect,
               finishedWork,
@@ -1213,25 +1212,17 @@ function commitDeletion(
   nearestMountedAncestor: Fiber,
   renderPriorityLevel: ReactPriorityLevel,
 ): void {
-  if (supportsMutation) {
-    // Recursively delete all host nodes from the parent.
-    // Detach refs and call componentWillUnmount() on the whole subtree.
-    // 递归删除parent下的所有dom节点，卸载ref和调用componentWillUnmount
-    unmountHostComponents(
-      finishedRoot,
-      current,
-      nearestMountedAncestor,
-      renderPriorityLevel,
-    );
-  } else {
-    // Detach refs and call componentWillUnmount() on the whole subtree.
-    commitNestedUnmounts(
-      finishedRoot,
-      current,
-      nearestMountedAncestor,
-      renderPriorityLevel,
-    );
-  }
+
+  // Recursively delete all host nodes from the parent.
+  // Detach refs and call componentWillUnmount() on the whole subtree.
+  // 递归删除parent下的所有dom节点，卸载ref和调用componentWillUnmount
+  unmountHostComponents(
+    finishedRoot,
+    current,
+    nearestMountedAncestor,
+    renderPriorityLevel,
+  );
+
   const alternate = current.alternate;
   detachFiberMutation(current);
   if (alternate !== null) {
@@ -1240,8 +1231,10 @@ function commitDeletion(
 }
 
 function commitWork(current: Fiber | null, finishedWork: Fiber): void {
+
   enableLog && console.log('commitWork start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitWork')) debugger
+
   if (!supportsMutation) { // supportsMutation === true
     switch (finishedWork.tag) {
       case FunctionComponent:
@@ -1254,6 +1247,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
         // This prevents sibling component effects from interfering with each other,
         // e.g. a destroy function in one component should never override a ref set
         // by a create function in another component during the same commit.
+        // HookLayout | HookHasEffect这里处理的是useLayoutEffect的unMount
         commitHookEffectListUnmount(
           HookLayout | HookHasEffect,
           finishedWork,
@@ -1514,7 +1508,7 @@ function commitResetTextContent(current: Fiber): void {
   }
   resetTextContent(current.stateNode);
 }
-
+/** 清除useEffect的副作用 */
 function commitPassiveUnmount(finishedWork: Fiber): void {
   enableLog && console.log('commitPassiveUnmount start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('commitPassiveUnmount')) debugger
