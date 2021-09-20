@@ -29,10 +29,10 @@ export const PassiveUnmountPendingDev = /*     */ 0b000010000000000000;
 export const Hydrating = /*                    */ 0b000000010000000000;
 export const HydratingAndUpdate = /*           */ 0b000000010000000100;
 
-// Passive & Update & Callback & Ref & Snapshot
+/** Passive | Update | Callback | Ref | Snapshot */
 export const LifecycleEffectMask = /*          */ 0b000000001110100100;
 
-// Union of all host effects
+/** PerformedWork | PlacementAndUpdate |  Deletion | ContentReset | Callback | DidCapture | Ref | Snapshot | Passive | Hydrating */
 export const HostEffectMask = /*               */ 0b000000011111111111;
 
 // These are not really side effects, but we still reuse this field.
@@ -48,9 +48,13 @@ export const ForceUpdateForLegacySuspense = /* */ 0b000100000000000000;
 export const PassiveStatic = /*                */ 0b001000000000000000;
 
 // Union of side effect groupings as pertains to subtreeFlags
+/** Placement | Deletion | Snapshot | Passive */
 export const BeforeMutationMask = /*           */ 0b000000001100001010;
+/** Placement | Update | Deletion | ContentReset | Ref | Hydrating */
 export const MutationMask = /*                 */ 0b000000010010011110;
+/** Update | ContentReset |Ref */
 export const LayoutMask = /*                   */ 0b000000000010100100;
+/** Deletion | Passive */
 export const PassiveMask = /*                  */ 0b000000001000001000;
 
 // Union of tags that don't get reset on clones.
