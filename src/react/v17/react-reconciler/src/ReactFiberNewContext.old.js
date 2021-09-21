@@ -12,7 +12,7 @@ import type {Fiber, ContextDependency} from './ReactInternalTypes';
 import type {StackCursor} from './ReactFiberStack.old';
 import type {Lanes} from './ReactFiberLane';
 
-import {isPrimaryRenderer} from './ReactFiberHostConfig';
+
 import {createCursor, push, pop} from './ReactFiberStack.old';
 import {MAX_SIGNED_31_BIT_INT} from './MaxInts';
 import {
@@ -37,13 +37,11 @@ import {enableSuspenseServerRenderer} from 'shared/ReactFeatureFlags';
 
 const valueCursor: StackCursor<mixed> = createCursor(null);
 
-let rendererSigil;
 
 let currentlyRenderingFiber: Fiber | null = null;
 let lastContextDependency: ContextDependency<mixed> | null = null;
 let lastContextWithAllBitsObserved: ReactContext<any> | null = null;
 
-let isDisallowedContextReadInDEV: boolean = false;
 
 export function resetContextDependencies(): void {
   // This is called right before React yields execution, to ensure `readContext`
@@ -56,15 +54,10 @@ export function resetContextDependencies(): void {
 export function pushProvider<T>(providerFiber: Fiber, nextValue: T): void {
   const context: ReactContext<T> = providerFiber.type._context;
 
-  if (isPrimaryRenderer) {
-    push(valueCursor, context._currentValue, providerFiber);
 
-    context._currentValue = nextValue;
-  } else {
-    push(valueCursor, context._currentValue2, providerFiber);
+  push(valueCursor, context._currentValue, providerFiber);
 
-    context._currentValue2 = nextValue;
-  }
+  context._currentValue = nextValue;
 }
 
 export function popProvider(providerFiber: Fiber): void {
@@ -73,11 +66,7 @@ export function popProvider(providerFiber: Fiber): void {
   pop(valueCursor, providerFiber);
 
   const context: ReactContext<any> = providerFiber.type._context;
-  if (isPrimaryRenderer) {
-    context._currentValue = currentValue;
-  } else {
-    context._currentValue2 = currentValue;
-  }
+  context._currentValue = currentValue;
 }
 
 export function calculateChangedBits<T>(
@@ -312,5 +301,5 @@ export function readContext<T>(
       lastContextDependency = lastContextDependency.next = contextItem;
     }
   }
-  return isPrimaryRenderer ? context._currentValue : context._currentValue2;
+  return context._currentValue;
 }

@@ -17,8 +17,6 @@ export function createContext<T>(
 ): ReactContext<T> {
   if (calculateChangedBits === undefined) {
     calculateChangedBits = null;
-  } else {
-
   }
 
   const context: ReactContext<T> = {

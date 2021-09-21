@@ -10,14 +10,12 @@
 import type {MutableSource, MutableSourceVersion} from 'shared/ReactTypes';
 import type {FiberRoot} from './ReactInternalTypes';
 
-import {isPrimaryRenderer} from './ReactFiberHostConfig';
 
 // Work in progress version numbers only apply to a single render,
 // and should be reset before starting a new render.
 // This tracks which mutable sources need to be reset after a render.
 const workInProgressSources: Array<MutableSource<any>> = [];
 
-let rendererSigil;
 
 
 export function markSourceAsDirty(mutableSource: MutableSource<any>): void {
@@ -27,11 +25,8 @@ export function markSourceAsDirty(mutableSource: MutableSource<any>): void {
 export function resetWorkInProgressVersions(): void {
   for (let i = 0; i < workInProgressSources.length; i++) {
     const mutableSource = workInProgressSources[i];
-    if (isPrimaryRenderer) {
-      mutableSource._workInProgressVersionPrimary = null;
-    } else {
-      mutableSource._workInProgressVersionSecondary = null;
-    }
+
+    mutableSource._workInProgressVersionPrimary = null;
   }
   workInProgressSources.length = 0;
 }
@@ -39,22 +34,16 @@ export function resetWorkInProgressVersions(): void {
 export function getWorkInProgressVersion(
   mutableSource: MutableSource<any>,
 ): null | MutableSourceVersion {
-  if (isPrimaryRenderer) {
-    return mutableSource._workInProgressVersionPrimary;
-  } else {
-    return mutableSource._workInProgressVersionSecondary;
-  }
+  return mutableSource._workInProgressVersionPrimary;
 }
 
 export function setWorkInProgressVersion(
   mutableSource: MutableSource<any>,
   version: MutableSourceVersion,
 ): void {
-  if (isPrimaryRenderer) {
-    mutableSource._workInProgressVersionPrimary = version;
-  } else {
-    mutableSource._workInProgressVersionSecondary = version;
-  }
+
+  mutableSource._workInProgressVersionPrimary = version;
+
   workInProgressSources.push(mutableSource);
 }
 
