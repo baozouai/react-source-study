@@ -295,6 +295,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
 
   // Clone the dependencies object. This is mutated during the render phase, so
   // it cannot be shared with the current fiber.
+  // 这里是处理Context的
   const currentDependencies = current.dependencies;
   workInProgress.dependencies =
     currentDependencies === null

@@ -4,11 +4,11 @@ import LanguageParent from './LanguageContext/parent'
 import LagcyContext from './LagcyContext/index'
 import './index.css'
 
-const ContextDemo = () => {
+function ContextDemo() {
   return <div className={'context-demo'}>
     <ThemeParent/>
     <LanguageParent/>
     <LagcyContext/>
   </div>
 }
-export default ContextDemo
+export default ThemeParent

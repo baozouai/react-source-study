@@ -2250,6 +2250,9 @@ function updateContextProvider(
   workInProgress: Fiber,
   renderLanes: Lanes,
 ) {
+  debugger
+  // 对应Context.Provider，type为{ $$typeof: Symbol(react.provider),_context: context}
+  // 这里的context即为createContext的返回值
   const providerType: ReactProviderType<any> = workInProgress.type;
   const context: ReactContext<any> = providerType._context;
 
@@ -2258,18 +2261,22 @@ function updateContextProvider(
 
   const newValue = newProps.value;
 
-
+  // 把newValue放入workInProgress.type_currentValue
   pushProvider(workInProgress, newValue);
 
   if (oldProps !== null) {
+    // 不为空则是更新阶段
     const oldValue = oldProps.value;
     const changedBits = calculateChangedBits(context, newValue, oldValue);
+
     if (changedBits === 0) {
+      // 返回0代表没变
       // No change. Bailout early if children are the same.
       if (
         oldProps.children === newProps.children &&
         !hasLegacyContextChanged()
       ) {
+        // 且children也没变化，则bailout
         return bailoutOnAlreadyFinishedWork(
           current,
           workInProgress,
@@ -2290,12 +2297,13 @@ function updateContextProvider(
 }
 
 let hasWarnedAboutUsingContextAsConsumer = false;
-
+/** 这里是处理<Context.Consumer>...</Context.Consumer> */
 function updateContextConsumer(
   current: Fiber | null,
   workInProgress: Fiber,
   renderLanes: Lanes,
 ) {
+  debugger
   let context: ReactContext<any> = workInProgress.type;
   // The logic below for Context differs depending on PROD or DEV mode. In
   // DEV mode, we create a separate object for Context.Consumer that acts
