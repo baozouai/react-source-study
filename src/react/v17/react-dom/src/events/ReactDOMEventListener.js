@@ -102,15 +102,15 @@ export function createEventListenerWrapperWithPriority(
   const eventPriority = getEventPriorityForPluginSystem(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
-    // 0：离散事件，如click
+    // 0：离散事件，如click,优先级最高
     case DiscreteEvent:
       listenerWrapper = dispatchDiscreteEvent;
       break;
-    // 1: 用户阻塞事件
+    // 1: 用户阻塞事件，如scroll,优先级适中
     case UserBlockingEvent:
       listenerWrapper = dispatchUserBlockingUpdate;
       break;
-    // 2：连续事件
+    // 2：连续事件,如load, 优先级最低
     case ContinuousEvent:
     default:
       listenerWrapper = dispatchEvent;
@@ -279,8 +279,9 @@ export function attemptToDispatchEvent(
   nativeEvent: AnyNativeEvent,
 ): null | Container | SuspenseInstance {
   // TODO: Warn if _enabled is false.
-  // 一般是nativeEvent.target
+  // 获取原生dom节点，一般是nativeEvent.target
   const nativeEventTarget = getEventTarget(nativeEvent);
+  // 获取原生dom节点对应的fiber
   let targetInst = getClosestInstanceFromNode(nativeEventTarget);
 
   if (targetInst !== null) {

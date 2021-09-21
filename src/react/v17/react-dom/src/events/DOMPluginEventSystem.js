@@ -268,7 +268,7 @@ export function processDispatchQueue(
     enableLog && console.log('processDispatchQueue start')
     debugger
   }
-
+  // 是否是捕获阶段
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
   for (let i = 0; i < dispatchQueue.length; i++) {
     // 从dispatchQueue中取出事件对象和事件监听数组
@@ -714,6 +714,7 @@ export function accumulateSinglePhaseListeners(
 
       // Standard React on* listeners, i.e. onClick or onClickCapture
       if (reactEventName !== null) {
+        // instance.stateNode上有pendingProps，如onClick
         const listener = getListener(instance, reactEventName);
         if (listener != null) {
           listeners.push(
@@ -725,6 +726,7 @@ export function accumulateSinglePhaseListeners(
     // If we are only accumulating events for the target, then we don't
     // continue to propagate through the React fiber tree to find other
     // listeners.
+    // 如果只收集目标节点的话，那么就不用再往上收集了，直接跳出
     if (accumulateTargetOnly) {
       break;
     }

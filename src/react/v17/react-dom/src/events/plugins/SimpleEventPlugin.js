@@ -187,6 +187,7 @@ function extractEvents(
   );
   if (listeners.length > 0) {
     // Intentionally create event lazily.
+    // 构造合成事件
     const event = new SyntheticEventCtor(
       reactName,
       reactEventType,
