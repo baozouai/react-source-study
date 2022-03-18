@@ -500,7 +500,10 @@ export function scheduleUpdateOnFiber(
       ensureRootIsScheduled(root, eventTime);
       schedulePendingInteractions(root, lane);
       // 通过判断 executionContext 是否等于 NoContext 来确定当前更新流程是否在 React 事件流中
-      // 如果不在(NoContext)，直接调用 flushSyncCallbackQueue 更新
+      // 如果不在(NoContext)，直接调用 flushSyncCallbackQueue 更新，这种情况出现在异步操作
+      // 或原生事件中调用setState，比如常见的问题：setState是异步还是同步的：
+      // 异步：更新流程在React事件流中
+      // 同步：就是下面的flushSyncCallbackQueue，不在事件流中
       if (executionContext === NoContext) {
         // Flush the synchronous work now, unless we're already working or inside
         // a batch. This is intentionally inside scheduleUpdateOnFiber instead of
@@ -715,7 +718,7 @@ function performConcurrentWorkOnRoot(root) {
     // 上面的flushPassiveEffects运行后又可能重新赋值了root.callbackNode，所以这里要判断root.callbackNode
     // 是否变化了
     if (root.callbackNode !== originalCallbackNode) {
-      // 如果改变了，以为这有高优任务插队，才有可能root.callbackNode !== originalCallbackNode,
+      // 如果改变了，意味着有高优任务插队，才有可能root.callbackNode !== originalCallbackNode,
       // 则当前任务要取消掉，直接return掉
       // The current task was canceled. Exit. We don't need to call
       // `ensureRootIsScheduled` because the check above implies either that
@@ -1628,6 +1631,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       // Because this fiber did not complete, don't reset its expiration time.
 
       if (next !== null) {
+        // next有值意味着找到了错误边界对应的fiber
         // If completing this work spawned new work, do that next. We'll come
         // back here again.
         // Since we're restarting, remove anything that is not a host effect
@@ -1658,7 +1662,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         /**
          * 给父fiber打上Incomplete，之后父fiber也会走unwindWork
          * 直到找到错误边界的父fiber，上面的next !== null，将workInProgress指向该错误边界，然后return掉
-         * 错误边界的父fiber重新走beginWork处理updateQueue，改错误边界为增加了一个update，update的payload有getDerivedStateFromError
+         * 错误边界的父fiber重新走beginWork处理updateQueue，该错误边界因为增加了一个update，update的payload有getDerivedStateFromError
          * 故渲染出备用的ui
          * render() {
          *  if (this.state.hasError) {

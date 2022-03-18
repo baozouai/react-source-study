@@ -14,6 +14,7 @@ import Hooks from "./components/Hooks";
 import EventDemo from "./components/EventDemo";
 import ContextDemo from "./components/Context";
 import Delection from "./components/Delection";
+import ErrorBoundary from "./components/ErrorBoundary";
 import './App.css';
 
 // propsDiff
@@ -50,6 +51,9 @@ function App() {
   // return <Diff ref={'diffRef'}/>
   return <Diff />
 
+  // 错误边界
+  // return ErrorBoundary
 }
 
+// 想要调试那个功能，就替换下面的组件
 export default ContextDemo;

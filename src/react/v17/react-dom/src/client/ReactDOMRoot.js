@@ -172,4 +172,3 @@ export function isValidContainer(node: mixed): boolean {
         (node: any).nodeValue === ' react-mount-point-unstable '))
   );
 }
-

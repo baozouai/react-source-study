@@ -1344,10 +1344,6 @@ function rerenderTransition(): [(() => void) => void, boolean] {
 }
 
 
-function warnOnOpaqueIdentifierAccessInDEV(fiber) {
-
-}
-
 function mountOpaqueIdentifier(): OpaqueIDType | void {
   const makeId = makeClientId;
 

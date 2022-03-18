@@ -507,7 +507,7 @@ export function diffProperties(
      * 到了这里，则满足条件：
      * nextProps.hasOwnProperty(propKey) // nextProps存在propKey 
      * && nextProp !== lastProp // nextProp不等于lastProp
-     * && [nextProp, lastProp].every(prop => prop == null) 两者不都为null
+     * && ![nextProp, lastProp].every(prop => prop == null) 两者不都为null
      */
     if (propKey === STYLE) {
       // 对应style prop来说

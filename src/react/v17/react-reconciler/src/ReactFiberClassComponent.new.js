@@ -336,15 +336,20 @@ function mountClassInstance(
     (typeof instance.UNSAFE_componentWillMount === 'function' ||
       typeof instance.componentWillMount === 'function')
   ) {
+    // 如果没有getDerivedStateFromProps和getSnapshotBeforeUpdate，
+    // 但是有UNSAFE_componentWillMount或componentWillMount，那么执行
+    // UNSAFE_componentWillMount和componentWillMount
     callComponentWillMount(workInProgress, instance);
     // If we had additional state updates during this life-cycle, let's
     // process them now.
+    // 如果在上面的生命周期中有update，那么这里要再处理下update，以得到最新的memoizedState
     processUpdateQueue(workInProgress, newProps, instance, renderLanes);
     instance.state = workInProgress.memoizedState;
   }
 
   if (typeof instance.componentDidMount === 'function') {
-
+      // 如果有componentDidMount，那么打上Update的标记，这个会在commitRootImpl里面的
+      // commitLayoutEffect调用
       workInProgress.flags |= Update;
 
   }

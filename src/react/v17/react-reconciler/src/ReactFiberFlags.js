@@ -32,7 +32,7 @@ export const HydratingAndUpdate = /*           */ 0b000000010000000100;
 /** Passive | Update | Callback | Ref | Snapshot */
 export const LifecycleEffectMask = /*          */ 0b000000001110100100;
 
-/** PerformedWork | PlacementAndUpdate |  Deletion | ContentReset | Callback | DidCapture | Ref | Snapshot | Passive | Hydrating */
+/** @example PerformedWork | PlacementAndUpdate |  Deletion | ContentReset | Callback | DidCapture | Ref | Snapshot | Passive | Hydrating */
 export const HostEffectMask = /*               */ 0b000000011111111111;
 
 // These are not really side effects, but we still reuse this field.

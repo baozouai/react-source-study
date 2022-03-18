@@ -2355,7 +2355,7 @@ export function markWorkInProgressReceivedUpdate() {
   didReceiveUpdate = true;
 }
 /** 
- * 跳过当前WIP当前，但会调用markSkippedUpdateLanes标记跳过的更新，
+ * 跳过当前WIP，但会调用markSkippedUpdateLanes标记跳过的更新，
  * 同时会判断子节点是否需要更新，即includesSomeLane(renderLanes, workInProgress.childLanes)，
  * 不用更新返回null，否则从current上复制子节点到WIP.child，然后返回WIP.child
  */

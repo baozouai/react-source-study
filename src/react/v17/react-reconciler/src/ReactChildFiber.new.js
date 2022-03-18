@@ -182,7 +182,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       deletions.push(childToDelete);
     }
   }
-
+  /** 将currentFirstFiber及其sibling加入returnFiber的delections，同时为returnFiber打上Delectiion的flag */
   function deleteRemainingChildren(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
@@ -507,6 +507,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     if (typeof newChild === 'object' && newChild !== null) {
+      // newChild为object
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE: {
           if (newChild.key === key) {
@@ -542,7 +543,9 @@ function ChildReconciler(shouldTrackSideEffects) {
       }
 
       if (isArray(newChild) || getIteratorFn(newChild)) {
+        // newChild是数组或可遍历的，那么没有key，即key为null
         if (key !== null) {
+          // 那么如果oldFiber有key，那肯定就不相同了，则不可复用，直接return null
           return null;
         }
 
@@ -622,7 +625,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     return null;
   }
 
-  // 多节点diff
+  /** 多节点diff */ 
   function reconcileChildrenArray(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
@@ -667,8 +670,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       } else {
         nextOldFiber = oldFiber.sibling;
       }
-      // 如果newChildren与oldFiber同时遍历完,则只需在第一轮遍历进行组件更新
-      // 即当oldFiber === null时newIdx === newChildren.length
+      // 如果key不同，那么updateSlot会返回null
       const newFiber = updateSlot(
         returnFiber,
         oldFiber,
@@ -714,7 +716,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     // 到了这里如果满足newIdx === newChildren.length有两种可能：
     // 1.newChildren和oldFiber都遍历完
     // 2.newChildren遍历完，oldFiber没遍历完
-    // 意味着本次更新比之前的节点数量少，有节点被删除了。所以需要遍历剩下的oldFiber，依次标记Deletion
+    // 意味着本次更新比之前的节点数量少，有节点被删除了。所以需要将的oldFiber及其sibling加入returnFiber
+    // 的delections，同时returnFiber打上Deletion的flag
     if (newIdx === newChildren.length) {
       // We've reached the end of the new children. We can delete the rest.
       deleteRemainingChildren(returnFiber, oldFiber);
@@ -744,11 +747,11 @@ function ChildReconciler(shouldTrackSideEffects) {
       }
       return resultingFirstChild;
     }
-
+    // 到了这里说明newChildren和oldFiber都没遍历完，意味着有节点在这次更新中改变了位置
     // Add all children to a key map for quick lookups.
-    // Map: {key => oldFiber}
+    // Map: {key => oldFiber}，将oldFiber及其sibling存入一个map，
+    // key为oldFiber的key或index，value为oldFiber
     const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
-    // newChildren与oldFiber都没遍历完,意味着有节点在这次更新中改变了位置
     // Keep scanning and use the map to restore deleted items as moves.
     for (; newIdx < newChildren.length; newIdx++) {
       const newFiber = updateFromMap(
@@ -970,9 +973,11 @@ function ChildReconciler(shouldTrackSideEffects) {
     const key = element.key;
     let child = currentFirstChild;
     while (child !== null) {
+      // currentFirstChild不为空，则是更新阶段对比
       // TODO: If key === null and child.key === null, then this only applies to
       // the first item in the list.
       if (child.key === key) {
+        // 只有key相同才会进一步对比一下tag
         switch (child.tag) {
           case Fragment: {
             if (element.type === REACT_FRAGMENT_TYPE) {
@@ -1010,8 +1015,8 @@ function ChildReconciler(shouldTrackSideEffects) {
           // eslint-disable-next-lined no-fallthrough
           default: {
             if (child.elementType === element.type) {
-              // type相同则表示可以复用
-              // 先删除剩下的oldFiber节点
+              // 上面已经key相同了，这里type相同则表示可以复用
+              // 由于是单节点diff，已经找到可以复用的节点，那么可以删除剩下的oldFiber节点了
               deleteRemainingChildren(returnFiber, child.sibling);
               // 基于oldFiber节点和新节点的props新建新的fiber节点
               const existing = useFiber(child, element.props);
@@ -1024,18 +1029,17 @@ function ChildReconciler(shouldTrackSideEffects) {
           }
         }
         // 代码到这里，上面的switch都没有匹配到，即key相同但是type不同
-         // 则将该fiber及其兄弟fiber标记为删除
-        // Didn't match.
+         // 则将该child及其sibling加入returnFiber的delections，同时returnFiber打上Delection的flag
         deleteRemainingChildren(returnFiber, child);
         break;
       } else {
         // 没匹配到说明新的fiber节点无法从oldFiber节点新建
-        // 删除掉所有child节点
+        // 将该child加入returnFiber的delections
         deleteChild(returnFiber, child);
       }
       child = child.sibling;
     }
-
+    // 代码走到这里说明找不到可复用的fiber
     if (element.type === REACT_FRAGMENT_TYPE) {
       // 如果是Fragment,如<>{[...]}</> or <>...</>，这真正的element为element.props.children
       const created = createFiberFromFragment(
@@ -1186,6 +1190,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     if (getIteratorFn(newChild)) {
+      // 可迭代类型
       return reconcileChildrenIterator(
         returnFiber,
         currentFirstChild,

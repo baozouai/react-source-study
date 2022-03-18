@@ -134,14 +134,20 @@ function FiberNode(
   
   enableLog && console.log('FiberNode')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('FiberNode')) debugger
-  // Effects
+  // 副作用相关，如Placement、Update、Delection
+  // 该fiber上的flags
   this.flags = NoFlags;
+  // 该fiber的子树上的flags
   this.subtreeFlags = NoFlags;
   this.deletions = null;
-
+  // --------调度优先级相关 start--------
+  // 该fiber上的优先级
   this.lanes = NoLanes;
+  // 该fiber子节点上的 优先级
   this.childLanes = NoLanes;
+  // --------调度优先级相关 end--------
 
+  // 双缓存树中的另一个，WIP.alternate = current;current.alternate = WIP
   this.alternate = null;
 
   if (enableProfilerTimer) {
