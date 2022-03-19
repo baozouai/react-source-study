@@ -142,7 +142,7 @@ function safelyCallComponentWillUnmount(
     }
 
 }
-
+/** 卸载ref，如果ref为函数，那么传入null，即ref(null)，否则将ref设置为null，即ref.current = null */
 function safelyDetachRef(current: Fiber, nearestMountedAncestor: Fiber) {
   const ref = current.ref;
   if (ref !== null) {
@@ -762,6 +762,7 @@ function commitNestedUnmounts(
       }
       node = node.return;
     }
+    // 到了这里有sibling了
     node.sibling.return = node.return;
     node = node.sibling;
   }
@@ -887,6 +888,7 @@ function getHostSibling(fiber: Fiber): ?Instance {
       node = node.return;
     }
     node.sibling.return = node.return;
+    // 到了这里就是兄弟节点了
     node = node.sibling;
 
     while (
@@ -894,6 +896,7 @@ function getHostSibling(fiber: Fiber): ?Instance {
       node.tag !== HostText &&
       node.tag !== DehydratedFragment
     ) {
+      // 兄弟节点不是dom组件
       // If it is not host node and, we might have a host node inside it.
       // Try to search down until we find one.
       if (node.flags & Placement) {
@@ -903,8 +906,10 @@ function getHostSibling(fiber: Fiber): ?Instance {
       // If we don't have a child, try the siblings instead.
       // We also skip portals because they are not part of this host tree.
       if (node.child === null || node.tag === HostPortal) {
+        // 不是dom组件，且没有child或者是HostPortal，则回到上面
         continue siblings;
       } else {
+        // 否则从兄弟节点的child节点找
         node.child.return = node;
         node = node.child;
       }
@@ -964,6 +969,7 @@ function commitPlacement(finishedWork: Fiber): void {
     // Reset the text content of the parent before doing any insertions
     resetTextContent(parent);
     // Clear ContentReset from the effect tag
+    // 重置了，那么就清理掉
     parentFiber.flags &= ~ContentReset;
   }
   // 2.获取Fiber节点的DOM兄弟节点
@@ -995,7 +1001,7 @@ function insertOrAppendPlacementNodeIntoContainer(
 
   if (isHost) {
     // 是dom的话就直接插入
-    const stateNode = isHost ? node.stateNode : node.stateNode.instance;
+    const stateNode = node.stateNode;
     if (before) {
       // 如果有before，则stateNode插入到before之前
       insertInContainerBefore(parent, stateNode, before);
@@ -1038,7 +1044,7 @@ function insertOrAppendPlacementNode(
   const isHost = tag === HostComponent || tag === HostText;
   if (isHost) {
     // 如果是原生dom，fiber的stateNode指向对应的dom，直接插入
-    const stateNode = isHost ? node.stateNode : node.stateNode.instance;
+    const stateNode = node.stateNode;
     if (before) {
       // 有before，意味着stateNode要插入到before之前
       insertBefore(parent, stateNode, before);
@@ -1134,6 +1140,7 @@ function unmountHostComponents(
           (node.stateNode: Instance | TextInstance),
         );
       } else {
+        // 简单理解为removeChild(child)
         removeChild(
           ((currentParent: any): Instance),
           (node.stateNode: Instance | TextInstance),
