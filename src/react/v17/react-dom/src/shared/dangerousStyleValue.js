@@ -26,7 +26,7 @@ function dangerousStyleValue(name, value, isCustomProperty) {
   // This is not an XSS hole but instead a potential CSS injection issue
   // which has lead to a greater discussion about how we're going to
   // trust URLs moving forward. See #2115901
-
+  // value为undefined或null，或者value为boolean或者value为''
   const isEmpty = value == null || typeof value === 'boolean' || value === '';
   if (isEmpty) {
     return '';
@@ -38,9 +38,17 @@ function dangerousStyleValue(name, value, isCustomProperty) {
     value !== 0 &&
     !(isUnitlessNumber.hasOwnProperty(name) && isUnitlessNumber[name])
   ) {
+    // 1.非自定义
+    // 2.value为number且value不为0，注意这里的number，也就是说你写上width: '1px'的话，那么就走不进这里了
+    // 3.不是无需单位的属性
+    // 那么这里给加上px
     return value + 'px'; // Presumes implicit 'px' suffix for unitless numbers
   }
-
+  // 到了这里则是这几种情况
+  // 1.非空
+  // 2.是自定义的
+  // 3. value为 0 或者是字符串
+  // 4. value无需px单位
   return ('' + value).trim();
 }
 

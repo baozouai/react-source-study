@@ -1673,6 +1673,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
          */
         // Mark the parent fiber as incomplete
         returnFiber.flags |= Incomplete;
+        // 由于错误了，之前的状态没用了，故可以把subtreeFlags和deletions重置了
         returnFiber.subtreeFlags = NoFlags;
         returnFiber.deletions = null;
       }

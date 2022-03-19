@@ -123,21 +123,28 @@ function setInitialDOMProperties(
       // Relies on `updateStylesByID` not mutating `styleUpdates`.
       setValueForStyles(domElement, nextProp);
     } else if (propKey === DANGEROUSLY_SET_INNER_HTML) {
+      // 设置了dangerouslySetInnerHTML的prop，其真正的html为dangerouslySetInnerHTML.__html
       const nextHtml = nextProp ? nextProp[HTML] : undefined;
       if (nextHtml != null) {
+        // 可理解为domElement.innerHTML = nextHtml
         setInnerHTML(domElement, nextHtml);
       }
     } else if (propKey === CHILDREN) {
+      // 如果是children的话
       if (typeof nextProp === 'string') {
+        // 如果值为string
         // Avoid setting initial textContent when the text is empty. In IE11 setting
         // textContent on a <textarea> will cause the placeholder to not
         // show within the <textarea> until it has been focused and blurred again.
         // https://github.com/facebook/react/issues/6731#issuecomment-254874553
+        // 判断是否能设置textContent，跳级是非textarea且不为空字符串
         const canSetTextContent = tag !== 'textarea' || nextProp !== '';
         if (canSetTextContent) {
+          // 简单理解为 domElement.textContent = nextProp
           setTextContent(domElement, nextProp);
         }
       } else if (typeof nextProp === 'number') {
+        // 数字的话转为字符串
         setTextContent(domElement, '' + nextProp);
       }
     } else if (
@@ -155,10 +162,12 @@ function setInitialDOMProperties(
       if (nextProp != null) {
 
         if (propKey === 'onScroll') {
+          // 只处理onScroll，其他的大多在createRoot里面就通过事件委托绑定了
           listenToNonDelegatedEvent('scroll', domElement);
         }
       }
     } else if (nextProp != null) {
+      // 简单理解为domElement.setAttribute(propKey, nextProp)
       setValueForProperty(domElement, propKey, nextProp, isCustomComponentTag);
     }
   }
@@ -458,6 +467,8 @@ export function diffProperties(
      */
     if (propKey === STYLE) {
       // 对应style
+      // 比如lastProps[STYLE] = {width: 1, color: 'red'}
+      // 那么styleUpdates = { width: '', color: '' }
       const lastStyle = lastProps[propKey];
       for (styleName in lastStyle) {
         if (lastStyle.hasOwnProperty(styleName)) {
@@ -549,12 +560,12 @@ export function diffProperties(
       } else {
         // 不存在旧的style prop
         // Relies on `updateStylesByID` not mutating `styleUpdates`.
-        if (!styleUpdates) {
-          if (!updatePayload) {
-            updatePayload = [];
-          }
-          updatePayload.push(propKey, styleUpdates);
-        }
+        // if (!styleUpdates) {
+        //   if (!updatePayload) {
+        //     updatePayload = [];
+        //   }
+        //   // updatePayload.push(propKey, styleUpdates);
+        // }
         styleUpdates = nextProp;
       }
     } else if (propKey === DANGEROUSLY_SET_INNER_HTML) {

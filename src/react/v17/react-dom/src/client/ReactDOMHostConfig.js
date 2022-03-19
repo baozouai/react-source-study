@@ -221,7 +221,7 @@ export function createInstance(
   props: Props,
   rootContainerInstance: Container,
   hostContext: HostContext,
-  /** domElement对应的workInProgress Fiber */
+  /** domElement 对应的 workInProgress Fiber */
   internalInstanceHandle: Object,
 ): Instance {
   
@@ -259,7 +259,7 @@ export function finalizeInitialChildren(
 ): boolean {
   // 在这里给domElement加上属性
   setInitialProperties(domElement, type, props, rootContainerInstance);
-  // 'button':'input':'select':'textarea'等如果有设置了autoFocus，那么去autoFocus，否则是false
+  // 'button'、'input'、'select'、'textarea'等如果有设置了autoFocus，那么取autoFocus，否则是false
   return shouldAutoFocusHostComponent(type, props);
 }
 

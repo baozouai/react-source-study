@@ -175,7 +175,7 @@ export function shouldRemoveAttribute(
   }
   return false;
 }
-
+/** 通过驼峰name获取实际的dom prop，如 className => class */
 export function getPropertyInfo(name: string): PropertyInfo | null {
   return properties.hasOwnProperty(name) ? properties[name] : null;
 }

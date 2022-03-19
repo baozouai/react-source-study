@@ -38,6 +38,7 @@ export function setValueForStyles(node, styles) {
     if (!styles.hasOwnProperty(styleName)) {
       continue;
     }
+    // 是否是自定义属性，自定义属性以 `--` 开头
     const isCustomProperty = styleName.indexOf('--') === 0;
 
     const styleValue = dangerousStyleValue(
@@ -48,16 +49,13 @@ export function setValueForStyles(node, styles) {
     if (styleName === 'float') {
       styleName = 'cssFloat';
     }
+    // 如果是自定义，则用setProperty，否则放到对象上
     if (isCustomProperty) {
       style.setProperty(styleName, styleValue);
     } else {
       style[styleName] = styleValue;
     }
   }
-}
-
-function isValueEmpty(value) {
-  return value == null || typeof value === 'boolean' || value === '';
 }
 
 /**

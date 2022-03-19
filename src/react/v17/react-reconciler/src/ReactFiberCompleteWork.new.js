@@ -197,7 +197,7 @@ const appendAllChildren = function(
       // 否则回溯到parentFiber
       node = node.return;
     }
-    // 处理兄弟节点
+    // 到了这里跳出上面的while循环了，意味着node.singling不为空，那么处理兄弟节点
     node.sibling.return = node.return;
     node = node.sibling;
   }
@@ -251,9 +251,11 @@ if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('updateHostComponent')) debu
   // If the update payload indicates that there is a change or if there
   // is a new ref we mark this as an update. All the work is done in commitWork.
   if (updatePayload) {
+    // 如果有updatePayload，那么打上Update的flag
     markUpdate(workInProgress);
   }
 };
+/** 如果 oldText !== newText, 则打上Update的flag*/
 const updateHostText = function(
   current: Fiber,
   workInProgress: Fiber,
@@ -531,6 +533,7 @@ function completeWork(
         );
 
         if (current.ref !== workInProgress.ref) {
+          // ref不同，则打上Ref的flag
           markRef(workInProgress);
         }
       } else {
@@ -584,12 +587,12 @@ function completeWork(
           // (eg DOM renderer supports auto-focus for certain elements).
           // Make sure such renderers get scheduled for later work.
           /**
-           * 1.finalizeInitialChildren中调用了setInitialProperties
-           * setInitialProperties中调用了setInitialDOMProperties
-           * 来为instance dom加上初始的props
-           * 2.并最终返回了shouldAutoFocusHostComponent(type, props):
-           * 如果 type为['button','input','select','textarea']其中一个
-           * 返回!!props.autoFocus来判断，如果type不是上面四个类型之一,返回false
+           * 1.finalizeInitialChildren 中调用了 setInitialProperties，
+           * setInitialProperties 中调用了 setInitialDOMProperties
+           * 来为instance dom加上初始的 props
+           * 2.并最终返回了 shouldAutoFocusHostComponent(type, props):
+           * 如果 type 为 ['button','input','select','textarea'] 其中一个
+           * 返回 !!props.autoFocus 来判断，如果type不是上面四个类型之一,返回 false
            */
           if (
             finalizeInitialChildren(
@@ -605,7 +608,7 @@ function completeWork(
         }
 
         if (workInProgress.ref !== null) {
-          // 打上ref的flag
+          // 因为是mount阶段，那么判断到ref不为空的话就要打上Ref的flag
           // If there is a ref on a host node we need to schedule a callback
           markRef(workInProgress);
         }
@@ -614,13 +617,17 @@ function completeWork(
       return null;
     }
     case HostText: {
+      // 纯文本节点
       const newText = newProps;
       if (current && workInProgress.stateNode != null) {
+        // 更新阶段
         const oldText = current.memoizedProps;
         // If we have an alternate, that means this is an update and we need
         // to schedule a side-effect to do the updates.
+        // oldText和newText不同的话，则打上Update的flag
         updateHostText(current, workInProgress, oldText, newText);
       } else {
+        // 否则是mount阶段
         if (typeof newText !== 'string') {
           invariant(
             workInProgress.stateNode !== null,

@@ -58,6 +58,7 @@ export function setValueForProperty(
   value: mixed,
   isCustomComponentTag: boolean,
 ) {
+  // 获取实际的dom prop
   const propertyInfo = getPropertyInfo(name);
   if (shouldIgnoreAttribute(name, propertyInfo, isCustomComponentTag)) {
     return;
@@ -70,6 +71,7 @@ export function setValueForProperty(
     if (isAttributeNameSafe(name)) {
       const attributeName = name;
       if (value === null) {
+        // value为null，那么移除
         node.removeAttribute(attributeName);
       } else {
         node.setAttribute(
