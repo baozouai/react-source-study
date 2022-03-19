@@ -95,6 +95,7 @@ function createClassErrorUpdate(
   errorInfo: CapturedValue<mixed>,
   lane: Lane,
 ): Update<mixed> {
+  // NoTimestamp代表最高优先级，毕竟已经出错了
   const update = createUpdate(NoTimestamp, lane);
   // update的tag打上CaptureUpdate
   update.tag = CaptureUpdate;
@@ -187,6 +188,7 @@ function throwException(
     typeof value === 'object' &&
     typeof value.then === 'function'
   ) {
+    // 这里是suspense相关的
     // This is a wakeable.
     const wakeable: Wakeable = (value: any);
 
@@ -347,10 +349,13 @@ function throwException(
 
   value = createCapturedValue(value, sourceFiber);
   let workInProgress = returnFiber;
+  // 下面会一直往上找，找到对应的错误边界
   do {
     switch (workInProgress.tag) {
       case HostRoot: {
+        // 如果找不到错误边界，那么最终会如找到HostRoot
         const errorInfo = value;
+        // 打上ShouldCapture
         workInProgress.flags |= ShouldCapture;
         const lane = pickArbitraryLane(rootRenderLanes);
         workInProgress.lanes = mergeLanes(workInProgress.lanes, lane);
@@ -359,13 +364,14 @@ function throwException(
         return;
       }
       case ClassComponent:
+        // 错误边界只可能是类组件
         // Capture and retry
         const errorInfo = value;
         const ctor = workInProgress.type;
         const instance = workInProgress.stateNode;
         /**
          * 1.如果静态属性上有getDerivedStateFromError
-         * 2.或者实例组件上有componentDidCatch
+         * 2.或者实例组件上有componentDidCatch且该实例没报错
          * 则该fiber是错误边界，打上ShouldCapture的flag
          */
         if (

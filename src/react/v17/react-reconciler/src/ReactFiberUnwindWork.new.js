@@ -53,7 +53,7 @@ function unwindWork(workInProgress: Fiber, renderLanes: Lanes) {
       }
       const flags = workInProgress.flags;
       if (flags & ShouldCapture) {
-        // 如果有ShouldCapture的flag，则先去掉ShouldCapture，再加上DidCapture
+        // 如果有ShouldCapture的flag，则先去掉ShouldCapture(应该捕获)，再加上DidCapture(确实捕获了)
         workInProgress.flags = (flags & ~ShouldCapture) | DidCapture;
         if (
           enableProfilerTimer &&

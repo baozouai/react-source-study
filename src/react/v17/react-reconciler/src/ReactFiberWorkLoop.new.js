@@ -1272,7 +1272,9 @@ function handleError(root, thrownValue): void {
         // suspended render.
         stopProfilerTimerIfRunningAndRecordDelta(erroredWork, true);
       }
-
+      // 这里面先给 erroredWork打上Incomplete的flag，
+      // 然后往上找错误边界（类组件带有静态属性getDerivedStateFromError或者实例方法componentDidCatch），
+      // 找到了会给错误边界打上ShouldCapture的flag
       throwException(
         root,
         erroredWork.return,
@@ -1280,6 +1282,8 @@ function handleError(root, thrownValue): void {
         thrownValue,
         workInProgressRootRenderLanes,
       );
+      // 由于上面给erroredWork打上Incomplete的flag，从该错误节点completeWork就能进入到
+      // if ((completedWork.flags & Incomplete) === NoFlags)的分支
       completeUnitOfWork(erroredWork);
     } catch (yetAnotherThrownValue) {
       // Something in the return path also threw.
@@ -1637,6 +1641,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         // Since we're restarting, remove anything that is not a host effect
         // from the effect tag.
         next.flags &= HostEffectMask;
+        // 那么从错误边界继续beginWork
         workInProgress = next;
         return;
       }
@@ -1657,13 +1662,13 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         }
         completedWork.actualDuration = actualDuration;
       }
-
+      // 到了这里意味着还没找到错误边界
       if (returnFiber !== null) {
         /**
          * 给父fiber打上Incomplete，之后父fiber也会走unwindWork
          * 直到找到错误边界的父fiber，上面的next !== null，将workInProgress指向该错误边界，然后return掉
          * 错误边界的父fiber重新走beginWork处理updateQueue，该错误边界因为增加了一个update，update的payload有getDerivedStateFromError
-         * 故渲染出备用的ui
+         * 或componentDidCatch，故渲染出备用的ui
          * render() {
          *  if (this.state.hasError) {
          *  return <h1>Something went wrong.</h1>;

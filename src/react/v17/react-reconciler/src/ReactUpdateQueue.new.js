@@ -220,7 +220,7 @@ export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
   }
   sharedQueue.pending = update;
 }
-
+/** 将capturedUpdate拼接到baseUpdate后面 */
 export function enqueueCapturedUpdate<State>(
   workInProgress: Fiber,
   capturedUpdate: Update<State>,

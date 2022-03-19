@@ -305,7 +305,7 @@ export function bailoutHooks(
 
   current.lanes = removeLanes(current.lanes, lanes);
 }
-
+/** 出错就重置 ReactCurrentDispatcher */
 export function resetHooksAfterThrow(): void {
   // We can assume the previous dispatcher is always this one, since we set it
   // at the beginning of the render phase and there's no re-entrancy.
