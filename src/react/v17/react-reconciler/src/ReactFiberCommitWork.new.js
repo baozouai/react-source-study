@@ -1334,6 +1334,8 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
         const oldProps = current !== null ? current.memoizedProps : newProps;
         const type = finishedWork.type;
         // TODO: Type the updateQueue to be specific to host components.
+        // 对于 HostComponent 来说，fiber.updateQueue就是updatePayload，
+        // 格式为['className', '.primary', 'title', 'xxx', ...]
         const updatePayload: null | UpdatePayload = (finishedWork.updateQueue: any);
         finishedWork.updateQueue = null;
         if (updatePayload !== null) {
