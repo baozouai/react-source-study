@@ -172,7 +172,7 @@ function setInitialDOMProperties(
     }
   }
 }
-
+/** 更新dom prop，偶数index，如0、2、4为key，奇数index，如1、3为 value */
 function updateDOMProperties(
   domElement: Element,
   updatePayload: Array<any>,
