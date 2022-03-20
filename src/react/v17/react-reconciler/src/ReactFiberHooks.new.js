@@ -223,7 +223,8 @@ export function renderWithHooks<Props, SecondArg>(
   // Using memoizedState to differentiate between mount/update only works if at least one stateful hook is used.
   // Non-stateful hooks (e.g. context) don't get added to memoizedState,
   // so memoizedState would be null during updates and mounts.
-
+  // current === null || current.memoizedState === null意味着是挂载阶段
+  // 否则是更新阶段，两个阶段用的ReactCurrentDispatcher.current是不同的
   ReactCurrentDispatcher.current =
     current === null || current.memoizedState === null
       ? HooksDispatcherOnMount
@@ -354,8 +355,11 @@ function mountWorkInProgressHook(): Hook {
 
   if (workInProgressHook === null) {
     // This is the first hook in the list
+    // workInProgressHook为空，意味着这是第一个hook
+    // 且currentlyRenderingFiber(WIPFiber).memoizedState指向hook链表
     currentlyRenderingFiber.memoizedState = workInProgressHook = hook;
   } else {
+    // 不为空，则拼到后面
     // Append to the end of the list
     workInProgressHook = workInProgressHook.next = hook;
   }
@@ -442,7 +446,7 @@ function updateWorkInProgressHook(): Hook {
       'Rendered more hooks than during the previous render.',
     );
     currentHook = nextCurrentHook;
-
+    // 复用currentHook来创新新的WipHook
     const newHook: Hook = {
       memoizedState: currentHook.memoizedState,
 
@@ -1051,8 +1055,11 @@ function updateRef<T>(initialValue: T): {current: T} {
 function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
 
   const hook = mountWorkInProgressHook();
+  // 依赖项
   const nextDeps = deps === undefined ? null : deps;
+  // 给fiber打上副作用的 flag，即 PassiveEffect | PassiveStaticEffect
   currentlyRenderingFiber.flags |= fiberFlags;
+  // 创建effect，放到hook.memorizedState
   hook.memoizedState = pushEffect(
     HookHasEffect | hookFlags,
     create,
@@ -1080,7 +1087,7 @@ function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
       }
     }
   }
-
+  // 依赖性变化，那么fiber要打上flag
   currentlyRenderingFiber.flags |= fiberFlags;
   // 这里前后依赖变化了，所以要加上HookHasEffect
   hook.memoizedState = pushEffect(

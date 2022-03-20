@@ -1536,7 +1536,7 @@ function commitPassiveUnmount(finishedWork: Fiber): void {
   }
   enableLog && console.log('commitPassiveUnmount end')
 }
-
+/** 处理useEffect的destroy */
 function commitPassiveUnmountInsideDeletedTree(
   current: Fiber,
   nearestMountedAncestor: Fiber | null,
@@ -1558,7 +1558,7 @@ function commitPassiveUnmountInsideDeletedTree(
   }
   enableLog && console.log('commitPassiveUnmountInsideDeletedTree end')
 }
-
+/** 处理useEffect的create */
 function commitPassiveMount(
   finishedRoot: FiberRoot,
   finishedWork: Fiber,

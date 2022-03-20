@@ -162,7 +162,7 @@ export function cancelCallback(callbackNode: mixed) {
     Scheduler_cancelCallback(callbackNode);
   }
 }
-
+/** 如果immediateQueueCallbackNode不为空，则取消该task，然后以立即优先级清空同步回调任务 */
 export function flushSyncCallbackQueue(): boolean {
   if (immediateQueueCallbackNode !== null) {
     const node = immediateQueueCallbackNode;
@@ -171,7 +171,7 @@ export function flushSyncCallbackQueue(): boolean {
   }
   return flushSyncCallbackQueueImpl();
 }
-
+/** 以立即优先级清空同步回调任务 */
 function flushSyncCallbackQueueImpl() {
   // 如果没有正在清空同步队列且同步队列不为空
   if (!isFlushingSyncQueue && syncQueue !== null) {

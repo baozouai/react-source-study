@@ -2099,6 +2099,7 @@ function commitBeforeMutationEffectsImpl(fiber: Fiber) {
     // the earliest opportunity.
     // before mutation 调度useEffects
     if (!rootDoesHavePassiveEffects) {
+      // 这里用rootDoesHavePassiveEffects判断，使得只发起一次调度
       rootDoesHavePassiveEffects = true;
       scheduleCallback(NormalSchedulerPriority, () => {
         flushPassiveEffects();
@@ -2305,7 +2306,12 @@ export function flushPassiveEffects(): boolean {
   enableLog && console.log('flushPassiveEffects end')
   return false;
 }
-
+/** 
+ * 处理useEffect的create
+ * 1.有child的话，先处理child
+ * 2.处理本fiber
+ * 3.处理sibling，重复1、2、3
+ */
 function flushPassiveMountEffects(root, firstChild: Fiber): void {
   let fiber = firstChild;
   while (fiber !== null) {
@@ -2331,7 +2337,11 @@ function flushPassiveMountEffects(root, firstChild: Fiber): void {
     fiber = fiber.sibling;
   }
 }
-
+/** 
+ * 1.先处理firstChild上的delections
+ * 2.在处理其child，如果有副作用的话
+ * 3.再处理sibling
+ */
 function flushPassiveUnmountEffects(firstChild: Fiber): void {
   let fiber = firstChild;
   // 深度优先遍历fiber，处理删除的节点，执行useEffect的destroy函数
@@ -2343,6 +2353,7 @@ function flushPassiveUnmountEffects(firstChild: Fiber): void {
         flushPassiveUnmountEffectsInsideOfDeletedTree(fiberToDelete, fiber);
 
         // Now that passive effects have been processed, it's safe to detach lingering pointers.
+        // 将fiberToDelete一些属性置为null，好被垃圾回收
         detachFiberAfterEffects(fiberToDelete);
       }
     }
@@ -2355,6 +2366,7 @@ function flushPassiveUnmountEffects(firstChild: Fiber): void {
       // since that would not cover passive effects in siblings.
       const passiveFlags = fiber.subtreeFlags & PassiveMask;
       if (passiveFlags !== NoFlags) {
+        // 子节点也有副作用，那么递归调用
         flushPassiveUnmountEffects(child);
       }
     }
@@ -2373,6 +2385,7 @@ function flushPassiveUnmountEffectsInsideOfDeletedTree(
   nearestMountedAncestor: Fiber,
 ): void {
   if ((fiberToDelete.subtreeFlags & PassiveStatic) !== NoFlags) {
+    // 子树也有副作用，那么先递归处理子节点
     // If any children have passive effects then traverse the subtree.
     // Note that this requires checking subtreeFlags of the current Fiber,
     // rather than the subtreeFlags/effectsTag of the first child,
@@ -2388,6 +2401,7 @@ function flushPassiveUnmountEffectsInsideOfDeletedTree(
   }
 
   if ((fiberToDelete.flags & PassiveStatic) !== NoFlags) {
+    // 处理useEffect的destroy
     commitPassiveUnmountInsideDeletedTreeOnFiber(
       fiberToDelete,
       nearestMountedAncestor,
@@ -3027,7 +3041,7 @@ export function act(callback: () => Thenable<mixed>): Thenable<void> {
     };
   }
 }
-
+/** 置为null，让GC回收掉 */
 function detachFiberAfterEffects(fiber: Fiber): void {
   // Null out fields to improve GC for references that may be lingering (e.g. DevTools).
   // Note that we already cleared the return pointer in detachFiberMutation().

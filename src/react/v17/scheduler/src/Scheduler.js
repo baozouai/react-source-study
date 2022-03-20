@@ -461,7 +461,7 @@ function unstable_continueExecution() {
 function unstable_getFirstCallbackNode() {
   return peek(taskQueue);
 }
-
+/** 将task.callback置空，之后循环taskQueue判断到null的话会将该task剔除taskQueue */
 function unstable_cancelCallback(task) {
   if (enableProfiling) {
     if (task.isQueued) {
