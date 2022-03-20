@@ -471,11 +471,12 @@ function commitLayoutEffectsForProfiler(
     }
   }
 }
-
+/** 类组件根据是否有current决定调用componentDidMount或componentDidUpdate */
 function commitLayoutEffectsForClassComponent(finishedWork: Fiber) {
   const instance = finishedWork.stateNode;
   const current = finishedWork.alternate;
   if (finishedWork.flags & Update) {
+    // 生命周期相关的
     if (current === null) {
       // We could update instance props and state here,
       // but instead we rely on them being set during last render.

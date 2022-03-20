@@ -639,7 +639,7 @@ export function resetHasForceUpdateBeforeProcessing() {
 export function checkHasForceUpdateAfterProcessing(): boolean {
   return hasForceUpdate;
 }
-
+/** 执行setState的所有回调 */
 export function commitUpdateQueue<State>(
   finishedWork: Fiber,
   finishedQueue: UpdateQueue<State>,

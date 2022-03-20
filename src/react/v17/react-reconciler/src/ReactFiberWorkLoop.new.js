@@ -1824,7 +1824,6 @@ function commitRootImpl(root, renderPriorityLevel) {
     NoFlags;
   // 子树或根节点有副作用
   if (subtreeHasEffects || rootHasEffect) {
-    let previousLanePriority;
     // 将当前上下文标记为CommitContext，作为commit阶段的标志
     const prevExecutionContext = executionContext;
     executionContext |= CommitContext;
@@ -1927,6 +1926,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
     // Tell Scheduler to yield at the end of the frame, so the browser has an
     // opportunity to paint.
+    // 告诉scheduler让出线程执行权，一遍浏览器更新页面
     requestPaint();
 
     if (enableSchedulerTracing) { // enableSchedulerTracing = __PROFILE__
