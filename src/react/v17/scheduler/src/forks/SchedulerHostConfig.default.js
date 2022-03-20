@@ -278,7 +278,7 @@ if (
   cancelHostCallback = function() {
     scheduledHostCallback = null;
   };
-
+  
   requestHostTimeout = function(callback, ms) {
     taskTimeoutID = setTimeout(() => {
       callback(getCurrentTime());

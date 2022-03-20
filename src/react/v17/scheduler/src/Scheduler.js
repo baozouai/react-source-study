@@ -77,7 +77,7 @@ var isPerformingWork = false;
 
 var isHostCallbackScheduled = false;
 var isHostTimeoutScheduled = false;
-
+/** 检查timeQueue中可以放到taskQueue中的task */
 function advanceTimers(currentTime) {
   // Check for tasks that are no longer delayed and add them to the queue.
   // 检查过期任务队列中不应再被推迟的，放到taskQueue中
@@ -88,9 +88,10 @@ function advanceTimers(currentTime) {
       // Timer was cancelled.
       pop(timerQueue);
     } else if (timer.startTime <= currentTime) {
-      // 任务已过期，放到taskQueue中
+      // 任务已开始，放到taskQueue中
       // Timer fired. Transfer to the task queue.
       pop(timerQueue);
+      // taskQueue是以expirationTime排序
       timer.sortIndex = timer.expirationTime;
       push(taskQueue, timer);
       if (enableProfiling) {
@@ -98,17 +99,19 @@ function advanceTimers(currentTime) {
         timer.isQueued = true;
       }
     } else {
-      // 由于是小顶堆，第一个未过期的话，剩下的都是未过期，无需再遍历
+      // 由于是小顶堆，第一个未开始的话，剩下的都是未开始，无需再遍历
       // Remaining timers are pending.
       return;
     }
     timer = peek(timerQueue);
   }
 }
-
+/**
+ * @description 这个函数的作用是检查timerQueue中的任务，如果有快过期的任务，将它放到taskQueue中，执行掉
+  如果没有快过期的，并且taskQueue中没有任务，那就取出timerQueue中的第一个任务，等它的任务快过期了，执行掉它
+ * @param {*} currentTime 通过getCurrentTime()得到，可简单理解为Date.now()
+ */
 function handleTimeout(currentTime) {
-  // 这个函数的作用是检查timerQueue中的任务，如果有快过期的任务，将它放到taskQueue中，执行掉
-  // 如果没有快过期的，并且taskQueue中没有任务，那就取出timerQueue中的第一个任务，等它的任务快过期了，执行掉它
   isHostTimeoutScheduled = false;
   // 检查过期任务队列中不应再被推迟的，放到taskQueue中
   advanceTimers(currentTime);
@@ -119,6 +122,8 @@ function handleTimeout(currentTime) {
       // 如果taskQueue不为空，发起一次调度
       requestHostCallback(flushWork);
     } else {
+      // taskQueue为空，那么判断timeQueue是否有任务，有的话再次发起一次setTimeout
+      // 最终目的都是为了等到timeQueue中的任务可以放入taskQueue为止
       const firstTimer = peek(timerQueue);
       if (firstTimer !== null) {
         requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
@@ -126,7 +131,11 @@ function handleTimeout(currentTime) {
     }
   }
 }
-
+/**
+ * @description performWorkUntilDeadline中会将hasTimeRemaining, initialTime传给flushWork
+ * @param {*} hasTimeRemaining 为true，表示有剩余时间
+ * @param {*} initialTime performWorkUntilDeadline中通过getCurrentTime()得到的
+ */
 function flushWork(hasTimeRemaining, initialTime) {
   
   enableLog && console.log('Scheduler: flushWork start')
@@ -139,6 +148,7 @@ function flushWork(hasTimeRemaining, initialTime) {
   // We'll need a host callback the next time work is scheduled.
   isHostCallbackScheduled = false;
   if (isHostTimeoutScheduled) {
+    // isHostTimeoutScheduled表示正在调用seTimeout
     // We scheduled a timeout but it's no longer needed. Cancel it.
     isHostTimeoutScheduled = false;
     cancelHostTimeout();
@@ -185,7 +195,7 @@ function workLoop(hasTimeRemaining, initialTime) {
   advanceTimers(currentTime);
   // 获取taskQueue中最紧急的任务
   currentTask = peek(taskQueue);
-  // 循环taskQueue，执行任务，相当于 while (currentTask !== null)
+  // 循环taskQueue，执行任务
   while (currentTask !== null) {
     if (
       currentTask.expirationTime > currentTime &&
@@ -231,6 +241,7 @@ function workLoop(hasTimeRemaining, initialTime) {
           pop(taskQueue);
         }
       }
+      // 每次执行任务后，都检查timeQueue中是否有可以放到taskQueue中的task
       advanceTimers(currentTime);
     } else {
       // 任务的callback不是函数，说明被取消了（unstable_cancelCallback(task)会将任务的callback置为nul)，则弹出
@@ -349,7 +360,7 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
   } else {
     startTime = currentTime;
   }
-  // 计算过期时间（scheduleCallback函数中的内容）
+  // 根据调度优先级计算过期时间（scheduleCallback函数中的内容）
   var timeout;
   switch (priorityLevel) {
     case ImmediatePriority:
@@ -359,7 +370,7 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
       timeout = USER_BLOCKING_PRIORITY_TIMEOUT; // 250
       break;
     case IdlePriority:
-      timeout = IDLE_PRIORITY_TIMEOUT; // 1073741823 ms
+      timeout = IDLE_PRIORITY_TIMEOUT; // idle表示无所事事，比low优先级还低 1073741823 ms
       break;
     case LowPriority:
       timeout = LOW_PRIORITY_TIMEOUT; // 10000

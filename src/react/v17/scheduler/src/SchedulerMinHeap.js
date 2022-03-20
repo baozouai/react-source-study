@@ -12,13 +12,13 @@ type Node = {
   id: number,
   sortIndex: number,
 };
-
+/** push进node后调整小顶堆 */
 export function push(heap: Heap, node: Node): void {
   const index = heap.length;
   heap.push(node);
   siftUp(heap, node, index);
 }
-
+/** 因为是小顶堆，第一个最小 */
 export function peek(heap: Heap): Node | null {
   const first = heap[0];
   return first === undefined ? null : first;
@@ -45,6 +45,7 @@ function siftUp(heap, node, i) {
     const parent = heap[parentIndex];
     if (parent !== undefined && compare(parent, node) > 0) {
       // The parent is larger. Swap positions.
+      // parent比较大，将node往上提
       heap[parentIndex] = node;
       heap[index] = parent;
       index = parentIndex;

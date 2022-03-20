@@ -671,7 +671,9 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   } else {
     // 否则就是concurrent模式
     // 将本次更新任务的优先级转化为调度优先级
-    // schedulerPriorityLevel为调度优先级
+    // 这里的schedulerPriorityLevel实际上这里是ReactPriorityLevel，下面的
+    // scheduleCallback会将传入的schedulerPriorityLevel通过reactPriorityToSchedulerPriority
+    // 转换为真正的调度优先级
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
       newCallbackPriority,
     );
