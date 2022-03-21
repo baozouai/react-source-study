@@ -170,6 +170,7 @@ function extractEvents(
   // In the past, React has always bubbled them, but this can be surprising.
   // We're going to try aligning closer to the browser behavior by not bubbling
   // them in React either. We'll start by not bubbling onScroll, and then expand.
+  // 是否只收集target
   const accumulateTargetOnly =
     !inCapturePhase &&
     // TODO: ideally, we'd eventually add all events from
@@ -187,7 +188,7 @@ function extractEvents(
   );
   if (listeners.length > 0) {
     // Intentionally create event lazily.
-    // 构造合成事件
+    // 不为空则构造合成事件
     const event = new SyntheticEventCtor(
       reactName,
       reactEventType,
@@ -195,6 +196,7 @@ function extractEvents(
       nativeEvent,
       nativeEventTarget,
     );
+    // 之后event会被listeners中的listener调用
     dispatchQueue.push({event, listeners});
   }
 }

@@ -177,7 +177,11 @@ function setEventPriorities(
     eventPriorities.set(eventTypes[i], priority);
   }
 }
-
+/**
+ * @description 根据事件名获取对应的优先级
+ * @param {*} domEventName 事件名
+ * @returns 优先级EventPriority
+ */
 export function getEventPriorityForPluginSystem(
   domEventName: DOMEventName,
 ): EventPriority {

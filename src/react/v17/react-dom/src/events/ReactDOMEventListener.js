@@ -87,7 +87,13 @@ export function createEventListenerWrapper(
     targetContainer,
   );
 }
-
+/**
+ * @description 根据事件优先级创建事件监听器包装器(bind)
+ * @param {*} targetContainer 目标元素
+ * @param {*} domEventName 事件名
+ * @param {*} eventSystemFlags 事件系统标志位
+ * @returns `listenerWrapper.bind`
+ */
 export function createEventListenerWrapperWithPriority(
   targetContainer: EventTarget,
   domEventName: DOMEventName,
@@ -98,7 +104,7 @@ export function createEventListenerWrapperWithPriority(
     enableLog && console.log('createEventListenerWrapperWithPriority start')
     debugger
   }
-  // 根据dom事件名获取时间优先级
+  // 根据dom事件名获取事件优先级
   const eventPriority = getEventPriorityForPluginSystem(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
@@ -119,6 +125,7 @@ export function createEventListenerWrapperWithPriority(
   if ((!__LOG_NAMES__.length || __LOG_NAMES__.includes('createEventListenerWrapperWithPriority')) && domEventName === 'click') {
     enableLog && console.log('createEventListenerWrapperWithPriority end')
   }
+  // 还差一个nativeEvent，真正事件执行会传入
   return listenerWrapper.bind(
     null,
     domEventName,
@@ -126,7 +133,14 @@ export function createEventListenerWrapperWithPriority(
     targetContainer,
   );
 }
-
+/**
+ * @description 处理离散事件，实际上就是执行dispatchEvent(domEventName,eventSystemFlags,container,nativeEvent,)
+ *              前后设置isInsideEventHandler的状态
+ * @param {*} domEventName 事件名
+ * @param {*} eventSystemFlags 事件系统标志
+ * @param {*} container 
+ * @param {*} nativeEvent 
+ */
 function dispatchDiscreteEvent(
   domEventName,
   eventSystemFlags,
@@ -161,6 +175,7 @@ function dispatchUserBlockingUpdate(
   container,
   nativeEvent,
 ) {
+  // 将优先级记录到scheduler中
   runWithPriority(
     UserBlockingPriority,
     dispatchEvent.bind(
@@ -272,6 +287,7 @@ export function dispatchEvent(
 }
 
 // Attempt dispatching an event. Returns a SuspenseInstance or Container if it's blocked.
+/** 尝试触发事件，如果被阻塞了，那么返回一个Suspense实例或者Container */
 export function attemptToDispatchEvent(
   domEventName: DOMEventName,
   eventSystemFlags: EventSystemFlags,

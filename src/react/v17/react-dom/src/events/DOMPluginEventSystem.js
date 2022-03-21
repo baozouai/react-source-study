@@ -196,6 +196,7 @@ export const mediaEventTypes: Array<DOMEventName> = [
 // We should not delegate these events to the container, but rather
 // set them on the actual target element itself. This is primarily
 // because these events do not consistently bubble in the DOM.
+/** 这些时间不委托到#root上，而是绑定到具体的element上，因为这些时间不是持续冒泡的 */
 export const nonDelegatedEvents: Set<DOMEventName> = new Set([
   'cancel',
   'close',
@@ -216,7 +217,7 @@ function executeDispatch(
   currentTarget: EventTarget,
 ): void {
   const type = event.type || 'unknown-event';
-  // 将currentTarget，运行真正的事件函数后，如onClick后，再将event.currentTarget置为null
+  // 替换currentTarget，运行真正的事件函数后，如onClick后，再将event.currentTarget置为null
   event.currentTarget = currentTarget;
   invokeGuardedCallbackAndCatchFirstError(type, listener, undefined, event);
   event.currentTarget = null;
@@ -337,7 +338,7 @@ const listeningMarker =
   Math.random()
     .toString(36)
     .slice(2);
-
+/** createRootImpl时就调用了，给#root绑定各种事件 */
 export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   
   enableLog && console.log('listenToAllSupportedEvents start')
@@ -354,6 +355,7 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   allNativeEvents.forEach(domEventName => {
     if (__LOG_NAMES__.includes('listenToAllSupportedEvents') && domEventName === 'click') debugger
     if (!nonDelegatedEvents.has(domEventName)) {
+      // 事件可以持续冒泡，才调用，false表示冒泡的标志
       listenToNativeEvent(
         domEventName,
         false,
@@ -370,7 +372,15 @@ export function listenToAllSupportedEvents(rootContainerElement: EventTarget) {
   });
   enableLog && console.log('listenToAllSupportedEvents end')
 }
-
+/**
+ * 
+ * @param {*} domEventName 事件名
+ * @param {*} isCapturePhaseListener 是否捕获的标志，true为捕获，false为冒泡
+ * @param {*} rootContainerElement 根节点，即#root
+ * @param {*} targetElement 如果有传入，则忽略rootContainerElement
+ * @param {*} eventSystemFlags 
+ * @returns 
+ */
 export function listenToNativeEvent(
   domEventName: DOMEventName,
   isCapturePhaseListener: boolean,
@@ -382,6 +392,7 @@ export function listenToNativeEvent(
     enableLog && console.log('listenToNativeEvent start')
     debugger
   }
+  // 默认是rootContainerElement，即#root
   let target = rootContainerElement;
   // selectionchange needs to be attached to the document
   // otherwise it won't capture incoming events that are only
@@ -396,11 +407,13 @@ export function listenToNativeEvent(
   // register it to the root container. Otherwise, we should
   // register the event to the target element and mark it as
   // a non-delegated event.
+  // 如果事件能委托，那么会注册到root上， 否则应该注册到对应的element上，并且标记为不可委托的
   if (
     targetElement !== null &&
     !isCapturePhaseListener &&
     nonDelegatedEvents.has(domEventName)
   ) {
+    // 目标元素不为空，且是冒泡阶段和不可委托
     // For all non-delegated events, apart from scroll, we attach
     // their event listeners to the respective elements that their
     // events fire on. That means we can skip this step, as event
@@ -413,7 +426,9 @@ export function listenToNativeEvent(
     if (domEventName !== 'scroll') {
       return;
     }
+    // 标记为不可委托
     eventSystemFlags |= IS_NON_DELEGATED;
+    // target默认是root，这里更新target为目标元素
     target = targetElement;
   }
   // 给dom设置一个属性值（new Set()),如果已有则返回原先的
@@ -427,7 +442,9 @@ export function listenToNativeEvent(
   // If the listener entry is empty or we should upgrade, then
   // we need to trap an event listener onto the target.
   if (!listenerSet.has(listenerSetKey)) {
+    // listenerSetKey只处理一次，下次有就不用了
     if (isCapturePhaseListener) {
+      // 打上捕获的flag
       eventSystemFlags |= IS_CAPTURE_PHASE;
     }
     addTrappedEventListener(
@@ -442,14 +459,14 @@ export function listenToNativeEvent(
     enableLog && console.log('listenToNativeEvent end')
   }
 }
-
-export function listenToReactEvent(
-  reactEvent: string,
-  rootContainerElement: Element,
-  targetElement: Element | null,
-): void {
-}
-
+/**
+ * 
+ * @param {*} targetContainer 绑定事件的目标元素
+ * @param {*} domEventName 事件名
+ * @param {*} eventSystemFlags 
+ * @param {*} isCapturePhaseListener 是否是捕获，true为是
+ * @param {*} isDeferredListenerForLegacyFBSupport 这个没用到
+ */
 function addTrappedEventListener(
   targetContainer: EventTarget,
   domEventName: DOMEventName,
@@ -536,22 +553,6 @@ function addTrappedEventListener(
   }
 }
 
-function deferClickToDocumentForLegacyFBSupport(
-  domEventName: DOMEventName,
-  targetContainer: EventTarget,
-): void {
-  // We defer all click events with legacy FB support mode on.
-  // This means we add a one time event listener to trigger
-  // after the FB delegated listeners fire.
-  const isDeferredListenerForLegacyFBSupport = true;
-  addTrappedEventListener(
-    targetContainer,
-    domEventName,
-    IS_LEGACY_FB_SUPPORT_MODE,
-    false,
-    isDeferredListenerForLegacyFBSupport,
-  );
-}
 
 function isMatchingRootContainer(
   grandContainer: Element,
@@ -669,7 +670,7 @@ export function dispatchEventForPluginEventSystem(
     enableLog && console.log('dispatchEventForPluginEventSystem end')
   }
 }
-
+/** 每一个执行路径 */
 function createDispatchListener(
   instance: null | Fiber,
   listener: Function,
@@ -681,7 +682,7 @@ function createDispatchListener(
     currentTarget,
   };
 }
-
+/** 从目标元素开始一直到root,收集所有的事件监听  */
 export function accumulateSinglePhaseListeners(
   targetFiber: Fiber | null,
   reactName: string | null,
@@ -708,6 +709,7 @@ export function accumulateSinglePhaseListeners(
   while (instance !== null) {
     const {stateNode, tag} = instance;
     // Handle listeners that are on HostComponents (i.e. <div>)
+    // 必须是HostComponent，stateNode执行dom
     if (tag === HostComponent && stateNode !== null) {
       lastHostComponent = stateNode;
 

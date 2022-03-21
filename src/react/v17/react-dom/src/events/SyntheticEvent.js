@@ -64,7 +64,7 @@ function createSyntheticEvent(Interface: EventInterfaceType) {
         this[propName] = nativeEvent[propName];
       }
     }
-
+    // 是否默认阻止了
     const defaultPrevented =
       nativeEvent.defaultPrevented != null
         ? nativeEvent.defaultPrevented
@@ -87,24 +87,29 @@ function createSyntheticEvent(Interface: EventInterfaceType) {
       }
 
       if (event.preventDefault) {
+        // 如chrome的
         event.preventDefault();
         // $FlowFixMe - flow is not aware of `unknown` in IE
       } else if (typeof event.returnValue !== 'unknown') {
+        // ie的
         event.returnValue = false;
       }
       this.isDefaultPrevented = functionThatReturnsTrue;
     },
 
     stopPropagation: function() {
+      // 磨平浏览器的差异
       const event = this.nativeEvent;
       if (!event) {
         return;
       }
 
       if (event.stopPropagation) {
+        // 如chrome
         event.stopPropagation();
         // $FlowFixMe - flow is not aware of `unknown` in IE
       } else if (typeof event.cancelBubble !== 'unknown') {
+        ie
         // The ChangeEventPlugin registers a "propertychange" event for
         // IE. This event does not support bubbling or cancelling, and
         // any references to cancelBubble throw "Member not found".  A
@@ -112,7 +117,8 @@ function createSyntheticEvent(Interface: EventInterfaceType) {
         // IE specific).
         event.cancelBubble = true;
       }
-
+      // 阻止冒泡后,isPropagationStopped()就返回true了，用于在processDispatchQueueItemsInOrder
+      // 里面判断是否执行当前以及下一个
       this.isPropagationStopped = functionThatReturnsTrue;
     },
 
