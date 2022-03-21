@@ -25,4 +25,4 @@ npm i
 
 ## enableLog：
 
-在一些代码中增加了log来显示函数相对的先后调用关系，如果不想log，可在[ ReactFeatureFlags.js ](src/react/v17/shared/ReactFeatureFlags.js) 将enableLog`设为false
+在一些代码中增加了log来显示函数相对的先后调用关系，如果不想log，可在[ ReactFeatureFlags.js ](src/react/v17/shared/ReactFeatureFlags.js) 将 `enableLog` 设为false
