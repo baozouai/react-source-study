@@ -339,7 +339,18 @@ function cutOffTailIfNeeded(
     }
   }
 }
-
+/** 
+ * 循环子节点和子节点的兄弟节点，收集lanes到fiber的childLanes上,
+ * 最终收集到root.pendingLanes上，这个发生在commitRootImpl
+ * @example
+ * function commitRootImpl(root, renderPriorityLevel) {
+ *   // 将收集到的childLanes，连同root自己的lanes，一并赋值给remainingLanes
+ *   let remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
+ *   // markRootFinished中会将remainingLanes赋值给remainingLanes
+ *   markRootFinished(root, remainingLanes);*
+ *   ...
+ * }
+ *  */
 function bubbleProperties(completedWork: Fiber) {
 
   enableLog && console.log('bubbleProperties')
@@ -386,7 +397,7 @@ function bubbleProperties(completedWork: Fiber) {
       completedWork.actualDuration = actualDuration;
       completedWork.treeBaseDuration = treeBaseDuration;
     } else {
-      // 循环子节点和兄弟节点，收集lanes
+      // 循环子节点和子节点的兄弟节点，收集lanes
       let child = completedWork.child;
       while (child !== null) {
         newChildLanes = mergeLanes(

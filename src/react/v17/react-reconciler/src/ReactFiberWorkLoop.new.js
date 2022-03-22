@@ -335,15 +335,31 @@ export function getCurrentTime() {
 export function requestUpdateLane(fiber: Fiber): Lane {
   // Special cases
   const mode = fiber.mode;
+  /** 
+   * 在createHostRootFiber中有：
+   * if (tag === ConcurrentRoot) {
+   *    // StrictMode =     0b00001;
+   *    // BlockingMode =   0b00010;
+   *    // ConcurrentMode = 0b00100;
+   *    mode = ConcurrentMode | BlockingMode | StrictMode;
+   *  } else if (tag === BlockingRoot) {
+   *    mode = BlockingMode | StrictMode;
+   *  } else {
+   *    mode = NoMode;
+   *  }
+   */
   if ((mode & BlockingMode) === NoMode) {
+    // 从上面我们知道，ConcurrentRoot和BlockingRoot都有BlockingMode，所以这里没有BlockingMode就肯定是SyncLane了
     // 同步lane
     return (SyncLane: Lane);
   } else if ((mode & ConcurrentMode) === NoMode) {
+    // 有BlockingMode，但是没有ConcurrentMode，那么就是BlockingRoot，判断调度优先级是否
+    // 是立即优先级，是的话返回SyncLane，否则返回SyncBatchedLane
     return getCurrentPriorityLevel() === ImmediateSchedulerPriority
       ? (SyncLane: Lane)
       : (SyncBatchedLane: Lane);
   }
-
+  // 到了这里就是ConcurrentMode
   // The algorithm for assigning an update to a lane should be stable for all
   // updates at the same priority within the same event. To do this, the inputs
   // to the algorithm must be the same. For example, we use the `renderLanes`
@@ -361,7 +377,8 @@ export function requestUpdateLane(fiber: Fiber): Lane {
   if (currentEventWipLanes === NoLanes) {
     currentEventWipLanes = workInProgressRootIncludedLanes;
   }
-
+  // transtion相关的
+  // requestCurrentTransition会返回ReactCurrentBatchConfig.transition，不为0则代表有transition
   const isTransition = requestCurrentTransition() !== NoTransition;
   if (isTransition) {
     // 处于suspense过程中
@@ -371,11 +388,13 @@ export function requestUpdateLane(fiber: Fiber): Lane {
           ? mostRecentlyUpdatedRoot.pendingLanes
           : NoLanes;
     }
+    // 有transition就不走下面了
     return findTransitionLane(currentEventWipLanes, currentEventPendingLanes);
   }
-
+  // 到了这里没transition
   // TODO: Remove this dependency on the Scheduler priority.
   // To do that, we're replacing it with an update lane priority.
+  // 这里写着schedulerPriority，实际上是React优先级，根据Scheduler的优先级获取到对应的React优先级
   const schedulerPriority = getCurrentPriorityLevel();
 
   // The old behavior was using the priority level of the Scheduler.
@@ -446,7 +465,7 @@ export function scheduleUpdateOnFiber(
   markRootUpdated(root, lane, eventTime);
 
   if (root === workInProgressRoot) {
-    // workInProgressRoo存在，意味着是当前根节点触发的更新
+    // workInProgressRoot存在，意味着是当前根节点触发的更新
     // Received an update to a tree that's in the middle of rendering. Mark
     // that there was an interleaved update work on this root. Unless the
     // `deferRenderPhaseUpdateToNextBatch` flag is off and this is a render
@@ -477,12 +496,16 @@ export function scheduleUpdateOnFiber(
   const priorityLevel = getCurrentPriorityLevel();
 
   if (lane === SyncLane) { // 0b0000000000000000000000000000001
-    // 根据Scheduler的优先级获取到对应的React优先级
     if (
       // Check if we're inside unbatchedUpdates
+      // 是否在批量更新中
+      // ReactDom.render中会调用legacyRenderSubtreeIntoContainer，从而调用unbatchedUpdates，里面
+      // 会将 executionContext |= LegacyUnbatchedContext
       (executionContext & LegacyUnbatchedContext) !== NoContext &&
       // Check if we're not already rendering
-      // 判断是否不在render过程中
+      // 判断是否不在render和commit过程中
+      //  renderRootSync和renderRootConcurrent会将 executionContext |= RenderContext;
+      //  flushPassiveEffectsImpl和commitRootImpl会将 executionContext |= CommitContext;
       (executionContext & (RenderContext | CommitContext)) === NoContext
     ) {
       // 如果是本次更新是同步的(lane === SyncLane)，并且当前还未渲染，意味着主线程空闲，并没有React的
@@ -495,6 +518,11 @@ export function scheduleUpdateOnFiber(
       // should be deferred until the end of the batch.
       performSyncWorkOnRoot(root);
     } else {
+      // 到了这里，是以下几种情况：
+      // 1.不是ReactDom.render
+      // 2.在Render阶段又触发了更新
+      // 3.在Commit阶段又触发了更新，比如componentDidMount、componentDidUpdate、useLayoutEffect里面又setState
+
       // 如果当前有React更新任务正在进行，而且因为无法打断，所以调用ensureRootIsScheduled,
       // 目的是去复用已经在更新的任务，让这个已有的任务把这次更新顺便做了
       ensureRootIsScheduled(root, eventTime);
@@ -502,7 +530,8 @@ export function scheduleUpdateOnFiber(
       // 通过判断 executionContext 是否等于 NoContext 来确定当前更新流程是否在 React 事件流中
       // 如果不在(NoContext)，直接调用 flushSyncCallbackQueue 更新，这种情况出现在异步操作
       // 或原生事件中调用setState，比如常见的问题：setState是异步还是同步的：
-      // 异步：更新流程在React事件流中
+      // 异步：更新流程在React事件流中，一般react的时间系统都会加上对应的上下文，如在discreteUpdates里面
+      // 有executionContext |= DiscreteEventContext;
       // 同步：就是下面的flushSyncCallbackQueue，不在事件流中
       if (executionContext === NoContext) {
         // Flush the synchronous work now, unless we're already working or inside
@@ -511,6 +540,11 @@ export function scheduleUpdateOnFiber(
         // without immediately flushing it. We only do this for user-initiated
         // updates, to preserve historical behavior of legacy mode.
         resetRenderTimer();
+        /**
+         * 由于是SyncLane，上面的ensureRootIsScheduled会通过scheduleSyncCallback生成一个immediateQueueCallbackNode，
+         * 但因为这里不在事件流，所以flushSyncCallbackQueue里面判断到immediateQueueCallbackNode不为空的话，会将该任务取消掉，
+         * 然后直接情况syncQueue队列
+         */
         flushSyncCallbackQueue();
       }
     } 
@@ -534,6 +568,7 @@ export function scheduleUpdateOnFiber(
       }
     }
     // Schedule other updates after in case the callback is sync.
+    // lane不是Sync，那么是Batch或Concurrent，异步调度一下
     ensureRootIsScheduled(root, eventTime);
     schedulePendingInteractions(root, lane);
   }
@@ -549,7 +584,7 @@ export function scheduleUpdateOnFiber(
 // work without treating it as a typical update that originates from an event;
 // e.g. retrying a Suspense boundary isn't an update, but it does schedule work
 // on a fiber.
-/** 从触发状态更新的fiber通过一直往上找return得到rootFiber，找的过程都会将lane收集到每个parent.childLanes上 */
+/** 从触发状态更新的fiber一直往上找return得到rootFiber，找的过程都会将lane收集到每个parent.childLanes上 */
 function markUpdateLaneFromFiberToRoot(
   sourceFiber: Fiber,
   lane: Lane,
@@ -671,7 +706,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   } else {
     // 否则就是concurrent模式
     // 将本次更新任务的优先级转化为调度优先级
-    // 这里的schedulerPriorityLevel实际上这里是ReactPriorityLevel，下面的
+    // 这里的schedulerPriorityLevel实际上是ReactPriorityLevel，下面的
     // scheduleCallback会将传入的schedulerPriorityLevel通过reactPriorityToSchedulerPriority
     // 转换为真正的调度优先级
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
@@ -939,7 +974,7 @@ function performSyncWorkOnRoot(root) {
     'Should not already be working.',
   );
   
-  console.log('ReactFiberWorkLoop.new: performSyncWorkOnRoot')
+  enableLog && console.log('ReactFiberWorkLoop.new: performSyncWorkOnRoot')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('performSyncWorkOnRoot')) debugger
   flushPassiveEffects();
 
@@ -2698,7 +2733,7 @@ function jnd(timeElapsed: number) {
     ? 4320
     : ceil(timeElapsed / 1960) * 1960;
 }
-
+/** 检查是否无限更新 */
 function checkForNestedUpdates() {
   // React中规定循环更新大于50次则是重复在componentWillUpdate或componentDidUpdate调用setState
   if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
