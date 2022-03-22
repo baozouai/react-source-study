@@ -438,10 +438,10 @@ export function getMostRecentEventTime(root: FiberRoot, lanes: Lanes): number {
   return mostRecentEventTime;
 }
 
+/**
+ *   这个函数是计算lane的过期时间的，与饥饿问题相关
+ * */
 function computeExpirationTime(lane: Lane, currentTime: number) {
-  /**
-   *   这个函数是计算lane的过期时间的，与饥饿问题相关
-   * */
 
   // TODO: Expiration heuristic is constant per lane, so could use a map.
   // 根据传入的lane调用getHighestPriorityLanes后会将return_highestLanePriority赋值为对应的优先级
@@ -473,7 +473,10 @@ function computeExpirationTime(lane: Lane, currentTime: number) {
     return NoTimestamp;
   }
 }
-// 计算和存取以及判断是否过期的逻辑，每次有任务要被调度的时候都会调用一次
+/** 
+ * 计算和存取以及判断是否过期的逻辑，每次有任务要被调度的时候都会调用一次，
+ * 会将root.pendingLanes中过期的放到root.expiredLanes
+ *  */ 
 export function markStarvedLanesAsExpired(
   root: FiberRoot,
   currentTime: number,
@@ -481,7 +484,7 @@ export function markStarvedLanesAsExpired(
   /**
    * 计算lane的过期时间，饥饿问题（过期的lane被立即执行）的关键所在
    * 模型是这样的，假设lanes有7个二进制位（实际是31个）：
-   * 0b0011000
+   * 0b0010000
    * 对应一个7个元素的数组，每个元素表示一个过期时间，与lanes中的位相对应
    * [ -1, -1, 4395.2254, -1, -1, -1, -1 ]
    * -1表示任务未过期。root.expirationTimes就是这个数组
@@ -526,7 +529,7 @@ export function markStarvedLanesAsExpired(
       // using the current time.
       // 发现一个没有过期时间并且待处理的lane，如果它:
       // 1.没被挂起 (lane & suspendedLanes) === NoLanes
-      // 2或没被触发(lane & pingedLanes) === NoLanes
+      // 2.或suspense被恢复(lane & pingedLanes) !== NoLanes
       // 那么将它视为CPU密集型的任务，用当前时间计算一个新的过期时间
       if (
         (lane & suspendedLanes) === NoLanes ||
@@ -538,7 +541,7 @@ export function markStarvedLanesAsExpired(
       }
     } else if (expirationTime <= currentTime) {
       // This lane expired
-      // 已经过期，将lane并入到expiredLanes中，实现了将lanes标记为过期
+      // 过期时间小于等于当前时间，意味着已经过期，将lane并入到expiredLanes中，实现了将lanes标记为过期
       root.expiredLanes |= lane;
     }
     // 将lane从lanes中删除，每循环一次删除一个，直到lanes清空成0，结束循环
@@ -734,8 +737,12 @@ export function pickArbitraryLane(lanes: Lanes): Lane {
   return getHighestPriorityLane(lanes);
 }
 
+/** 
+ * 找到lanes中优先级最低的lane(最靠左的那个1的index, index从0开始)
+ * @example
+ * pickArbitraryLaneIndex(0b0000000000000000000000000011100) => index = 4
+ * */
 function pickArbitraryLaneIndex(lanes: Lanes) {
-  // 找到lanes中优先级最低的lane(最靠左的那个1的index)
   return 31 - clz32(lanes);
 }
 
