@@ -94,6 +94,7 @@ function createSyntheticEvent(Interface: EventInterfaceType) {
         // ie的
         event.returnValue = false;
       }
+      // 用这个磨平浏览器差异
       this.isDefaultPrevented = functionThatReturnsTrue;
     },
 
