@@ -96,27 +96,31 @@ function FiberNode(
   key: null | string,
   mode: TypeOfMode,
 ) {
-  // Instance
   /** Fiber对应组件的类型 Function/Class/HostComponent(如div)/HostText(html中的纯文本)等 */
   this.tag = tag;
+  /** 组件中写的key */ 
   this.key = key;
-  /** 一般跟type相同 */
+  /** createElement的第一个参数，ReactElement 上的 type */
   this.elementType = null;
   /** 
    * 对于组件，指组件对应的名称，如App
    * 对于html，则type等于tagName，如div、span、h1等
    * */
   this.type = null;
-  /** 对于root，存储FiberRoot，对应dom Fiber，用来存储该Fiber对应的dom节点 */
+  /** 
+   * 对于rootFiber，存储FiberRoot，
+   * 对于classComponent，是对应的类实例，
+   * 对于dom Fiber，用来存储该Fiber对应的dom节点
+   *  */
   this.stateNode = null;
 
-  // Fiber
   /** 指向父级 */
   this.return = null;
   /** 指向第一个child */
   this.child = null;
   /** 指向第一个兄弟 */
   this.sibling = null;
+  /** 一般如果没有兄弟节点的话是0 当某个父节点下的子节点是数组类型的时候会给每个子节点一个 index，index 和 key 要一起做 diff */
   this.index = 0;
 
   this.ref = null;
@@ -139,6 +143,7 @@ function FiberNode(
   this.flags = NoFlags;
   // 该fiber的子树上的flags
   this.subtreeFlags = NoFlags;
+  /** 子节点中要删除的fiber */
   this.deletions = null;
   // --------调度优先级相关 start--------
   // 该fiber上的优先级

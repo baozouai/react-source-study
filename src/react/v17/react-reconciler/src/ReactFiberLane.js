@@ -224,7 +224,17 @@ export function schedulerPriorityToLanePriority(
 
 /**
  * Scheduler调度一个React任务的时候，要通过lane的优先级计算出Scheduler能够识别的优先级
- * 该函数就是做这个的，但实际上返回的是一个 `ReactPriorityLevel`
+ * 该函数就是做这个的，但实际上返回的是一个 `ReactPriorityLevel`，其值有99、98、97、96、95，
+ * 还需要再通过 `reactPriorityToSchedulerPriority` 转换成真正的调度优先级，其值有5、4、3、2、1
+ * 
+ * @example
+ * {
+ *  99: 5,
+ *  98: 4,
+ *  97: 3,
+ *  96: 2,
+ *  95: 1,
+ * }
  * */
 export function lanePriorityToSchedulerPriority(
   lanePriority: LanePriority,
