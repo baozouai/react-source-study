@@ -119,7 +119,7 @@ function getClientEnvironment(publicUrl) {
       // 'updateContainer',
       // 'enqueueUpdate',
       // 'scheduleUpdateOnFiber',
-      // 'ensureRootIsScheduled',
+      'ensureRootIsScheduled',
       // 'unstable_scheduleCallback',
       // 'requestHostCallback',
       // 'performWorkUntilDeadline',
@@ -178,7 +178,7 @@ function getClientEnvironment(publicUrl) {
       // 'bubbleProperties',
       // 'dispatchDiscreteEvent',
       // 'createEventListenerWrapperWithPriority',
-      'updateWorkInProgressHook'
+      // 'updateWorkInProgressHook'
     ]),
   };
 

@@ -258,9 +258,6 @@ let workInProgressRootRenderTargetTime: number = Infinity;
 // suspense heuristics and opt out of rendering more content.
 const RENDER_TIMEOUT_MS = 500;
 
-// Used to avoid traversing the return path to find the nearest Profiler ancestor during commit.
-let nearestProfilerOnStack: Fiber | null = null;
-
 function resetRenderTimer() {
   workInProgressRootRenderTargetTime = now() + RENDER_TIMEOUT_MS;
 }
@@ -272,10 +269,13 @@ export function getRenderTargetTime(): number {
 let hasUncaughtError = false;
 let firstUncaughtError = null;
 let legacyErrorBoundariesThatAlreadyFailed: Set<mixed> | null = null;
-
+/** 在 `commit` 阶段如果有 `useEffect` 的话会被赋值为 `true` */
 let rootDoesHavePassiveEffects: boolean = false;
+/** 在 `commit` 阶段如果有 `useEffect` 的话会被赋值为 `root` */
 let rootWithPendingPassiveEffects: FiberRoot | null = null;
+/** 在 `commit` 阶段如果有 `useEffect` 的话会被赋值为 `renderPriorityLevel` */
 let pendingPassiveEffectsRenderPriority: ReactPriorityLevel = NoSchedulerPriority;
+/** 在 `commit` 阶段如果有 `useEffect` 的话会被赋值为 `root.finishedLanes` */
 let pendingPassiveEffectsLanes: Lanes = NoLanes;
 
 let rootsWithPendingDiscreteUpdates: Set<FiberRoot> | null = null;
@@ -530,7 +530,7 @@ export function scheduleUpdateOnFiber(
       // 通过判断 executionContext 是否等于 NoContext 来确定当前更新流程是否在 React 事件流中
       // 如果不在(NoContext)，直接调用 flushSyncCallbackQueue 更新，这种情况出现在异步操作
       // 或原生事件中调用setState，比如常见的问题：setState是异步还是同步的：
-      // 异步：更新流程在React事件流中，一般react的时间系统都会加上对应的上下文，如在discreteUpdates里面
+      // 异步：更新流程在React事件流中，一般react的事件系统都会加上对应的上下文，如在discreteUpdates里面
       // 有executionContext |= DiscreteEventContext;
       // 同步：就是下面的flushSyncCallbackQueue，不在事件流中
       if (executionContext === NoContext) {
@@ -543,7 +543,7 @@ export function scheduleUpdateOnFiber(
         /**
          * 由于是SyncLane，上面的ensureRootIsScheduled会通过scheduleSyncCallback生成一个immediateQueueCallbackNode，
          * 但因为这里不在事件流，所以flushSyncCallbackQueue里面判断到immediateQueueCallbackNode不为空的话，会将该任务取消掉，
-         * 然后直接情况syncQueue队列
+         * 然后直接清空syncQueue队列
          */
         flushSyncCallbackQueue();
       }
@@ -632,7 +632,6 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   
   enableLog && console.log('ensureRootIsScheduled start')
   if (!__LOG_NAMES__.length || __LOG_NAMES__.includes('ensureRootIsScheduled')) debugger
-
   // 获取旧任务，对应task上的callback，代表当前根节点正在被调度的任务
   const existingCallbackNode = root.callbackNode;
 
@@ -1575,6 +1574,7 @@ function workLoopConcurrent() {
   // 调用shouldYield判断如果超出时间片限制，那么结束循环
   // Perform work until Scheduler asks us to yield
   while (workInProgress !== null && !shouldYield()) {
+    console.log(workInProgress)
     performUnitOfWork(workInProgress);
   }
   enableLog && console.log('workLoopConcurrent end')
@@ -1775,6 +1775,9 @@ function commitRootImpl(root, renderPriorityLevel) {
     // flush synchronous work at the end, to avoid factoring hazards like this.
      // 触发useEffect回调与其他同步任务。
     //  由于这些任务可能触发新的渲染，所以这里要一直遍历执行直到没有任务
+    // 会进入这里的情况就是：比如我组件里有useEffect、useLayoutEffect，且在useLayoutEffect里面又setState
+    // 因为第一次render时判断到有useEffect，所以rootWithPendingPassiveEffects不为null，那么在useLayoutEffect里面setState
+    // 后这里就会满足条件进入了，所以会清空上一轮的useEffect
     flushPassiveEffects();
   } while (rootWithPendingPassiveEffects !== null);
 
@@ -1990,8 +1993,13 @@ function commitRootImpl(root, renderPriorityLevel) {
     // This commit has passive effects. Stash a reference to them. But don't
     // schedule a callback until after flushing layout work.
     rootDoesHavePassiveEffects = false;
+    // 因为useEffect是异步调度的，所以等到处理useEffect的时候，root拿不到，所以这里
+    // 用个全局变量保存，那么 `flushPassiveEffectImpl` 执行到的时候就能通过
+    // `const root = rootWithPendingPassiveEffects;` 以及
+    // `const lanes = pendingPassiveEffectsLanes;`拿到 root 和lanes 了
     rootWithPendingPassiveEffects = root;
     pendingPassiveEffectsLanes = lanes;
+    // pendingPassiveEffectsRenderPriority也是等到执行`flushPassiveEffect`的时候用到
     pendingPassiveEffectsRenderPriority = renderPriorityLevel;
   }
   // 获取尚未处理的优先级，比如之前被跳过的任务的优先级
