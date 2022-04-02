@@ -488,7 +488,10 @@ function unstable_cancelCallback(task) {
   // 不能从队列中删除这个任务，因为不能从基于堆的数组中删除任意节点，只能删除第一个节点。
   task.callback = null;
 }
-
+/**
+ * 
+ * @returns currentPriorityLevel;
+ */
 function unstable_getCurrentPriorityLevel() {
   return currentPriorityLevel;
 }

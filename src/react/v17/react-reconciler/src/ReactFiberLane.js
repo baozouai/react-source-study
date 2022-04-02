@@ -938,12 +938,12 @@ export function markRootFinished(root: FiberRoot, remainingLanes: Lanes) {
   // 从root.pendingLanes中删除remainingLanes
   /**
    * const a = 0b100
-   const b = 0b010
-   const c = a | b // 此时c是包含 a 和 b 的
-
-   // -- c = 0b110
-   ~b = 0b101
-   c = c & ~b = 0b100 // 此时的c只有a
+   * const b = 0b010
+   * const c = a | b // 此时c是包含 a 和 b 的
+   *
+   *  c = 0b110
+   * ~b = 0b010
+   * c = c & ~b = 0b100 // 此时的c只有a
    * */
 
   const noLongerPendingLanes = root.pendingLanes & ~remainingLanes;

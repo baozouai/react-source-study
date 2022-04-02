@@ -670,7 +670,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   if (existingCallbackNode !== null) {
     // 获取旧任务的优先级
     const existingCallbackPriority = root.callbackPriority;
-    // 如果新旧任务的优先级相同，则无需调度，如多次调用setState：
+    // 如果新旧任务的优先级相同，则无需调度，复用旧任务，顺便把这次更新一起做了，如多次调用setState：
     // onClick = () => {
     // setState(1);
     // setState(2);
