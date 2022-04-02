@@ -795,6 +795,7 @@ function performConcurrentWorkOnRoot(root) {
     // 那么最初render无效, 丢弃最初render的结果, 等待下一次调度
     prepareFreshStack(root, NoLanes);
   } else if (exitStatus !== RootIncomplete) {
+    // renderRootConcurrent执行后的状态不等于RootIncomplete(未完成)，也就是完成了
     // 4. 异常处理: 有可能fiber构造过程中出现异常
     if (exitStatus === RootErrored) {
       executionContext |= RetryAfterError;
@@ -840,6 +841,9 @@ function performConcurrentWorkOnRoot(root) {
     // currently executed. Need to return a continuation.
     return performConcurrentWorkOnRoot.bind(null, root);
   }
+  // finishConcurrentRender中的commitRoot调用了commitRootImpl，里面会把
+  // root.callbackNode置为null，所以上面的root.callbackNode === originalCallbackNode
+  // 就不满足了
   enableLog && console.log('performConcurrentWorkOnRoot end')
   // 否则retutn null，表示任务已经完成，通知Scheduler停止调度
   return null;
@@ -1810,13 +1814,14 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   // Update the first and last pending times on this root. The new first
   // pending time is whatever is left on the root fiber.
-  // 将收集到的childLanes，连同root自己的lanes，一并赋值给remainingLanes
+  // 将收集到的childLanes，连同root自己的lanes，一并赋值给remainingLanes，表示还没处理的lanes
   let remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
   /**
    * 将root.pendingLanes去掉remaingLanes(叫做noLongerPendingLanes），
-   * 即noLongerPendingLanes = root.pendingLanes & ~remainingLanes，
-   * 之后root.pendingLanes = remainingLanes
-   * 将noLongerPendingLanes对应eventTimes、expirationTimes中的index位的值置为NoTimestamp
+   * 即noLongerPendingLanes = root.pendingLanes & ~remainingLanes，表示已经处理的lanes，
+   * 之后root.pendingLanes = remainingLanes，即pendingLanes等于剩下还没处理的lanes，
+   * 因为noLongerPendingLanes已经处理了，那么将noLongerPendingLanes对应eventTimes、
+   * expirationTimes中的index位的值置为NoTimestamp
    */
   markRootFinished(root, remainingLanes);
 

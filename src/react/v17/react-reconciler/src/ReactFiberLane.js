@@ -269,7 +269,7 @@ export function lanePriorityToSchedulerPriority(
       );
   }
 }
-// 计算renderLanes
+/** 计算renderLanes */ 
 export function getNextLanes(root: FiberRoot, wipLanes: Lanes): Lanes {
   // 该函数从root.pendingLanes中找出优先级最高的lane
 
@@ -933,7 +933,13 @@ export function hasDiscreteLanes(lanes: Lanes) {
 export function markRootMutableRead(root: FiberRoot, updateLane: Lane) {
   root.mutableReadLanes |= updateLane & root.pendingLanes;
 }
-
+/**
+ * 将root.pendingLanes去掉remaingLanes(叫做noLongerPendingLanes），
+ * 即noLongerPendingLanes = root.pendingLanes & ~remainingLanes，表示已经处理的lanes，
+ * 之后root.pendingLanes = remainingLanes，即pendingLanes等于剩下还没处理的lanes，
+ * 因为noLongerPendingLanes已经处理了，那么将noLongerPendingLanes对应eventTimes、
+ * expirationTimes中的index位的值置为NoTimestamp
+ */
 export function markRootFinished(root: FiberRoot, remainingLanes: Lanes) {
   // 从root.pendingLanes中删除remainingLanes
   /**
@@ -965,18 +971,18 @@ export function markRootFinished(root: FiberRoot, remainingLanes: Lanes) {
   /**
    * 假设 lanes = 0b0000000000000000000000000011100      // 十进制为10
    *     index = pickArbitraryLaneIndex(lanes)          // index = 4
-   *                       // 1 为 0b0000000000000000000000000000001
-   *     lane = 1 << 4  //        0b0000000000000000000000000010000
+   *                        1 为 0b0000000000000000000000000000001
+   *     lane = 1 << 4          0b0000000000000000000000000010000
    * 经过
    * lanes &= ~lane
    * 的位运算
    *
-   * lanes =0b0000000000000000000000000010100
+   * lanes =0b0000000000000000000000000001100
    *
    * 我们只看后几位
    * 开始的   lanes 为 11100
-   * 算出的    lane 为 01000
-   * 最终的结果为       10100
+   * 算出的    lane 为 10000
+   * 最终的结果为       01100
    * ...
    * 最终计算到lanes 为 00000 结束
    * -----------------------------------------------------
