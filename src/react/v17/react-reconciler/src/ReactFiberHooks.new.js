@@ -606,6 +606,7 @@ function updateReducer<S, I, A>(
             // This update is going to be committed so we never want uncommit
             // it. Using NoLane works because 0 is a subset of all bitmasks, so
             // this will never be skipped by the check above.
+            // 因为该update是高优update，但是在baseQueue里面，所以将lane优先级提高到最高，NoLane表示最高
             lane: NoLane,
             action: update.action,
             eagerReducer: update.eagerReducer,
