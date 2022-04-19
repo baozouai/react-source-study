@@ -1449,7 +1449,7 @@ function dispatchAction<S, A>(
   ) {
     /**
      * 因为只有在render的时候触发更新，上面的fiber或fiber.alternate才等于currentlyRenderingFiber,
-     * 将didScheduleRenderPhaseUpdate设为true
+     * 将didScheduleRenderPhaseUpdate设为true，，所以在render的时候setState是不会走scheduleUpdateOnFiber的
      */
     // This is a render phase update. Stash it in a lazily-created map of
     // queue -> linked list of updates. After this render pass, we'll restart
