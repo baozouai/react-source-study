@@ -39,9 +39,7 @@ const randomKey = Math.random()
 const internalInstanceKey = '__reactFiber$' + randomKey;
 const internalPropsKey = '__reactProps$' + randomKey;
 const internalContainerInstanceKey = '__reactContainer$' + randomKey;
-const internalEventHandlersKey = '__reactEvents$' + randomKey;
 const internalEventHandlerListenersKey = '__reactListeners$' + randomKey;
-const internalEventHandlesSetKey = '__reactHandles$' + randomKey;
 
 export function precacheFiberNode(
   hostInst: Fiber,

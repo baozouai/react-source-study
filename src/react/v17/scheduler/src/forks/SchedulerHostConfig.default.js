@@ -12,12 +12,13 @@ export let requestHostCallback;
 /** 取消回调，scheduledHostCallback = null */
 export let cancelHostCallback;
 /**
- * @example
+ * ```js
  * requestHostTimeout = function(callback, ms) {
     taskTimeoutID = setTimeout(() => {
       callback(getCurrentTime());
     }, ms);
   };
+  ```
  */
 export let requestHostTimeout;
 /** clearTimeout(taskTimeoutID) */
